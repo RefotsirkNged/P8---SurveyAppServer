@@ -1,2 +1,3 @@
 #!/bin/sh
 curl http://192.168.1.124:8080/git/notifyCommit?url=https://github.com/RefotsirkNged/P8---SurveyAppServer
+curl http://192.168.1.125:8081/git/notifyCommit?url=https://github.com/RefotsirkNged/P8---SurveyAppServer
