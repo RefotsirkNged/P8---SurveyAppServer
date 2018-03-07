@@ -21,7 +21,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.io.StringReader;
 
-public class SessionResourceTest {
+public class AdminSessionResourceTest {
     private HttpServer server;
     private WebTarget target;
 
@@ -33,6 +33,8 @@ public class SessionResourceTest {
 
     private final String malformedEmail = "xxxemail.com";
     private final String malformedPassword = "pypass";
+
+    private final String path = "admin/session";
 
     @Before
     public void setUp() throws Exception
@@ -57,7 +59,7 @@ public class SessionResourceTest {
         server.shutdown();
     }
 
-    private JsonObject getPayload(Response response)
+   /* private JsonObject getPayload(Response response)
     {
         String content = response.readEntity(String.class);
         JsonReader jsonReader = Json.createReader(new StringReader(content));
@@ -70,7 +72,7 @@ public class SessionResourceTest {
     {
         target.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_USERNAME, email);
         target.property(HttpAuthenticationFeature.HTTP_AUTHENTICATION_BASIC_PASSWORD, password);
-        return target.path("session").request().get();
+        return target.path(path).request().get();
     }
 
     @Test
@@ -133,5 +135,5 @@ public class SessionResourceTest {
     {
         // TODO: Implement when we know more about the delete method
         assertTrue(false);
-    }
+    }*/
 }
