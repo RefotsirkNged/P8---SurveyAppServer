@@ -10,8 +10,8 @@
 <body>
 
 <div class="wrapper">
-    <label>Email</label> <input id="loginemail" type="text"/>
-    <label>Password</label><input id="loginpassword" type="password"/>
+    <label>Email</label> <input id="loginemail" type="text" value="researcher1@email.com"/>
+    <label>Password</label><input id="loginpassword" type="password" value="pypass"/>
     <br>
     <br>
     <button id="loginbutton" onclick="login()">Login</button>
@@ -27,39 +27,48 @@
 </body>
 </html>
 <script>
-  var modal = document.getElementById("loginfailedmodal");
-  var span = document.getElementById("modalclose");
+    var modal = document.getElementById("loginfailedmodal");
+    var span = document.getElementById("modalclose");
 
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+
+    function login() {
+        var email = document.getElementById('loginemail').value;
+        var password = document.getElementById('loginpassword').value;
+
+        $.ajax({
+            url: 'http://localhost:8080/api/researcher/login',
+            type: 'POST',
+            beforeSend: function (request) {
+                request.setRequestHeader("email", email);
+                request.setRequestHeader("password", password);
+            },
+            //data: {email: email, password: password},
+            success: function (response) {
+                if(response.hasOwnProperty("error")){
+                    modal.style.display = "block";
+                    document.getElementById("loginfailedmessage").innerText = response.error;
+                }
+                else {
+                    sessionStorage.setItem('token', response.token);
+                    setCookie("token", response.token, 1);
+                    window.location.replace("../index.html");
+                }
+            },
+            error: function (response) {
+                modal.style.display = "block";
+
+                document.getElementById("loginfailedmessage").innerText = "Something happened";
+            }
+        });
+
     }
-  }
-
-  span.onclick = function () {
-    modal.style.display = "none";
-  }
-
-  function login () {
-    var email = document.getElementById('loginemail').value;
-    var password = document.getElementById('loginpassword').value;
-
-    $.ajax({
-      url: 'TODO',
-      type: 'GET',
-      data: {email: email, password: password},
-      success: function (response) {
-        var res = JSON.parse(response);
-
-        setCookie("usertoken", res.usertoken, 1);
-        window.location.replace("/webportal/home")
-      },
-      error: function (response) {
-        modal.style.display = "block";
-
-        document.getElementById("loginfailedmessage").innerText = "Something happened";
-      }
-    })
-
-  }
 </script>
