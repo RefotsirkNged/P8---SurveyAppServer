@@ -26,5 +26,5 @@ function setCookie(cname, cvalue, exdays) {
 function isLoggedIn()
 {
   var usertoken = sessionStorage.getItem('token');
-  return usertoken !== "";
+  return usertoken !== null && usertoken !== "" && usertoken !== "null";
 }
