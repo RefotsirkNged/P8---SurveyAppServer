@@ -15,7 +15,7 @@ public class Database {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://192.168.1.123:5432/postgres",
+                .getConnection("jdbc:postgresql://localhost:5432/postgres",
                         "postgres", "power123");
         return c;
     }
