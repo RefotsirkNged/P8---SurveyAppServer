@@ -1,7 +1,9 @@
 package sw806f18.server;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Database {
 
@@ -47,6 +49,18 @@ public class Database {
         } else {
             return -1;
         }
+    }
+
+    public static List<group> getAllGroups(Connection connection) throws SQLException{
+        Statement statement = connection.createStatement();
+        String query = "SELECT * FROM groups";
+        ResultSet resultSet = statement.executeQuery(query);
+        List<group> groups = new ArrayList<group>();
+
+        if (resultSet.next()) {
+            groups.add(new group(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("hub")));
+        }
+        return groups;
     }
 
     /**
