@@ -1,4 +1,8 @@
-package sw806f18.server;
+package sw806f18.server.api;
+
+import sw806f18.server.Authentication;
+import sw806f18.server.Database;
+import sw806f18.server.exceptions.LoginException;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -7,9 +11,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.crypto.Data;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @Path("researcher/login")
 public class ResearcherLoginResource {
@@ -24,20 +25,15 @@ public class ResearcherLoginResource {
     public JsonObject login(@HeaderParam("email") String email, @HeaderParam("password") String password)
     {
         try {
-            Connection connection = Database.createConnection();
-            int userid = Database.getUser(connection, email, password);
-
-            if(userid == -1 || !Database.isResearcher(connection, userid))
-            {
-                return Json.createObjectBuilder().add("error", "Invalid email or password!").build();
-            }
+            int userid = Database.getResearcher(email, password).id;
 
             String token = Authentication.instance.getToken(userid); // Database.createSessionToken(connection, userid);
-            Database.closeConnection(connection);
+
 
             return Json.createObjectBuilder().add("token", token).build();
-        } catch (Exception e) {
-            return Json.createObjectBuilder().add("error", "Exception: " + e.getMessage()).build();
+        } catch (LoginException e) {
+            e.printStackTrace();
+            return Json.createObjectBuilder().add("error", e.getMessage()).build();
         }
     }
 
