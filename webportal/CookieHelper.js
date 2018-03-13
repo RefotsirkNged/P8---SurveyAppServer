@@ -28,3 +28,44 @@ function isLoggedIn()
   var usertoken = sessionStorage.getItem('token');
   return usertoken !== null && usertoken !== "" && usertoken !== "null";
 }
+
+function login() {
+    var email = document.getElementById('loginemail').value;
+    var password = document.getElementById('loginpassword').value;
+
+    $.ajax({
+        url: 'http://localhost:8081/api/researcher/login',
+        type: 'POST',
+        beforeSend: function (request) {
+            request.setRequestHeader("email", email);
+            request.setRequestHeader("password", password);
+        },
+        //data: {email: email, password: password},
+        success: function (response) {
+            if(response.hasOwnProperty("error")){
+                modal.style.display = "block";
+                document.getElementById("loginfailedmessage").innerText = response.error;
+            }
+            else {
+                sessionStorage.setItem('token', response.token);
+                setCookie("token", response.token, 1);
+                window.location.replace("../index.html");
+            }
+        },
+        error: function (response) {
+            modal.style.display = "block";
+
+            document.getElementById("loginfailedmessage").innerText = "Something happened";
+        }
+    });
+
+}
+
+function groupManager(){
+    if(isLoggedIn()){
+        window.location.replace("../groupmanager/index.html");
+    }
+    else {
+        window.location.replace("../login/index.html");
+    }
+}
