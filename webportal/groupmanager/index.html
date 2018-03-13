@@ -3,10 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="../CookieHelper.js"></script>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
 </head>
 <body>
-GROUP MANAGER
+<div class="groupWrapper">
+    <div class="groupWindow">
+        <table class="table table-hover">
+            <tbody>
+            <tr>
+                <td>John</td>
+            </tr>
+            <tr>
+                <td>Mary</td>
+            </tr>
+            <tr>
+                <td>July</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="btnWrapper">
+        <button type="button" class="btn btn-success btnGroupManager" data-toggle="modal" data-target="#addGroupModal">+</button>
+        <button type="button" class="btn btn-danger btnGroupManager">-</button>
+        <button type="button" class="btn btn-info btnGroupManager"><span class="glyphicon glyphicon-pencil"></span> A</button>
+    </div>
+
+    <div class="modal fade" id="addGroupModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Group</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="groupNameInput" placeholder="Name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetRows(){
+        var rows = $('table').find('tr').css('background-color', '');
+    }
+
+    $(document).ready(function() {
+        $('table tr').click(function() {
+            resetRows();
+            $(this).css('background-color','#9a9a9a');
+        });
+
+    });
+</script>
+
 </body>
 </html>

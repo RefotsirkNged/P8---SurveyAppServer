@@ -58,7 +58,12 @@ function login() {
             document.getElementById("loginfailedmessage").innerText = "Something happened";
         }
     });
+}
 
+function logout(){
+    sessionStorage.removeItem('token');
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    window.location.replace("../index.html");
 }
 
 function groupManager(){

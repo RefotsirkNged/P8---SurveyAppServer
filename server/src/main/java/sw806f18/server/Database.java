@@ -29,7 +29,7 @@ public class Database {
      * @throws SQLException
      */
     static int getUser(Connection connection, String email, String password) throws SQLException {
-        String query = "SELECT id, password, salt FROM users WHERE username = '" + email + "'";
+        String query = "SELECT id, password, salt FROM users WHERE email = '" + email + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if(!resultSet.next()){
