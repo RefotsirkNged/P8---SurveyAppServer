@@ -7,9 +7,9 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-export CONFIG_CHECK_FILE="C:\Users\krist\P8---SurveyAppAndroid\hooks\google_checkstyle.xml";
-export CONFIG_JAR="C:\Users\krist\P8---SurveyAppAndroid\hooks\checkstyle-8.8-all.jar";
-
+localPath="$(dirname $(readlink -f $0))"
+export CONFIG_CHECK_FILE="$localPath\google_checkstyle.xml";
+export CONFIG_JAR="$localPath\checkstyle-8.8-all.jar";
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
