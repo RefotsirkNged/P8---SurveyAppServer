@@ -7,8 +7,9 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-export CONFIG_CHECK_FILE="$pwd\google_checkstyle.xml";
-export CONFIG_JAR="$pwd\checkstyle-8.8-all.jar";
+localPath=pwd
+export CONFIG_CHECK_FILE="$localPath\google_checkstyle.xml";
+export CONFIG_JAR="$localPath\checkstyle-8.8-all.jar";
 
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
