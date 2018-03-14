@@ -7,7 +7,7 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-localPath='pwd'
+localPath="$(dirname $(readlink -f $0))"
 export CONFIG_CHECK_FILE="$localPath\google_checkstyle.xml";
 export CONFIG_JAR="$localPath\checkstyle-8.8-all.jar";
 
