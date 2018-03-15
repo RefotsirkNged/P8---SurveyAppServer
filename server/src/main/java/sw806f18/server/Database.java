@@ -1,9 +1,7 @@
 package sw806f18.server;
 
-import sw806f18.server.api.ResearcherResource;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteUserException;
-import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.Group;
 import sw806f18.server.model.Researcher;
 
 import java.sql.*;
@@ -12,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Database {
-
     /**
      * Creates a new Database connection to the PostgreSQL Database.
      * @return An open Database connection.
@@ -23,7 +20,7 @@ public class Database {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/postgres",
+                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
                         Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
         return c;
     }
@@ -57,16 +54,84 @@ public class Database {
         }
     }
 
-    public static List<group> getAllGroups(Connection connection) throws SQLException{
-        Statement statement = connection.createStatement();
-        String query = "SELECT * FROM groups";
-        ResultSet resultSet = statement.executeQuery(query);
-        List<group> groups = new ArrayList<group>();
+    /**
+     * Get list of all groups from database
+     * @return List of all groups
+     * @throws GetGroupsException
+     */
+    public static List<Group> getAllGroups() throws GetGroupsException{
+        Connection con;
 
-        if (resultSet.next()) {
-            groups.add(new group(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("hub")));
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT * FROM groups";
+            ResultSet resultSet = statement.executeQuery(query);
+            List<Group> groups = new ArrayList<Group>();
+
+            while (resultSet.next()) {
+                groups.add(new Group(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("hub")));
+            }
+            con.close();
+            return groups;
         }
-        return groups;
+        catch(SQLException e){
+            throw new GetGroupsException(e.getMessage());
+        }
+        catch (ClassNotFoundException e){
+            throw new GetGroupsException(e.getMessage());
+        }
+    }
+
+    /**
+     * Adds group to database
+     * @param name Name of group
+     * @return ID of group
+     * @throws AddGroupException
+     */
+    public static int addGroup(String name) throws AddGroupException{
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO groups (name, hub) VALUES ('" + name + "', null) RETURNING id";
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            id = rs.getInt(1);
+            con.close();
+        }
+        catch(SQLException e){
+            throw new AddGroupException(e.getMessage());
+        }
+        catch (ClassNotFoundException e){
+            throw new AddGroupException(e.getMessage());
+        }
+        return id;
+    }
+
+    /**
+     * Deletes group in database
+     * @param id ID of group to delete
+     * @throws DeleteGroupException
+     */
+    public static void deleteGroup(int id) throws DeleteGroupException{
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "DELETE FROM groups WHERE id=" + id;
+            statement.executeUpdate(query);
+            con.close();
+        }
+        catch(SQLException e){
+            throw new DeleteGroupException(e.getMessage());
+        }
+        catch (ClassNotFoundException e){
+            throw new DeleteGroupException(e.getMessage());
+        }
     }
 
     /**

@@ -53,9 +53,24 @@ body{
     overflow:auto;
 }
 
+.memberWindow{
+    margin-top:20px;
+    height:200px;
+}
+
 .groupWrapper{
-    width:570px;
+    width:560px;
     overflow: hidden;
+    float:left;
+}
+
+.groupManagerWrapper{
+    width:1090px;
+    overflow:hidden;
+}
+
+.allUsersWrapper{
+    float:right;
 }
 
 .btnWrapper{
@@ -64,11 +79,30 @@ body{
     padding-right:10px;
 }
 
+.userWindow{
+    height:520px;
+}
+
+.btnBack{
+    margin-top:20px;
+    width:200px;
+}
+
 .btnGroupManager{
     width:50px;
     height: 50px;
     margin: 5px;
     margin-left:0;
+}
+
+.btnMemberList{
+    width:25px;
+    height:25px;
+    line-height:0;
+    padding:0 0;
+    float:right;
+    border:0;
+    border-radius:0.25rem;
 }
 
 .table > tbody > tr:first-child > td {

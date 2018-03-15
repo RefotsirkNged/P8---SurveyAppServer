@@ -7,63 +7,202 @@
     <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="../js/CookieHelper.js"></script>
+    <script src="../js/script.js"></script>
     <script src="../js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="groupWrapper">
-    <div class="groupWindow">
-        <table class="table table-hover">
-            <tbody>
-            <tr>
-                <td>John</td>
-            </tr>
-            <tr>
-                <td>Mary</td>
-            </tr>
-            <tr>
-                <td>July</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="groupManagerWrapper">
+    <div class="groupWrapper">
+        <div class="groupWindow">
+            <table class="table table-hover">
+                <tbody id="groupTableBody">
+                </tbody>
+            </table>
+        </div>
 
-    <div class="btnWrapper">
-        <button type="button" class="btn btn-success btnGroupManager" data-toggle="modal" data-target="#addGroupModal">+</button>
-        <button type="button" class="btn btn-danger btnGroupManager">-</button>
-        <button type="button" class="btn btn-info btnGroupManager"><span class="glyphicon glyphicon-pencil"></span> A</button>
-    </div>
+        <div class="btnWrapper">
+            <button type="button" class="btn btn-success btnGroupManager" data-toggle="modal" data-target="#addGroupModal">+</button>
+            <button type="button" class="btn btn-danger btnGroupManager" onclick="deleteGroupToggle()">-</button>
+        </div>
 
-    <div class="modal fade" id="addGroupModal" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Group</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" class="form-control" id="groupNameInput" placeholder="Name">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <div class="modal fade" id="addGroupModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Group</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" class="form-control" id="groupNameInput" placeholder="Name">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="modal fade" id="deleteGroupModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Group</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body" id="deleteModalText">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Yes</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="noMarkingModal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Oooops!</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        No group has been marked!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="groupWindow memberWindow">
+            <table class="table">
+                <tbody id="groupMemberBody">
+                <tr>
+                    <td>
+                        Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="allUsersWrapper">
+        <div class="groupWindow userWindow">
+            <table class="table">
+                <tbody id="allUsersWindow">
+                <tr>
+                    <td>
+                        Test <button type="button" class="btn-success btnMemberList" onclick="deleteGroupToggle()">+</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Test <button type="button" class="btn-success btnMemberList" onclick="deleteGroupToggle()">+</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
+<button type="button" class="btn btn-info btnBack" onclick="gotoHome()">Back</button>
+
 <script>
+    var marked;
+    function deleteGroupToggle(){
+        if(marked === undefined){
+            $('#noMarkingModal').modal('toggle');
+        }
+        else{
+            $('#deleteModalText').html("Are you sure you want to delete " + marked.name + "?");
+            $('#deleteGroupModal').modal('toggle');
+        }
+    }
+
+    function deleteGroup(){
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'DELETE',
+            beforeSend: function (request) {
+                request.setRequestHeader("id", marked.id);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                $('#row' + marked.id).remove();
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
     function resetRows(){
         var rows = $('table').find('tr').css('background-color', '');
     }
 
-    $(document).ready(function() {
-        $('table tr').click(function() {
-            resetRows();
-            $(this).css('background-color','#9a9a9a');
-        });
+    function addGroup(){
+        var name = document.getElementById('groupNameInput').value;
 
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'PUT',
+            beforeSend: function (request) {
+                request.setRequestHeader("name", name);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                $('#groupTableBody').append('<tr id="row' + response.success + '"><td>' + name + '</td></tr>');
+                $('#row' + response.success).click(function() {
+                    resetRows();
+                    $(this).css('background-color','#9a9a9a');
+                    marked = {id: response.success, name: name};
+                });
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        updateTable();
     });
+
+    function updateTable(){
+        $('#groupTableBody').innerHTML = "";
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            //data: {email: email, password: password},
+            success: function (response) {
+                var groups = response.groups;
+                groups.forEach(function(e){
+                    $('#groupTableBody').append('<tr id="row' + e.id + '"><td>' + e.name + '</td></tr>');
+                    $('#row' + e.id).click(function() {
+                        resetRows();
+                        $(this).css('background-color','#9a9a9a');
+                        marked = {id:e.id, name: e.name};
+                    });
+                });
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
 </script>
 
 </body>
