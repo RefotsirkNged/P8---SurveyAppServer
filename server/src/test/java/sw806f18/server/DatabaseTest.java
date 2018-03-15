@@ -34,6 +34,7 @@ public class DatabaseTest {
 
     @Test public static void testfunc(String key){
         return;
+
     }
 
     @Test
