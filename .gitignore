@@ -25,4 +25,6 @@ hs_err_pid*
 .idea/*
 server/target*
 server/.idea*
+server/server.iml
+
 webportal/.idea/workspace.xml

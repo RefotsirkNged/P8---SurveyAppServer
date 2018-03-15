@@ -15,6 +15,7 @@ public class Configurations {
     private String psqlUsername;
     private String psqlPassword;
     private int psqlPort;
+    private String psqlDatabase;
     public Configurations(String path){
         try {
             InputStream fis = new FileInputStream(path);
@@ -27,6 +28,7 @@ public class Configurations {
             psqlUsername = psql.getString("user");
             psqlPassword = psql.getString("password");
             psqlPort = psql.getInt("port");
+            psqlDatabase = psql.getString("database");
         } catch (IOException e) {
             e.printStackTrace();
             //throw new IOException("Configuration file not found");
@@ -37,4 +39,5 @@ public class Configurations {
     public int postgresPort(){return psqlPort;}
     public String postgresUser(){return psqlUsername;}
     public String postgresPassword(){return psqlPassword;}
+    public String postgresDatabase(){return psqlDatabase;}
 }

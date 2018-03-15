@@ -4,6 +4,7 @@ import sw806f18.server.api.ResearcherResource;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteUserException;
 import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
 import java.sql.*;
@@ -21,7 +22,7 @@ public class Database {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/postgres",
+                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
                         Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
         return c;
     }
@@ -196,5 +197,25 @@ public class Database {
      */
     private static void closeConnection(Connection c) throws SQLException {
         c.close();
+    }
+
+    public static void createInvite(String cpr, String key) {
+        return;
+    }
+
+    public static String getCPRFromKey(String key) {
+        return null;
+    }
+
+    public static void clearInviteFromKey(String key) {
+        return;
+    }
+
+    public static Participant getParticipant(String email, String password) {
+        return null;
+    }
+
+    public static void createParticipant(Participant participant, String password) {
+
     }
 }
