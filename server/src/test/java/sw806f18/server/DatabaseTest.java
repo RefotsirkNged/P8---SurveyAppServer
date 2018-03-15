@@ -3,6 +3,7 @@ package sw806f18.server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteUserException;
 import sw806f18.server.exceptions.LoginException;
@@ -119,9 +120,12 @@ public class DatabaseTest {
 
     private boolean createHelperInvite() {
         boolean created = true;
-
-        Database.createInvite("0123456789", fixedKey);
-
+        try{
+            Database.createInvite("0123456789", fixedKey);
+        }
+        catch(CreateInviteException ex){
+            created = false;
+        }
         return created;
     }
 

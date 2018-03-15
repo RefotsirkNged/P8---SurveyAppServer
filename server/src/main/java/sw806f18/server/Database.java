@@ -1,6 +1,7 @@
 package sw806f18.server;
 
 import sw806f18.server.api.ResearcherResource;
+import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteUserException;
 import sw806f18.server.exceptions.LoginException;
@@ -199,8 +200,17 @@ public class Database {
         c.close();
     }
 
-    public static void createInvite(String cpr, String key) {
-        return;
+    public static void createInvite(String cpr, String key) throws CreateInviteException{
+        Connection con = null;
+        try {
+
+            con = createConnection();
+            Statement stmt = con.createStatement();
+        }
+        catch (SQLException | ClassNotFoundException e) {
+            //Send stacktrace to log
+            throw new CreateInviteException("Server error, contact system administrator", e);
+        }
     }
 
     public static String getCPRFromKey(String key) {
@@ -215,7 +225,7 @@ public class Database {
         return null;
     }
 
-    public static void createParticipant(Participant participant, String password) {
+    public static void createParticipant(Participant participant, String password) throws CreateUserException{
 
     }
 }
