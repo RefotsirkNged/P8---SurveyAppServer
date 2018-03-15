@@ -1,6 +1,9 @@
 package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.Participant;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -11,8 +14,15 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class TestHelpers {
@@ -126,5 +136,36 @@ public class TestHelpers {
             result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
         }
         return result;
+    }
+
+    public static void populateDatabase() throws CreateUserException, CreateInviteException {
+        Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
+        Database.createParticipant(participant1, "power123");
+        Database.createInvite("0123456789", "abc");
+    }
+
+    public static Connection createConnection() throws SQLException, ClassNotFoundException {
+        Connection c = null;
+        Class.forName("org.postgresql.Driver");
+        c = DriverManager
+                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
+                        Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
+        return c;
+    }
+
+    public static void closeConnection(Connection c) throws SQLException {
+        c.close();
+    }
+
+    public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
+        Connection connection = createConnection();
+
+        String query = "SELECT truncate_tables('postgres')";
+
+        Statement statement = connection.createStatement();
+
+        statement.execute(query);
+
+        closeConnection(connection);
     }
 }

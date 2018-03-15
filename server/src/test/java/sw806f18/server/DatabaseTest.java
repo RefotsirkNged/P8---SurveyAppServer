@@ -3,39 +3,23 @@ package sw806f18.server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteUserException;
-import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
-import javax.swing.plaf.nimbus.State;
-import javax.xml.crypto.Data;
-import java.io.Console;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.*;
+import static sw806f18.server.TestHelpers.populateDatabase;
+import static sw806f18.server.TestHelpers.resetDatabase;
 
 /**
  * Created by augustkorvell on 13/03/2018.
  */
 public class DatabaseTest {
     private String email = "test@testington.com";
-
-
-
-    @Test public static void testfunc(String key){
-        return;
-
-    }
 
     @Test
     public void createGetDeleteResearcher() throws Exception {
@@ -60,32 +44,14 @@ public class DatabaseTest {
     @Before
     public void setUp() throws Exception
     {
-        Connection con = null;
-        try {
-
-            con = createConnection();
-            Statement stmt = con.createStatement();
-
-            String q = "DELETE FROM users WHERE email = '" + email + "';";
-
-            stmt.execute(q);
-            stmt.close();
-
-            closeConnection(con);
-
-        } catch (SQLException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        }
+        resetDatabase();
+        populateDatabase();
     }
 
     @After
     public void tearDown() throws Exception
     {
-        // resetDatabase();
+        //resetDatabase();
 
 //        Connection con = null;
 //        try {
@@ -110,19 +76,6 @@ public class DatabaseTest {
     }
 
 
-    private static Connection createConnection() throws SQLException, ClassNotFoundException {
-        Connection c = null;
-        Class.forName("org.postgresql.Driver");
-        c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
-                        Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
-        return c;
-    }
-
-    private static void closeConnection(Connection c) throws SQLException {
-        c.close();
-    }
-
     private String fixedKey = "abc";
 
     private boolean createHelperInvite() {
@@ -142,16 +95,15 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getCprFromInvite() {
-        assertTrue(createHelperInvite());
-        assertEquals(Database.getCPRFromKey(fixedKey), "0123456789");
+    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
+        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
     }
 
     @Test
     public void createParticipant() throws SQLException, ClassNotFoundException {
         assertTrue(createHelperInvite());
 
-        Participant participant = new Participant(-1, "sw806f18@gmail.com", "0123456789");
+        Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
 
         boolean success = true;
 
@@ -168,34 +120,34 @@ public class DatabaseTest {
 
     @Test
     public void getParticipant() {
-        assertTrue(createHelperInvite());
 
-        Participant participant = new Participant(-1, "sw806f18@gmail.com", "0123456789");
-
+        Participant participant = new Participant(-1, "test@testesen.dk", "0123456789");
+        Participant createdParticipant = null;
         boolean success = true;
 
+
+
         try {
-            Database.createParticipant(participant, "power123");
+            createdParticipant = Database.getParticipant(participant.email, "power123");
         }
-        catch (CreateUserException e)
-        {
+        catch (LoginException ex){
             success = false;
         }
 
-        Participant createdParticipant = Database.getParticipant(participant.email, "power123");
-
-        assertEquals(participant, createdParticipant);
+        assertTrue(participant.equals(createdParticipant));
+        assertTrue(success);
     }
 
-    public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
-        Connection connection = createConnection();
-
-        String schema = new String(Files.readAllBytes(Paths.get("../sql/TruncateDatabase.sql")));
-
-        Statement statement = connection.createStatement();
-
-        statement.execute(schema);
-
-        closeConnection(connection);
+    @Test
+    public void clearInviteFromKey(){
+        boolean success = true;
+        try{
+            Database.clearInviteFromKey("abc");
+        }
+        catch(CPRKeyNotFoundException ex){
+            success = false;
+        }
+        assertTrue(success);
     }
+
 }

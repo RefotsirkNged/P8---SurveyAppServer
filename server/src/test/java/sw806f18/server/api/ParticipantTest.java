@@ -7,6 +7,8 @@ import org.junit.Test;
 import sw806f18.server.Database;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.exceptions.CPRKeyNotFoundException;
+import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Participant;
 
 import javax.json.JsonObject;
@@ -49,7 +51,7 @@ public class ParticipantTest {
     }
 
     @Test
-    public void createParticipant() throws IOException, MessagingException, InterruptedException {
+    public void createParticipant() throws IOException, MessagingException, InterruptedException, LoginException {
         String email = "sw806f18@gmail.com";
         String cpr = "0123456789";
         String password = "power123";
@@ -72,7 +74,13 @@ public class ParticipantTest {
         Participant fullParticipant = Database.getParticipant(email,password);
 
         assertTrue(fullParticipant.equals(partialParticipant));
-
-        Database.clearInviteFromKey(key);
+        boolean success = true;
+        try{
+            Database.clearInviteFromKey(key);
+        }
+        catch(CPRKeyNotFoundException ex){
+            success = false;
+        }
+        assertTrue(success);
     }
 }

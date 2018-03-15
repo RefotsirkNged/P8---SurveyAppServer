@@ -33,7 +33,7 @@ create table persons
 			primary key
 		constraint persons_id_fkey
 			references users,
-	cpr char(11) not null
+	cpr char(10) not null
 		constraint persons_cpr_key
 			unique,
 	primarygroup integer
