@@ -211,6 +211,7 @@ public class Database {
             //Send stacktrace to log
             throw new CreateInviteException("Server error, contact system administrator", e);
         }
+
     }
 
     public static String getCPRFromKey(String key) {
