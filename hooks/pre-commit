@@ -55,7 +55,7 @@ fi
 #Quickly change it so the output goes to stdout, so we can save the result
 
 shopt -s globstar #This can be used if we wanna do wildcard directory search google it if in doubt
-result=$(exec java -jar $CONFIG_JAR -c $CONFIG_CHECK_FILE SurveyAppAndroid/app/src/main/java/)
+result=$(exec java -jar $CONFIG_JAR -c $CONFIG_CHECK_FILE server/src)
 
 if [ -z "$result" ]
 wait
