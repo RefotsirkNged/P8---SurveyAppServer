@@ -8,8 +8,8 @@
 # To enable this hook, rename this file to "pre-commit".
 
 localPath="$(dirname $(readlink -f $0))"
-export CONFIG_CHECK_FILE="$localPath\google_checkstyle.xml";
-export CONFIG_JAR="$localPath\checkstyle-8.8-all.jar";
+export CONFIG_CHECK_FILE="hooks/google_checkstyle.xml";
+export CONFIG_JAR="hooks/checkstyle-8.8-all.jar";
 
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
@@ -55,8 +55,8 @@ fi
 #Quickly change it so the output goes to stdout, so we can save the result
 
 shopt -s globstar #This can be used if we wanna do wildcard directory search google it if in doubt
-result=$(exec java -jar $CONFIG_JAR -c $CONFIG_CHECK_FILE $(pwd))
-echo "$(pwd)/server/src/"
+result=$(exec java -jar $CONFIG_JAR -c $CONFIG_CHECK_FILE server/src)
+
 if [ -z "$result" ]
 wait
 then
