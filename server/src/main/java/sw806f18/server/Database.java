@@ -1,48 +1,64 @@
 package sw806f18.server;
 
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Researcher;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
+
+import java.sql.*;
+import java.util.Arrays;
 
 public class Database {
     /**
      * Creates a new Database connection to the PostgreSQL Database.
      * @return An open Database connection.
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException SQL Exception.
+     * @throws ClassNotFoundException Class Not Found Exception.
      */
     private static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
-                        Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.postgresIp() + ":"
+                                + Configurations.instance.postgresPort() + "/"
+                                + Configurations.instance.postgresDatabase(),
+                        Configurations.instance.postgresUser(),
+                        Configurations.instance.postgresPassword());
         return c;
     }
 
     /**
      * Gets a user from the Database.
      * @param connection An open Database connection.
-     * @param email User email
-     * @param password User password
+     * @param email User email.
+     * @param password User password.
      * @return An integer for the user id, or -1 if the user isn't found.
-     * @throws SQLException
+     * @throws SQLException SQL Exception.
      */
-    private static int getUser(Connection connection, String email, String password) throws SQLException {
-        String query = "SELECT id, password, salt FROM users WHERE email = '" + email + "'";
+    private static int getUser(Connection connection, String email, String password)
+            throws SQLException {
+        String query = "SELECT id, password, salt FROM users "
+                + "WHERE email = '" + email + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
-        if(!resultSet.next()){
+        if (!resultSet.next()) {
             return -1;
         }
 
-        byte[] saltedPassword = Security.convertStringToByteArray(resultSet.getString("password"));
-        byte[] salt = Security.convertStringToByteArray(resultSet.getString("salt"));
+        byte[] saltedPassword = Security
+                .convertStringToByteArray(resultSet.getString("password"));
+        byte[] salt = Security
+                .convertStringToByteArray(resultSet.getString("salt"));
         int id = resultSet.getInt("id");
 
         byte[] hashedPassword = Security.hash(password, salt);
@@ -55,11 +71,11 @@ public class Database {
     }
 
     /**
-     * Get list of all groups from database
-     * @return List of all groups
-     * @throws GetGroupsException
+     * Get list of all groups from database.
+     * @return List of all groups.
+     * @throws GetGroupsException Exception.
      */
-    public static List<Group> getAllGroups() throws GetGroupsException{
+    public static List<Group> getAllGroups() throws GetGroupsException {
         Connection con;
 
         try {
@@ -70,53 +86,52 @@ public class Database {
             List<Group> groups = new ArrayList<Group>();
 
             while (resultSet.next()) {
-                groups.add(new Group(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getInt("hub")));
+                groups.add(new Group(resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getInt("hub")));
             }
             con.close();
             return groups;
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             throw new GetGroupsException(e.getMessage());
-        }
-        catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new GetGroupsException(e.getMessage());
         }
     }
 
     /**
-     * Adds group to database
-     * @param name Name of group
-     * @return ID of group
-     * @throws AddGroupException
+     * Adds group to database.
+     * @param name Name of group.
+     * @return ID of group.
+     * @throws AddGroupException Exception.
      */
-    public static int addGroup(String name) throws AddGroupException{
+    public static int addGroup(String name) throws AddGroupException {
         Connection con;
         int id = 0;
 
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "INSERT INTO groups (name, hub) VALUES ('" + name + "', null) RETURNING id";
+            String query = "INSERT INTO groups (name, hub) VALUES ('"
+                    + name + "', null) RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
             con.close();
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             throw new AddGroupException(e.getMessage());
-        }
-        catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new AddGroupException(e.getMessage());
         }
         return id;
     }
 
     /**
-     * Deletes group in database
-     * @param id ID of group to delete
-     * @throws DeleteGroupException
+     * Deletes group in database.
+     * @param id ID of group to delete.
+     * @throws DeleteGroupException Exceptions.
      */
-    public static void deleteGroup(int id) throws DeleteGroupException{
+    public static void deleteGroup(int id) throws DeleteGroupException {
         Connection con;
 
         try {
@@ -125,21 +140,19 @@ public class Database {
             String query = "DELETE FROM groups WHERE id=" + id;
             statement.executeUpdate(query);
             con.close();
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             throw new DeleteGroupException(e.getMessage());
-        }
-        catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new DeleteGroupException(e.getMessage());
         }
     }
 
     /**
-     * Validates if the user is a researcher
-     * @param connection An open Database connection
-     * @param id Id of researcher
+     * Validates if the user is a researcher.
+     * @param connection An open Database connection.
+     * @param id Id of researcher.
      * @return Boolean value specifying if the id belongs to a researcher.
-     * @throws SQLException
+     * @throws SQLException Exception.
      */
     private static boolean isResearcher(Connection connection, int id) throws SQLException {
         Statement statement = connection.createStatement();
@@ -154,11 +167,11 @@ public class Database {
     }
 
     /**
-     * Attempts login and returns id of researcher if successful
-     * @param email
-     * @param password
-     * @return
-     * @throws LoginException
+     * Attempts login and returns id of researcher if successful.
+     * @param email Email.
+     * @param password Password.
+     * @return Researcher object.
+     * @throws LoginException Exception.
      */
     public static Researcher getResearcher(String email, String password) throws LoginException {
 
@@ -171,11 +184,9 @@ public class Database {
 
             userid = getUser(connection, email, password);
 
-            if(userid == -1 || !isResearcher(connection, userid))
-            {
+            if (userid == -1 || !isResearcher(connection, userid)) {
                 throw new LoginException("Invalid email or password!");
-            }
-            else{
+            } else {
                 Statement statement = connection.createStatement();
                 String query = "SELECT phone FROM researcher WHERE id = " + userid;
                 ResultSet resultSet = statement.executeQuery(query);
@@ -194,26 +205,28 @@ public class Database {
             throw new LoginException("Server error, contact system administrator");
         }
 
-
         return researcher;
     }
 
     /**
-     * Adds a new researcher to the database
-     * @param researcher
-     * @param password
-     * @throws CreateUserException
+     * Adds a new researcher to the database.
+     * @param researcher Researcher object.
+     * @param password Password.
+     * @throws CreateUserException Exception.
      */
-    public static Researcher createResearcher(Researcher researcher, String password) throws CreateUserException {
+    public static Researcher createResearcher(Researcher researcher, String password)
+            throws CreateUserException {
         Connection con = null;
         try {
             con = createConnection();
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt) " +
-                    "VALUES ( '" + researcher.email + "' , '" + Security.convertByteArrayToString(Security.hash(password, salt)) + "' , '" + Security.convertByteArrayToString(salt) + "' ) " +
-                    "RETURNING id";
+            String q1 = "INSERT INTO users(email, password, salt) "
+                    + "VALUES ( '" + researcher.email + "' , '"
+                    + Security.convertByteArrayToString(Security.hash(password, salt))
+                    + "' , '" + Security.convertByteArrayToString(salt) + "' ) "
+                    + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -221,8 +234,8 @@ public class Database {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO researcher (id, phone)" +
-                    "VALUES (" + id + ", " + researcher.phone + ")";
+            String q2 = "INSERT INTO researcher (id, phone)"
+                    + "VALUES (" + id + ", " + researcher.phone + ")";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -242,10 +255,10 @@ public class Database {
     }
 
     /**
-     * Deletes a researcher by removing it from the database
-     * @param email
+     * Deletes a researcher by removing it from the database.
+     * @param email Email.
      */
-    public static void deleteResearcher(String email) throws DeleteUserException{
+    public static void deleteResearcher(String email) throws DeleteUserException {
         Connection con = null;
         try {
 
@@ -269,15 +282,15 @@ public class Database {
     }
 
     /**
-     * Closes an open Database connection
-     * @param c An open Database connection
-     * @throws SQLException
+     * Closes an open Database connection.
+     * @param c An open Database connection.
+     * @throws SQLException Exception.
      */
     private static void closeConnection(Connection c) throws SQLException {
         c.close();
     }
 
-    public static void createInvite(String cpr, String key) throws CreateInviteException{
+    public static void createInvite(String cpr, String key) throws CreateInviteException {
         Connection con = null;
         try {
 
@@ -313,7 +326,7 @@ public class Database {
             Connection conn = createConnection();
             Statement stmt = conn.createStatement();
             String query = "DELETE FROM invite WHERE key = '" + key + "'";
-            stmt.executeQuery(query);
+            stmt.execute(query);
         }
         catch (SQLException e) {
             throw new CPRKeyNotFoundException("Server error, contact system administrator", e);

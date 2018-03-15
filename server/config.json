@@ -5,6 +5,6 @@
     "database": "devdb",
     "user": "postgres",
     "password": "power123",
-    "database": "postgres"
+    "database": "devdb"
   }
 }

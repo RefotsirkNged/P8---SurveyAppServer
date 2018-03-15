@@ -1,23 +1,30 @@
 package sw806f18.server;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.*;
 
 /**
  * Created by chrae on 09-03-2018.
  */
 public class Configurations {
-    public static Configurations instance = new Configurations("config.json");
+    public static Configurations instance;
 
-    private String psqlIP;
+    private String psqlIp;
     private String psqlUsername;
     private String psqlPassword;
     private String psqlDatabase;
     private int psqlPort;
-    private String psqlDatabase;
-    public Configurations(String path){
+
+    /**
+     * Constructor.
+     * @param path Path to configuration file.
+     */
+    public Configurations(String path) {
         try {
             InputStream fis = new FileInputStream(path);
             JsonReader reader = Json.createReader(fis);
@@ -25,20 +32,53 @@ public class Configurations {
             reader.close();
 
             JsonObject psql = conf.getJsonObject("postgreSQL");
-            psqlIP = psql.getString("ip");
+            psqlIp = psql.getString("ip");
             psqlUsername = psql.getString("user");
             psqlPassword = psql.getString("password");
             psqlPort = psql.getInt("port");
             psqlDatabase = psql.getString("database");
         } catch (IOException e) {
             e.printStackTrace();
-            //throw new IOException("Configuration file not found");
         }
     }
 
-    public String postgresIp(){return psqlIP;}
-    public int postgresPort(){return psqlPort;}
-    public String postgresUser(){return psqlUsername;}
-    public String postgresPassword(){return psqlPassword;}
-    public String postgresDatabase(){return psqlDatabase;}
+    /**
+     * Get IP.
+     * @return IP.
+     */
+    public String postgresIp() {
+        return psqlIp;
+    }
+
+    /**
+     * Get port.
+     * @return Port.
+     */
+    public int postgresPort() {
+        return psqlPort;
+    }
+
+    /**
+     * Get user.
+     * @return User.
+     */
+    public String postgresUser() {
+        return psqlUsername;
+    }
+
+    /**
+     * Get password.
+     * @return Password.
+     */
+    public String postgresPassword() {
+        return psqlPassword;
+    }
+
+    /**
+     * Get database.
+     * @return Database.
+     */
+    public String postgresDatabase() {
+        return psqlDatabase;
+    }
 }

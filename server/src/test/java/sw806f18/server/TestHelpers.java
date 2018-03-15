@@ -1,11 +1,12 @@
 package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
+import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.model.Participant;
-
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -19,31 +20,34 @@ import javax.ws.rs.core.Response;
 import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class TestHelpers {
-    public final static String RESEARCHER_LOGIN_PATH = "researcher/login";
-    public final static String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
-    public final static String RENEW_TOKEN_PATH = "renewtoken";
+    public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
+    public static final String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
+    public static final String RENEW_TOKEN_PATH = "renewtoken";
 
-    public final static String VALID_RESEARCHER_EMAIL = "researcher1@email.com";
-    public final static String VALID_RESEARCHER_PASSWORD = "pypass";
+    public static final String VALID_RESEARCHER_EMAIL = "researcher1@email.com";
+    public static final String VALID_RESEARCHER_PASSWORD = "pypass";
 
-    public final static String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
-    public final static String INVALID_RESEARCHER_PASSWORD = "fake";
+    public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
+    public static final String INVALID_RESEARCHER_PASSWORD = "fake";
 
     private TestHelpers() {
         // Don't instantiate me
     }
 
+    /**
+     * Get payload.
+     * @param response Response.
+     * @return Payload.
+     */
     public static JsonObject getPayload(Response response) {
         String content = response.readEntity(String.class);
         JsonReader jsonReader = Json.createReader(new StringReader(content));
@@ -52,37 +56,65 @@ public class TestHelpers {
         return jsonObject;
     }
 
+    /**
+     * Login function.
+     * @param target Web target.
+     * @param path Endpoint.
+     * @param email Email.
+     * @param password Password.
+     * @return Response.
+     */
     public static Response login(WebTarget target, String path, String email, String password) {
-        return target.path(path).request().header("email", email).header("password", password).post(Entity.text(""));
+        return target.path(path).request().header("email", email)
+                .header("password", password).post(Entity.text(""));
     }
 
-    public static String getResearcherLoginToken(WebTarget target) {
-        Response response = login(target, "researcher/login", VALID_RESEARCHER_EMAIL, VALID_RESEARCHER_PASSWORD);
-        JsonObject jsonObject = getPayload(response);
-        return jsonObject.getString("token");
-    }
-
-    public static Response getAllGroups(WebTarget target, String path, String token)
-    {
+    /**
+     * Get all groups.
+     * @param target Web target.
+     * @param path Endpoint.
+     * @param token Token.
+     * @return All groups.
+     */
+    public static Response getAllGroups(WebTarget target, String path, String token) {
         return target.path(path).request().header("token", token).get();
     }
 
-    public static Response addGroup(WebTarget target, String path, String name, String token)
-    {
-        return target.path(path).request().header("name", name).header("token", token).put(Entity.text(""));
+    /**
+     * Add group to database.
+     * @param target Web target.
+     * @param path Endpoint.
+     * @param name Group name
+     * @param token Token.
+     * @return
+     */
+    public static Response addGroup(WebTarget target, String path, String name, String token) {
+        return target.path(path).request().header("name", name)
+                .header("token", token).put(Entity.text(""));
     }
 
-    public static Response deleteGroup(WebTarget target, String path, int id, String token)
-    {
+    /**
+     * Delete group in the database.
+     * @param target Web target.
+     * @param path Endpoint.
+     * @param id Group id.
+     * @param token Token.
+     * @return Response.
+     */
+    public static Response deleteGroup(WebTarget target, String path, int id, String token) {
         return target.path(path).request().header("id", id).header("token", token).delete();
     }
 
-    public static List<Group> testGroups(){
-        List<Group> list = new ArrayList<>();
-        list.add(new Group(1, "Group 1", 0));
-        list.add(new Group(2, "Group 2", 0));
-        list.add(new Group(3, "Group 3", 0));
-        return list;
+    /**
+     * Get the test researcher's login token.
+     * @param target Web target.
+     * @return Login token.
+     */
+    public static String getResearcherLoginToken(WebTarget target) {
+        Response response = login(target, "researcher/login",
+                VALID_RESEARCHER_EMAIL, VALID_RESEARCHER_PASSWORD);
+        JsonObject jsonObject = getPayload(response);
+        return jsonObject.getString("token");
     }
 
     public static String getKeyFromParticipantEmail() throws MessagingException, IOException {
@@ -166,10 +198,22 @@ public class TestHelpers {
         return result;
     }
 
-    public static void populateDatabase() throws CreateUserException, CreateInviteException {
+    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
+        // Create researchers
+        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
+        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
+
+        // Create test participants
         Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
         Database.createParticipant(participant1, "power123");
+
+        // Create invites
         Database.createInvite("0123456789", "abc");
+
+        // Create groups
+        for (Group group : testGroups()) {
+            Database.addGroup(group.getName());
+        }
     }
 
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
@@ -195,5 +239,17 @@ public class TestHelpers {
         statement.execute(query);
 
         closeConnection(connection);
+    }
+
+    /**
+     * Fetch testing groups.
+     * @return Test groups.
+     */
+    public static List<Group> testGroups() {
+        List<Group> list = new ArrayList<>();
+        list.add(new Group(1, "Group 1", 0));
+        list.add(new Group(2, "Group 2", 0));
+        list.add(new Group(3, "Group 3", 0));
+        return list;
     }
 }
