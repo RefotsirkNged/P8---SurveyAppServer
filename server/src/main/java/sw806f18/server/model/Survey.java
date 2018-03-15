@@ -71,12 +71,28 @@ public class Survey {
 
         builder.append("<head>");
         builder.append("<title>" + title + "</title>");
+        builder.append("<meta charset='UTF-8' content='width=device-width, initial-scale=1.0'>");
+
+        builder.append("<!-- Latest compiled and minified CSS -->\n" +
+                       "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" type=\"text/css\">\n" +
+                       "\n" +
+                       "<!-- jQuery library -->\n" +
+                       "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" type='text/javascript'></script>\n" +
+                       "\n" +
+                       "<!-- Popper JS -->\n" +
+                       "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" type='text/javascript'></script>\n" +
+                       "\n" +
+                       "<!-- Latest compiled JavaScript -->\n" +
+                       "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" type='text/javascript'></script>");
+
         builder.append("</head>");
 
-        builder.append("<body>");
-        builder.append("<h1>" + title + "</h1>");
-        builder.append("<h2>" + description + "</h2>");
-
+        builder.append("<body style='background-color:#D0ECE7;'>");
+        builder.append("<div class='content' style='padding:1%;'>");
+        builder.append("<h2>" + title + "</h2>");
+        builder.append("<br />");
+        builder.append("<h4>" + description + "</h4>");
+        builder.append("<hr />");
         builder.append("<form action='" + Constants.url + "'>");
 
         for (int i = 0; i < questions.size(); i++) {
@@ -86,11 +102,34 @@ public class Survey {
         }
 
         builder.append("</form>");
-
+        builder.append("</div>");
         builder.append("</body>");
 
         builder.append("</html>");
 
         return builder.toString();
     }
+
+
+
+
+    private   void ABEFEST()  {
+
+
+
+
+
+
+
+
+    }
+
+
+
+
 }
+
+
+
+
+

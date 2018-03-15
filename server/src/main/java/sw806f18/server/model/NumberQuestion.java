@@ -33,9 +33,9 @@ public class NumberQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h3>" + title + "</h3>");
+        builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<input id='" + title.replace(" ","_")+ "' type='number'>");
+        builder.append("<input id='" + title.replace(" ","_")+ "' type='number' class='form-control'>");
 
         return  builder.toString();
     }

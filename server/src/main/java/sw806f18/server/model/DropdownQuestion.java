@@ -41,12 +41,12 @@ public class DropdownQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h3>" + title + "</h3>");
+        builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<select id='" + title.replace(" ","_") + "'>");
+        builder.append("<select id='" + title.replace(" ","_") + "' class='form-control'>");
 
         for (int i = 0; i < values.size(); i++) {
-            builder.append("<option value='" + values.get(i) + "'>" + values.get(i) + "</option>");
+            builder.append("<option value='" + values.get(i) + "' class='form-control'>" + values.get(i) + "</option>");
         }
 
         builder.append("</select>");

@@ -43,9 +43,9 @@ public class QuestionTest {
 
         //assertTrue(tidy.getParseErrors() == 0);
         //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h3").equals(title));
+        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals((Integer.toString(question.id))));
+        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals(title.replace(' ', '_')));
         assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("text"));
     }
 
@@ -73,9 +73,9 @@ public class QuestionTest {
 
         //assertTrue(tidy.getParseErrors() == 0);
         //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h3").equals(title));
+        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "select", "id").equals(Integer.toString(question.id)));
+        assertTrue(getHTMLTagAttribute(htmlDoc, "select", "id").equals(title.replace(' ', '_')));
 
 
     }
@@ -93,9 +93,9 @@ public class QuestionTest {
 
         //assertTrue(tidy.getParseErrors() == 0);
         //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h3").equals(title));
+        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals((Integer.toString(question.id))));
+        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals(title.replace(' ', '_')));
         assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
     }
 

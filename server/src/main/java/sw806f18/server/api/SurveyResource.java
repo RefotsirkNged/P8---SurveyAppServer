@@ -32,17 +32,19 @@ public class SurveyResource {
     @Produces(MediaType.TEXT_HTML)
     public InputStream getSurvey(@PathParam("id") int id)
     {
-        Survey survey = new Survey("Hello world", Integer.toString(id));
-        survey.addQuestion(new TextQuestion(1,"Text question", "Text question description"));
+        Survey survey = new Survey("Barn 0-5 år", "Dette spørgeskema vedrører dit barn.");
+        survey.addQuestion(new NumberQuestion(3,"Barents højde", "Skriv barnets højde i centimeter:"));
+        survey.addQuestion(new NumberQuestion(3,"Barnets vægt", "Skriv barents vægt i gram:"));
 
         List<String> values = new ArrayList<>();
-        values.add("A");
-        values.add("B");
-        values.add("C");
+        values.add("0");
+        values.add("1-5");
+        values.add("6-10");
+        values.add("10+");
 
-        survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING, "Drop question", "Drop question description", values));
-        survey.addQuestion(new NumberQuestion(3,"Number question", "Number question description"));
-        System.out.println("Test-----------" + survey.getHTML());
+        survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING, "Barnets helbred", "Hvor mange gange har din barn været syg inden for de sidste 6 måneder:", values));
+        survey.addQuestion(new TextQuestion(1,"Barnets livret", "Udfyld kun hvis relevant:"));
+
 
         InputStream stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
         return stream;

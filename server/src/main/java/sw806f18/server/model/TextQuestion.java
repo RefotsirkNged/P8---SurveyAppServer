@@ -38,9 +38,9 @@ public class TextQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h3>" + title + "</h3>");
+        builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<input id='" + title.replace(" ","_") + "' type='text'>");
+        builder.append("<input id='" + title.replace(" ","_") + "' type='text' class='form-control'>");
 
         return  builder.toString();
     }
