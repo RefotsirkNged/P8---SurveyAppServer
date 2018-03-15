@@ -4,6 +4,7 @@
     "port": 5432,
     "database": "devdb",
     "user": "postgres",
-    "password": "power123"
+    "password": "power123",
+    "database": "postgres"
   }
 }

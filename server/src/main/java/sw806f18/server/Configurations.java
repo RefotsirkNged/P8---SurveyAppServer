@@ -14,6 +14,7 @@ public class Configurations {
     private String psqlIP;
     private String psqlUsername;
     private String psqlPassword;
+    private String psqlDatabase;
     private int psqlPort;
     private String psqlDatabase;
     public Configurations(String path){

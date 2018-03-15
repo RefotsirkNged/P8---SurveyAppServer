@@ -4,12 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sw806f18.server.exceptions.*;
+import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
+import javax.json.JsonObject;
+import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static sw806f18.server.TestHelpers.populateDatabase;
@@ -20,6 +25,36 @@ import static sw806f18.server.TestHelpers.resetDatabase;
  */
 public class DatabaseTest {
     private String email = "test@testington.com";
+
+    @Before
+    public void setUp() throws Exception
+    {
+        resetDatabase();
+        populateDatabase();
+    }
+    @Test
+    public void createInvite() {
+        assertTrue(createHelperInvite());
+    }
+    @Test
+    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
+        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
+    }
+    @Test
+    public void createParticipant() throws SQLException, ClassNotFoundException {
+        // assertTrue(createHelperInvite());
+        Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
+
+        boolean success = true;
+
+        try {
+            Database.createParticipant(participant, "power123");
+        } catch (CreateUserException e) {
+            success = false;
+
+            assertTrue(success);
+        }
+    }
 
     @Test
     public void createGetDeleteResearcher() throws Exception {
@@ -41,83 +76,46 @@ public class DatabaseTest {
         assertTrue(deleted);
     }
 
-    @Before
-    public void setUp() throws Exception
-    {
-        resetDatabase();
-        populateDatabase();
-    }
-
-    @After
-    public void tearDown() throws Exception
-    {
-        //resetDatabase();
-
-//        Connection con = null;
-//        try {
-//
-//            con = createConnection();
-//            Statement stmt = con.createStatement();
-//
-//            String q = "DELETE FROM users WHERE email = '" + email + "';";
-//
-//            stmt.execute(q);
-//            stmt.close();
-//
-//            closeConnection(con);
-//
-//        } catch (SQLException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        } catch (ClassNotFoundException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        }
-    }
-
-
-    private String fixedKey = "abc";
-
-    private boolean createHelperInvite() {
-        boolean created = true;
-        try{
-            Database.createInvite("0123456789", fixedKey);
-        }
-        catch(CreateInviteException ex){
-            created = false;
-        }
-        return created;
+    @Test
+    public void getAllGroups() throws Exception{
+        List<Group> groups = Database.getAllGroups();
+        List<Group> expected = TestHelpers.testGroups();
+        assertTrue(groups.equals(expected));
     }
 
     @Test
-    public void createInvite() {
-        assertTrue(createHelperInvite());
-    }
-
-    @Test
-    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
-    }
-
-    @Test
-    public void createParticipant() throws SQLException, ClassNotFoundException {
-        assertTrue(createHelperInvite());
-
-        Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
-
-        boolean success = true;
-
+    public void addGroup(){
+        Group group = new Group("TestGroup", 0);
         try {
-            Database.createParticipant(participant, "power123");
+            group.setId(Database.addGroup(group.getName()));
+            List<Group> groups = Database.getAllGroups();
+            assertTrue(groups.contains(group));
+            Database.deleteGroup(group.getId());
+        } catch (GetGroupsException e) {
+            e.printStackTrace();
+        } catch (DeleteGroupException e) {
+            e.printStackTrace();
+        } catch (AddGroupException e) {
+            e.printStackTrace();
         }
-        catch (CreateUserException e)
-        {
-            success = false;
-        }
-
-        assertTrue(success);
     }
 
+    @Test
+    public void deleteGroup(){
+        Group group = new Group("TestGroup", 0);
+        try {
+            group.setId(Database.addGroup(group.getName()));
+            Database.deleteGroup(group.getId());
+            List<Group> groups = Database.getAllGroups();
+            assertFalse(groups.contains(group));
+        } catch (GetGroupsException e) {
+            e.printStackTrace();
+        } catch (DeleteGroupException e) {
+            e.printStackTrace();
+        } catch (AddGroupException e) {
+            e.printStackTrace();
+        }
+    }
     @Test
     public void getParticipant() {
 
@@ -149,5 +147,4 @@ public class DatabaseTest {
         }
         assertTrue(success);
     }
-
 }
