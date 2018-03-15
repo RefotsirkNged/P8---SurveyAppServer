@@ -58,7 +58,7 @@ shopt -s globstar #This can be used if we wanna do wildcard directory search goo
 result=$(exec java -jar hooks/checkstyle-8.8-all.jar -c hooks/google_checkstyle.xml server/src)
 
 echo $result
-if [[ $result != *WARN* ]]; then
+if [[ $result != *WARN* ]] || [[ $result != *ERR* ]] ; then
 	echo "Audit successful."
 else
 	echo $result
