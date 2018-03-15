@@ -5,7 +5,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.validation.constraints.AssertTrue;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
