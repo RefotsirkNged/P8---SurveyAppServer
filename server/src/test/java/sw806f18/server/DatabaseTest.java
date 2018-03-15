@@ -30,6 +30,10 @@ import static org.junit.Assert.*;
 public class DatabaseTest {
     private String email = "test@testington.com";
 
+    @Test public static void testfunc(String key){
+        return;
+    }
+
     @Test
     public void createGetDeleteResearcher() throws Exception {
         Researcher researcher = new Researcher(email,"50505050");
