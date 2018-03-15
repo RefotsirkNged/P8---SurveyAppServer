@@ -5,7 +5,7 @@ package sw806f18.server.model;
  */
 public abstract class User {
 
-    public User(int id, String email){
+    public User(int id, String email) {
         this.id = id;
         this.email = email;
     }

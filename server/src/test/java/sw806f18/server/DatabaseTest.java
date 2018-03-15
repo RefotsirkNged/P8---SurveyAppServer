@@ -1,76 +1,38 @@
 package sw806f18.server;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Researcher;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.DeleteGroupException;
+import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.model.Group;
+import sw806f18.server.model.Researcher;
 
 /**
  * Created by augustkorvell on 13/03/2018.
  */
+
 public class DatabaseTest {
     private String email = "test@testington.com";
 
+    /**
+     * Before.
+     * @throws Exception Exception.
+     */
     @Before
-    public void setUp() throws Exception
-    {
-        Connection con = null;
-        try {
-
-            con = createConnection();
-            Statement stmt = con.createStatement();
-
-            String q = "DELETE FROM users WHERE email = '" + email + "';";
-
-            stmt.execute(q);
-            stmt.close();
-
-            closeConnection(con);
-
-        } catch (SQLException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        }
-    }
-
-    @After
-    public void tearDown() throws Exception
-    {
-        Connection con = null;
-        try {
-
-            con = createConnection();
-            Statement stmt = con.createStatement();
-
-            String q = "DELETE FROM users WHERE email = '" + email + "';";
-
-            stmt.execute(q);
-            stmt.close();
-
-            closeConnection(con);
-        } catch (SQLException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        }
+    public void setUp() throws Exception {
+        Configurations.instance = new Configurations("config.json");
     }
 
     @Test
@@ -83,10 +45,9 @@ public class DatabaseTest {
         boolean deleted = false;
 
 
-        try{
+        try {
             Database.getResearcher(researcher.email, "1234");
-        }
-        catch (LoginException e){
+        } catch (LoginException e) {
             deleted = true;
         }
 
@@ -94,14 +55,14 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getAllGroups() throws Exception{
+    public void getAllGroups() throws Exception {
         List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
         assertTrue(groups.equals(expected));
     }
 
     @Test
-    public void addGroup(){
+    public void addGroup() {
         Group group = new Group("TestGroup", 0);
         try {
             group.setId(Database.addGroup(group.getName()));
@@ -118,7 +79,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void deleteGroup(){
+    public void deleteGroup() {
         Group group = new Group("TestGroup", 0);
         try {
             group.setId(Database.addGroup(group.getName()));
@@ -134,12 +95,30 @@ public class DatabaseTest {
         }
     }
 
+    @Test
+    public void removeGroupMember() {
+        assertTrue(false);
+    }
+
+    @Test
+    public void findUserByName() {
+        assertTrue(false);
+    }
+
+    @Test
+    public void addGroupMember() {
+        assertTrue(false);
+    }
+
     private static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/postgres",
-                        Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.postgresIp() + ":"
+                                + Configurations.instance.postgresPort() + "/postgres",
+                        Configurations.instance.postgresUser(),
+                        Configurations.instance.postgresPassword());
         return c;
     }
 
