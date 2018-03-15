@@ -30,6 +30,8 @@ import static org.junit.Assert.*;
 public class DatabaseTest {
     private String email = "test@testington.com";
 
+
+
     @Test public static void testfunc(String key){
         return;
     }
