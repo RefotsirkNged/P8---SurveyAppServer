@@ -85,7 +85,7 @@ public class DatabaseTest {
     @After
     public void tearDown() throws Exception
     {
-        resetDatabase();
+        // resetDatabase();
 
 //        Connection con = null;
 //        try {
@@ -190,9 +190,7 @@ public class DatabaseTest {
     public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
         Connection connection = createConnection();
 
-        String clearSchema = new String(Files.readAllBytes(Paths.get("../sql/ClearDatabase.sql")));
-        String createSchema = new String(Files.readAllBytes(Paths.get("../sql/CreateSchema.sql")));
-        String schema = clearSchema + "\n" + createSchema;
+        String schema = new String(Files.readAllBytes(Paths.get("../sql/TruncateDatabase.sql")));
 
         Statement statement = connection.createStatement();
 
