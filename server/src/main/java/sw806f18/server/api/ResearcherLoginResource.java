@@ -1,9 +1,5 @@
 package sw806f18.server.api;
 
-import sw806f18.server.Authentication;
-import sw806f18.server.Database;
-import sw806f18.server.exceptions.LoginException;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.HeaderParam;
@@ -11,6 +7,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import sw806f18.server.Authentication;
+import sw806f18.server.Database;
+import sw806f18.server.exceptions.LoginException;
 
 @Path("researcher/login")
 public class ResearcherLoginResource {
@@ -22,13 +22,11 @@ public class ResearcherLoginResource {
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject login(@HeaderParam("email") String email, @HeaderParam("password") String password)
-    {
+    public JsonObject login(@HeaderParam("email") String email,
+                            @HeaderParam("password") String password) {
         try {
             int userid = Database.getResearcher(email, password).id;
-
-            String token = Authentication.instance.getToken(userid); // Database.createSessionToken(connection, userid);
-
+            String token = Authentication.instance.getToken(userid);
 
             return Json.createObjectBuilder().add("token", token).build();
         } catch (LoginException e) {

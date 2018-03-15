@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="../CookieHelper.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
@@ -13,8 +15,7 @@
     <label>Email</label> <input id="loginemail" type="text" value="researcher1@email.com"/>
     <label>Password</label><input id="loginpassword" type="password" value="pypass"/>
     <br>
-    <br>
-    <button id="loginbutton" onclick="login()">Login</button>
+    <button type="button" class="btn btn-primary btn-md" onclick="login()">Login</button>
 </div>
 
 <div id="loginfailedmodal" class="modal">
@@ -39,36 +40,4 @@
     span.onclick = function () {
         modal.style.display = "none";
     };
-
-    function login() {
-        var email = document.getElementById('loginemail').value;
-        var password = document.getElementById('loginpassword').value;
-
-        $.ajax({
-            url: 'http://192.168.1.123:8081/api/researcher/login',
-            type: 'POST',
-            beforeSend: function (request) {
-                request.setRequestHeader("email", email);
-                request.setRequestHeader("password", password);
-            },
-            //data: {email: email, password: password},
-            success: function (response) {
-                if(response.hasOwnProperty("error")){
-                    modal.style.display = "block";
-                    document.getElementById("loginfailedmessage").innerText = response.error;
-                }
-                else {
-                    sessionStorage.setItem('token', response.token);
-                    setCookie("token", response.token, 1);
-                    window.location.replace("../index.html");
-                }
-            },
-            error: function (response) {
-                modal.style.display = "block";
-
-                document.getElementById("loginfailedmessage").innerText = "Something happened";
-            }
-        });
-
-    }
 </script>

@@ -1,27 +1,32 @@
 package sw806f18.server;
 
+import static org.junit.Assert.assertTrue;
+
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.*;
 
 import javax.json.JsonObject;
-import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.glassfish.grizzly.http.server.HttpServer;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RenewTokenTest {
     private HttpServer server;
     private WebTarget target;
 
+    /**
+     * Before.
+     * @throws Exception Exception.
+     */
     @Before
     public void setUp() throws Exception {
+        Configurations.instance = new Configurations("config.json");
         // start the server
         server = Main.startServer();
         // create the client
@@ -43,12 +48,14 @@ public class RenewTokenTest {
 
     @Test
     public void renew() {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
+        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
 
         // Ensure that the renewed token is newer.
-        // Should the new token be made the same second as the old one, we can't check if they always are assigned the same times.
+        // Should the new token be made the same second as the old one,
+        // we can't check if they always are assigned the same times.
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

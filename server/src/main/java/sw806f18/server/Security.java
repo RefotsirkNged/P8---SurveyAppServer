@@ -1,13 +1,14 @@
 package sw806f18.server;
 
-import org.glassfish.grizzly.compression.lzma.impl.Base;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Random;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class Security {
     private static final Random RANDOM = new SecureRandom();
@@ -31,7 +32,8 @@ public class Security {
             SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
+            throw new AssertionError("Error while hashing a password: "
+                    + e.getMessage(), e);
         } finally {
             spec.clearPassword();
         }
@@ -46,14 +48,12 @@ public class Security {
         return Base64.getEncoder().encodeToString(input);
     }
 
-
     /**
      * Converts an encoded string back into a binary array.
      * @param string a Base64 encoded string to convert to byte[]
      * @return A Decoded byte[]
      */
-    public static byte[] convertStringToByteArray(String string)
-    {
+    public static byte[] convertStringToByteArray(String string) {
         return Base64.getDecoder().decode(string);
     }
 
