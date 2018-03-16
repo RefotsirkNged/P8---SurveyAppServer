@@ -34,7 +34,7 @@ public class ResearcherGroupManagerTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configurations.instance = new Configurations("config.json");
+        Configurations.instance = new Configurations("test-config.json");
         token = Authentication.instance.getToken(1);
         // start the server
         server = Main.startServer();

@@ -32,7 +32,7 @@ public class DatabaseTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configurations.instance = new Configurations("config.json");
+        Configurations.instance = new Configurations("test-config.json");
     }
 
     @Test
