@@ -1,7 +1,9 @@
-package sw806f18.server;
+package sw806f18.server.database;
 
 import org.junit.Before;
 import org.junit.Test;
+import sw806f18.server.Configurations;
+import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
@@ -22,12 +24,32 @@ import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Survey;
 
 /**
  * Created by augustkorvell on 13/03/2018.
  */
 
-public class RelationalDatabaseTest {
+public class DatabaseTest {
+    @Test
+    public void addAndGetSurvey() throws Exception {
+        List<Survey> surveys = TestHelpers.testSurveys();
+        List<Survey> addedSurveys;
+
+        for (Survey survey : surveys){
+            survey.id = Database.addSurvey(survey);
+        }
+
+        for (Survey survey : surveys){
+            assertTrue(survey.equals(Database.getSurvey(survey.id)));
+        }
+    }
+
+    @Test
+    public void getUsersSurveys() throws Exception {
+        assertTrue(false);
+    }
+
     private String email = "test@testington.com";
 
     /**
@@ -45,15 +67,15 @@ public class RelationalDatabaseTest {
     @Test
     public void createGetDeleteResearcher() throws Exception {
         Researcher researcher = new Researcher(email, "50505050");
-        assertTrue(RelationalDatabase.createResearcher(researcher, "1234").equals(researcher));
-        assertTrue(RelationalDatabase.getResearcher(email, "1234").equals(researcher));
+        assertTrue(Database.createResearcher(researcher, "1234").equals(researcher));
+        assertTrue(Database.getResearcher(email, "1234").equals(researcher));
 
-        RelationalDatabase.deleteResearcher(researcher.email);
+        Database.deleteResearcher(researcher.email);
         boolean deleted = false;
 
 
         try {
-            RelationalDatabase.getResearcher(researcher.email, "1234");
+            Database.getResearcher(researcher.email, "1234");
         } catch (LoginException e) {
             deleted = true;
         }
@@ -64,7 +86,7 @@ public class RelationalDatabaseTest {
     @Test
     public void getAllGroups() throws Exception {
         // ToDo: Fix pls
-        List<Group> groups = RelationalDatabase.getAllGroups();
+        List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
         assertTrue(groups.equals(expected));
     }
@@ -73,10 +95,10 @@ public class RelationalDatabaseTest {
     public void addGroup() {
         Group group = new Group("TestGroup", 0);
         try {
-            group.setId(RelationalDatabase.addGroup(group.getName()));
-            List<Group> groups = RelationalDatabase.getAllGroups();
+            group.setId(Database.addGroup(group.getName()));
+            List<Group> groups = Database.getAllGroups();
             assertTrue(groups.contains(group));
-            RelationalDatabase.deleteGroup(group.getId());
+            Database.deleteGroup(group.getId());
         } catch (GetGroupsException e) {
             e.printStackTrace();
         } catch (DeleteGroupException e) {
@@ -94,7 +116,7 @@ public class RelationalDatabaseTest {
     private boolean createHelperInvite() {
         boolean created = true;
         try {
-            RelationalDatabase.createInvite("0123456789", "abc");
+            Database.createInvite("0123456789", "abc");
         } catch (CreateInviteException ex) {
             created = false;
         }
@@ -105,9 +127,9 @@ public class RelationalDatabaseTest {
     public void deleteGroup() {
         Group group = new Group("TestGroup", 0);
         try {
-            group.setId(RelationalDatabase.addGroup(group.getName()));
-            RelationalDatabase.deleteGroup(group.getId());
-            List<Group> groups = RelationalDatabase.getAllGroups();
+            group.setId(Database.addGroup(group.getName()));
+            Database.deleteGroup(group.getId());
+            List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(group));
         } catch (GetGroupsException e) {
             e.printStackTrace();
@@ -120,7 +142,7 @@ public class RelationalDatabaseTest {
 
     @Test
     public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(RelationalDatabase.getCPRFromKey("abc"), "0123456789");
+        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
     }
 
     @Test
@@ -143,7 +165,7 @@ public class RelationalDatabaseTest {
         boolean success = true;
 
         try {
-            RelationalDatabase.createParticipant(participant, "power123");
+            Database.createParticipant(participant, "power123");
         } catch (CreateUserException e) {
             success = false;
         }
@@ -165,7 +187,7 @@ public class RelationalDatabaseTest {
 
 
         try {
-            createdParticipant = RelationalDatabase.getParticipant(participant.email, "power123");
+            createdParticipant = Database.getParticipant(participant.email, "power123");
         } catch (LoginException ex) {
             success = false;
         }
@@ -179,10 +201,10 @@ public class RelationalDatabaseTest {
         Class.forName("org.postgresql.Driver");
         c = DriverManager
                 .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.postgresIp() + ":"
-                                + Configurations.instance.postgresPort() + "/postgres",
-                        Configurations.instance.postgresUser(),
-                        Configurations.instance.postgresPassword());
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/postgres",
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -190,7 +212,7 @@ public class RelationalDatabaseTest {
     public void clearInviteFromKey() {
         boolean success = true;
         try {
-            RelationalDatabase.clearInviteFromKey("abc");
+            Database.clearInviteFromKey("abc");
         } catch (CPRKeyNotFoundException ex) {
             success = false;
         }

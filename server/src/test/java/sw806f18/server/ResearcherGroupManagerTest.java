@@ -18,6 +18,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
@@ -69,9 +71,9 @@ public class ResearcherGroupManagerTest {
             assertEquals(response.getStatus(), 200);
             JsonObject jsonObject = TestHelpers.getPayload(response);
             group.setId(jsonObject.getInt("success"));
-            List<Group> groups = RelationalDatabase.getAllGroups();
+            List<Group> groups = Database.getAllGroups();
             assertTrue(groups.contains(group));
-            RelationalDatabase.deleteGroup(group.getId());
+            Database.deleteGroup(group.getId());
         } catch (GetGroupsException e) {
             e.printStackTrace();
         } catch (DeleteGroupException e) {
@@ -83,10 +85,10 @@ public class ResearcherGroupManagerTest {
     public void removeGroup() {
         Group group = new Group("TestGroup", 0);
         try {
-            group.setId(RelationalDatabase.addGroup(group.getName()));
+            group.setId(Database.addGroup(group.getName()));
             TestHelpers.deleteGroup(target, TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
                     group.getId(), token);
-            List<Group> groups = RelationalDatabase.getAllGroups();
+            List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(group));
         } catch (GetGroupsException e) {
             e.printStackTrace();

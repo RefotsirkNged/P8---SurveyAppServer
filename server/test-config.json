@@ -5,5 +5,12 @@
     "user": "postgres",
     "password": "power123",
     "database": "devdb"
+  },
+  "mongoDB": {
+    "ip": "192.168.1.125",
+    "port": 27017,
+    "database": "devdata",
+    "user": "root",
+    "password": "power123"
   }
 }

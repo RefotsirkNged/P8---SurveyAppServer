@@ -20,6 +20,12 @@ public class Configurations {
     private String psqlDatabase;
     private int psqlPort;
 
+    private String mongoIp;
+    private String mongoUser;
+    private String mongoPassword;
+    private String mongoDatabase;
+    private int mongoPort;
+
     /**
      * Constructor.
      * @param path Path to configuration file.
@@ -37,6 +43,13 @@ public class Configurations {
             psqlPassword = psql.getString("password");
             psqlPort = psql.getInt("port");
             psqlDatabase = psql.getString("database");
+
+            JsonObject mongo = conf.getJsonObject("mongoDB");
+            mongoIp = mongo.getString("ip");
+            mongoUser = mongo.getString("user");
+            mongoPassword = mongo.getString("password");
+            mongoPort = mongo.getInt("port");
+            mongoDatabase = mongo.getString("database");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,7 +59,7 @@ public class Configurations {
      * Get IP.
      * @return IP.
      */
-    public String postgresIp() {
+    public String getPostgresIp() {
         return psqlIp;
     }
 
@@ -54,7 +67,7 @@ public class Configurations {
      * Get port.
      * @return Port.
      */
-    public int postgresPort() {
+    public int getPostgresPort() {
         return psqlPort;
     }
 
@@ -62,7 +75,7 @@ public class Configurations {
      * Get user.
      * @return User.
      */
-    public String postgresUser() {
+    public String getPostgresUser() {
         return psqlUsername;
     }
 
@@ -70,7 +83,7 @@ public class Configurations {
      * Get password.
      * @return Password.
      */
-    public String postgresPassword() {
+    public String getPostgresPassword() {
         return psqlPassword;
     }
 
@@ -78,7 +91,48 @@ public class Configurations {
      * Get database.
      * @return RelationalDatabase.
      */
-    public String postgresDatabase() {
+    public String getPostgresDatabase() {
         return psqlDatabase;
+    }
+
+
+    /**
+     * Get IP.
+     * @return IP.
+     */
+    public String getMongoIp() {
+        return mongoIp;
+    }
+
+    /**
+     * Get port.
+     * @return Port.
+     */
+    public int getMongoPort() {
+        return mongoPort;
+    }
+
+    /**
+     * Get user.
+     * @return User.
+     */
+    public String getMongoUser() {
+        return mongoUser;
+    }
+
+    /**
+     * Get password.
+     * @return Password.
+     */
+    public String getMongoPassword() {
+        return mongoPassword;
+    }
+
+    /**
+     * Get database.
+     * @return RelationalDatabase.
+     */
+    public String getMongoDatabase() {
+        return mongoDatabase;
     }
 }

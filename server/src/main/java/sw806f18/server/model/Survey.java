@@ -27,7 +27,15 @@ public class Survey {
     public List<Question> questions;
     private String title;
     private String description;
-    private int id;
+    public int id;
+
+    public String getTitle(){
+        return title;
+    }
+
+    public String getDescription(){
+        return description;
+    }
 
     /**
      * Adds (append) a Question to the survey
@@ -110,23 +118,21 @@ public class Survey {
         return builder.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Survey other = (Survey)obj;
 
+        if(other.questions.size() != this.questions.size())
+            return false;
 
+        for (int i = 0; i < this.questions.size(); i++) {
+            if(!this.questions.get(i).equals(other.questions.get(i))){
+                return false;
+            }
+        }
 
-    private   void ABEFEST()  {
-
-
-
-
-
-
-
-
+        return this.title.equals(other.title) && this.description.equals(other.description);
     }
-
-
-
-
 }
 
 

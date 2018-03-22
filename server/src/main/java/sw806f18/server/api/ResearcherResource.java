@@ -6,7 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import sw806f18.server.RelationalDatabase;
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.model.Researcher;
 
@@ -26,7 +27,7 @@ public class ResearcherResource {
                                 @HeaderParam("phone") String phone) {
 
         try {
-            RelationalDatabase.createResearcher(new Researcher(email, phone), password);
+            Database.createResearcher(new Researcher(email, phone), password);
         } catch (CreateUserException e) {
             e.printStackTrace();
             return "Fail";

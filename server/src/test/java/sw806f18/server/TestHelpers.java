@@ -1,6 +1,7 @@
 package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
+import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
@@ -198,22 +199,22 @@ public class TestHelpers {
     public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
         // Create researchers
         Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
-        RelationalDatabase.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
+        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
 
         // Create test participants
         Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
-        RelationalDatabase.createParticipant(participant1, "power123");
+        Database.createParticipant(participant1, "power123");
 
         // Create invites
-        RelationalDatabase.createInvite("0123456789", "abc");
+        Database.createInvite("0123456789", "abc");
 
         // Create groups
         for (Group group : testGroups()) {
-            RelationalDatabase.addGroup(group.getName());
+            Database.addGroup(group.getName());
         }
 
-        for (Survey survey : testSurveys()){
-
+        for (Survey s : testSurveys()){
+            Database.addSurvey(s);
         }
     }
 
@@ -221,8 +222,8 @@ public class TestHelpers {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.postgresIp() + ":" + Configurations.instance.postgresPort() + "/" + Configurations.instance.postgresDatabase(),
-                        Configurations.instance.postgresUser(), Configurations.instance.postgresPassword());
+                .getConnection("jdbc:postgresql://" + Configurations.instance.getPostgresIp() + ":" + Configurations.instance.getPostgresPort() + "/" + Configurations.instance.getPostgresDatabase(),
+                        Configurations.instance.getPostgresUser(), Configurations.instance.getPostgresPassword());
         return c;
     }
 

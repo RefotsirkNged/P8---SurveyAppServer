@@ -4,7 +4,8 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.RelationalDatabase;
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.CPRKeyNotFoundException;
@@ -71,12 +72,12 @@ public class ParticipantResourceTest {
 
         Response response1 = target.path("participant").request().header("key", key).header("email", partialParticipant.email).header("password", password).post(Entity.text(""));
 
-        Participant fullParticipant = RelationalDatabase.getParticipant(email,password);
+        Participant fullParticipant = Database.getParticipant(email,password);
 
         assertTrue(fullParticipant.equals(partialParticipant));
         boolean success = true;
         try{
-            RelationalDatabase.clearInviteFromKey(key);
+            Database.clearInviteFromKey(key);
         }
         catch(CPRKeyNotFoundException ex){
             success = false;

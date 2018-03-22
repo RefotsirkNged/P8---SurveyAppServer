@@ -13,7 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import sw806f18.server.Authentication;
-import sw806f18.server.RelationalDatabase;
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
@@ -32,7 +33,7 @@ public class ReseacherGroupManagerResource {
     public String getAllGroups(@HeaderParam("token") String token) {
         if (!Authentication.instance.isTokenExpired(token)) {
             try {
-                List<Group> groups = RelationalDatabase.getAllGroups();
+                List<Group> groups = Database.getAllGroups();
                 String jsonGroup = "{ \"groups\": [ ";
                 for (int i = 0; i < groups.size(); i++) {
                     if (i == 0) {
@@ -65,7 +66,7 @@ public class ReseacherGroupManagerResource {
         if (!Authentication.instance.isTokenExpired(token)) {
             int id = 0;
             try {
-                id = RelationalDatabase.addGroup(name);
+                id = Database.addGroup(name);
             } catch (AddGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }
@@ -102,7 +103,7 @@ public class ReseacherGroupManagerResource {
                                   @HeaderParam("token") String token) {
         if (!Authentication.instance.isTokenExpired(token)) {
             try {
-                RelationalDatabase.deleteGroup(groupId);
+                Database.deleteGroup(groupId);
             } catch (DeleteGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }

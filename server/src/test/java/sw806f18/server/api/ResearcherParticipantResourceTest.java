@@ -5,7 +5,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.RelationalDatabase;
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.CPRKeyNotFoundException;
@@ -66,7 +67,7 @@ public class ResearcherParticipantResourceTest {
 
         boolean success = true;
         try{
-            RelationalDatabase.clearInviteFromKey(key);
+            Database.clearInviteFromKey(key);
         }
         catch(CPRKeyNotFoundException ex){
             success = false;

@@ -1,4 +1,4 @@
-package sw806f18.server;
+package sw806f18.server.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,22 +9,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.CPRKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.DeleteUserException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-
-import java.sql.*;
-import java.util.Arrays;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sw806f18.server.Configurations;
+import sw806f18.server.Security;
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.*;
 
 public class RelationalDatabase {
+
     /**
      * Creates a new RelationalDatabase connection to the PostgreSQL RelationalDatabase.
      * @return An open RelationalDatabase connection.
@@ -36,11 +28,11 @@ public class RelationalDatabase {
         Class.forName("org.postgresql.Driver");
         c = DriverManager
                 .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.postgresIp() + ":"
-                                + Configurations.instance.postgresPort() + "/"
-                                + Configurations.instance.postgresDatabase(),
-                        Configurations.instance.postgresUser(),
-                        Configurations.instance.postgresPassword());
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/"
+                                + Configurations.instance.getPostgresDatabase(),
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -82,7 +74,7 @@ public class RelationalDatabase {
      * @return List of all groups.
      * @throws GetGroupsException Exception.
      */
-    public static List<Group> getAllGroups() throws GetGroupsException {
+    static List<Group> getAllGroups() throws GetGroupsException {
         Connection con;
 
         try {
@@ -112,7 +104,7 @@ public class RelationalDatabase {
      * @return ID of group.
      * @throws AddGroupException Exception.
      */
-    public static int addGroup(String name) throws AddGroupException {
+    static int addGroup(String name) throws AddGroupException {
         Connection con;
         int id = 0;
 
@@ -138,7 +130,7 @@ public class RelationalDatabase {
      * @param id ID of group to delete.
      * @throws DeleteGroupException Exceptions.
      */
-    public static void deleteGroup(int id) throws DeleteGroupException {
+    static void deleteGroup(int id) throws DeleteGroupException {
         Connection con;
 
         try {
@@ -180,7 +172,7 @@ public class RelationalDatabase {
      * @return Researcher object.
      * @throws LoginException Exception.
      */
-    public static Researcher getResearcher(String email, String password) throws LoginException {
+    static Researcher getResearcher(String email, String password) throws LoginException {
 
         Connection connection = null;
         int userid = -1;
@@ -221,7 +213,7 @@ public class RelationalDatabase {
      * @param password Password.
      * @throws CreateUserException Exception.
      */
-    public static Researcher createResearcher(Researcher researcher, String password)
+    static Researcher createResearcher(Researcher researcher, String password)
             throws CreateUserException {
         Connection con = null;
         try {
@@ -265,7 +257,7 @@ public class RelationalDatabase {
      * Deletes a researcher by removing it from the database.
      * @param email Email.
      */
-    public static void deleteResearcher(String email) throws DeleteUserException {
+    static void deleteResearcher(String email) throws DeleteUserException {
         Connection con = null;
         try {
 
@@ -297,7 +289,7 @@ public class RelationalDatabase {
         c.close();
     }
 
-    public static void createInvite(String cpr, String key) throws CreateInviteException {
+    static void createInvite(String cpr, String key) throws CreateInviteException {
         Connection con = null;
         try {
 
@@ -313,7 +305,7 @@ public class RelationalDatabase {
     }
 
 
-    public static String getCPRFromKey(String key) throws SQLException, ClassNotFoundException {
+    static String getCPRFromKey(String key) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         Statement stmt = conn.createStatement();
 
@@ -327,7 +319,7 @@ public class RelationalDatabase {
             return null;
     }
 
-    public static void clearInviteFromKey(String key) throws CPRKeyNotFoundException{
+    static void clearInviteFromKey(String key) throws CPRKeyNotFoundException{
 
         try{
             Connection conn = createConnection();
@@ -343,7 +335,7 @@ public class RelationalDatabase {
         }
     }
 
-    public static Participant getParticipant(String email, String password) throws LoginException{
+    static Participant getParticipant(String email, String password) throws LoginException{
         Connection connection = null;
         int userid = -1;
         Participant participant = null;
@@ -381,7 +373,7 @@ public class RelationalDatabase {
 
     }
 
-    public static boolean isParticipant(Connection conn, int id) throws SQLException {
+    static boolean isParticipant(Connection conn, int id) throws SQLException {
         Statement stmt = conn.createStatement();
         String query = "SELECT COUNT(*) FROM persons WHERE id = " + id;
         ResultSet res = stmt.executeQuery(query);
@@ -392,7 +384,7 @@ public class RelationalDatabase {
             return false;
     }
 
-    public static Participant createParticipant(Participant participant, String password) throws CreateUserException{
+    static Participant createParticipant(Participant participant, String password) throws CreateUserException{
         Connection con = null;
         try {
             con = createConnection();
@@ -429,5 +421,27 @@ public class RelationalDatabase {
         }
     }
 
-    public static void addSurvey()
+    static int addSurvey(Survey s) throws SurveyException{
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO modules (name) VALUES ('" + s.getTitle() + "') RETURNING id";
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            id = rs.getInt(1);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+        return id;
+    }
+
+    static List<Integer> getUsersSurveyIDs(User user){
+        throw new NotImplementedException();
+    }
 }

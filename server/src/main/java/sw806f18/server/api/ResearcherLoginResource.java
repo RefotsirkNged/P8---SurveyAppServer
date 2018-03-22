@@ -9,7 +9,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import sw806f18.server.Authentication;
-import sw806f18.server.RelationalDatabase;
+import sw806f18.server.database.Database;
+import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.LoginException;
 
 @Path("researcher/login")
@@ -25,7 +26,7 @@ public class ResearcherLoginResource {
     public JsonObject login(@HeaderParam("email") String email,
                             @HeaderParam("password") String password) {
         try {
-            int userid = RelationalDatabase.getResearcher(email, password).id;
+            int userid = Database.getResearcher(email, password).id;
             String token = Authentication.instance.getToken(userid);
 
             return Json.createObjectBuilder().add("token", token).build();
