@@ -76,7 +76,7 @@ public class Configurations {
 
     /**
      * Get database.
-     * @return Database.
+     * @return RelationalDatabase.
      */
     public String postgresDatabase() {
         return psqlDatabase;

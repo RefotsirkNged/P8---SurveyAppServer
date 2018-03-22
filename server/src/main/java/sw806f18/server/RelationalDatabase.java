@@ -24,10 +24,10 @@ import sw806f18.server.model.Researcher;
 import java.sql.*;
 import java.util.Arrays;
 
-public class Database {
+public class RelationalDatabase {
     /**
-     * Creates a new Database connection to the PostgreSQL Database.
-     * @return An open Database connection.
+     * Creates a new RelationalDatabase connection to the PostgreSQL RelationalDatabase.
+     * @return An open RelationalDatabase connection.
      * @throws SQLException SQL Exception.
      * @throws ClassNotFoundException Class Not Found Exception.
      */
@@ -45,8 +45,8 @@ public class Database {
     }
 
     /**
-     * Gets a user from the Database.
-     * @param connection An open Database connection.
+     * Gets a user from the RelationalDatabase.
+     * @param connection An open RelationalDatabase connection.
      * @param email User email.
      * @param password User password.
      * @return An integer for the user id, or -1 if the user isn't found.
@@ -156,7 +156,7 @@ public class Database {
 
     /**
      * Validates if the user is a researcher.
-     * @param connection An open Database connection.
+     * @param connection An open RelationalDatabase connection.
      * @param id Id of researcher.
      * @return Boolean value specifying if the id belongs to a researcher.
      * @throws SQLException Exception.
@@ -289,8 +289,8 @@ public class Database {
     }
 
     /**
-     * Closes an open Database connection.
-     * @param c An open Database connection.
+     * Closes an open RelationalDatabase connection.
+     * @param c An open RelationalDatabase connection.
      * @throws SQLException Exception.
      */
     private static void closeConnection(Connection c) throws SQLException {
@@ -428,4 +428,6 @@ public class Database {
             throw new CreateUserException("Server error, contact system administrator", e);
         }
     }
+
+    public static void addSurvey()
 }

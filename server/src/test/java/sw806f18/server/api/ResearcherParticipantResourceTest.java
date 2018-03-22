@@ -1,12 +1,11 @@
 package sw806f18.server.api;
 
-import com.sun.mail.pop3.POP3Store;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.Database;
+import sw806f18.server.RelationalDatabase;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.CPRKeyNotFoundException;
@@ -21,7 +20,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -68,7 +66,7 @@ public class ResearcherParticipantResourceTest {
 
         boolean success = true;
         try{
-            Database.clearInviteFromKey(key);
+            RelationalDatabase.clearInviteFromKey(key);
         }
         catch(CPRKeyNotFoundException ex){
             success = false;

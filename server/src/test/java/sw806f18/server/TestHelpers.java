@@ -4,9 +4,7 @@ import com.sun.mail.pop3.POP3Store;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
+import sw806f18.server.model.*;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -17,7 +15,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -201,18 +198,22 @@ public class TestHelpers {
     public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
         // Create researchers
         Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
-        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
+        RelationalDatabase.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
 
         // Create test participants
         Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
-        Database.createParticipant(participant1, "power123");
+        RelationalDatabase.createParticipant(participant1, "power123");
 
         // Create invites
-        Database.createInvite("0123456789", "abc");
+        RelationalDatabase.createInvite("0123456789", "abc");
 
         // Create groups
         for (Group group : testGroups()) {
-            Database.addGroup(group.getName());
+            RelationalDatabase.addGroup(group.getName());
+        }
+
+        for (Survey survey : testSurveys()){
+
         }
     }
 
@@ -251,5 +252,32 @@ public class TestHelpers {
         list.add(new Group(2, "Group 2", 0));
         list.add(new Group(3, "Group 3", 0));
         return list;
+    }
+
+    /**
+     * @return Test surveys.
+     */
+    public static List<Survey> testSurveys(){
+        List<Survey> results = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            String title = "Test" + i;
+            String description = "Description" + i;
+            Survey survey = new Survey(title, description);
+            survey.addQuestion(new TextQuestion(1,"Text question" + i, "Text question description" + i));
+
+            List<String> values = new ArrayList<>();
+            values.add("A" + i);
+            values.add("B" + i);
+            values.add("C" + i);
+
+            survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING, "Drop question" + i, "Drop question description" + i, values));
+            survey.addQuestion(new NumberQuestion(3,"Number question" + 1, "Number question description" + 1));
+
+            results.add(survey);
+        }
+
+
+        return results;
     }
 }

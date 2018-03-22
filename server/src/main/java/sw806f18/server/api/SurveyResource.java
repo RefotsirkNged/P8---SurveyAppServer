@@ -1,17 +1,11 @@
 package sw806f18.server.api;
 
-import sw806f18.server.Authentication;
-import sw806f18.server.Database;
-import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.*;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
