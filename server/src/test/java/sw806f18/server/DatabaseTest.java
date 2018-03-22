@@ -42,7 +42,7 @@ public class DatabaseTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configurations.instance = new Configurations("config.json");
+        Configurations.instance = new Configurations("test-config.json");
         TestHelpers.resetDatabase();
         TestHelpers.populateDatabase();
     }
@@ -68,6 +68,7 @@ public class DatabaseTest {
 
     @Test
     public void getAllGroups() throws Exception {
+        // ToDo: Fix pls
         List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
         assertTrue(groups.equals(expected));

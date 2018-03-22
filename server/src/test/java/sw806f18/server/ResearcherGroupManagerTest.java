@@ -34,7 +34,7 @@ public class ResearcherGroupManagerTest {
      */
     @Before
     public void setUp() throws Exception {
-        Configurations.instance = new Configurations("config.json");
+        Configurations.instance = new Configurations("test-config.json");
         token = Authentication.instance.getToken(1);
         // start the server
         server = Main.startServer();
@@ -114,6 +114,8 @@ public class ResearcherGroupManagerTest {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject element = jsonArray.get(i).asJsonObject();
             assertTrue(element.getString("name").equals(expected.get(i).getName()));
+            // ToDo: Fix pls
+            assertTrue(element.getInt("id") == expected.get(i).getId());
         }
     }
 
