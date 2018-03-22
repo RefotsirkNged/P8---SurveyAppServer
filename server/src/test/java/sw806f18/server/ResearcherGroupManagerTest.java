@@ -114,6 +114,7 @@ public class ResearcherGroupManagerTest {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject element = jsonArray.get(i).asJsonObject();
             assertTrue(element.getString("name").equals(expected.get(i).getName()));
+            // ToDo: Fix pls
             assertTrue(element.getInt("id") == expected.get(i).getId());
         }
     }

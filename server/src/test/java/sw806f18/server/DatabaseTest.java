@@ -68,6 +68,7 @@ public class DatabaseTest {
 
     @Test
     public void getAllGroups() throws Exception {
+        // ToDo: Fix pls
         List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
         assertTrue(groups.equals(expected));
