@@ -2,9 +2,8 @@
   "postgreSQL": {
     "ip": "192.168.1.123",
     "port": 5432,
-    "database": "devdb",
+    "database": "postgres",
     "user": "postgres",
-    "password": "power123",
-    "database": "postgres"
+    "password": "power123"
   }
 }

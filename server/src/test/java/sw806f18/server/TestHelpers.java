@@ -1,18 +1,13 @@
 package sw806f18.server;
 
-<<<<<<<
 import com.sun.mail.pop3.POP3Store;
+import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
 
-=======
-import java.io.StringReader;
-
-import java.util.ArrayList;
-import java.util.List;
-
->>>>>>>
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -22,22 +17,16 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-<<<<<<<
 import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-=======
-
->>>>>>>
-
-import sw806f18.server.model.Group;
 
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
@@ -54,16 +43,12 @@ public class TestHelpers {
         // Don't instantiate me
     }
 
-<<<<<<<
-    public static JsonObject getPayload(Response response) {
-=======
     /**
      * Get payload.
      * @param response Response.
      * @return Payload.
      */
     public static JsonObject getPayload(Response response) {
->>>>>>>
         String content = response.readEntity(String.class);
         JsonReader jsonReader = Json.createReader(new StringReader(content));
         JsonObject jsonObject = jsonReader.readObject();
@@ -71,10 +56,6 @@ public class TestHelpers {
         return jsonObject;
     }
 
-<<<<<<<
-    public static Response login(WebTarget target, String path, String email, String password) {
-        return target.path(path).request().header("email", email).header("password", password).post(Entity.text(""));
-=======
     /**
      * Login function.
      * @param target Web target.
@@ -86,13 +67,8 @@ public class TestHelpers {
     public static Response login(WebTarget target, String path, String email, String password) {
         return target.path(path).request().header("email", email)
                 .header("password", password).post(Entity.text(""));
->>>>>>>
     }
 
-<<<<<<<
-    public static String getResearcherLoginToken(WebTarget target) {
-        Response response = login(target, "researcher/login", VALID_RESEARCHER_EMAIL, VALID_RESEARCHER_PASSWORD);
-=======
     /**
      * Get all groups.
      * @param target Web target.
@@ -137,11 +113,9 @@ public class TestHelpers {
     public static String getResearcherLoginToken(WebTarget target) {
         Response response = login(target, "researcher/login",
                 VALID_RESEARCHER_EMAIL, VALID_RESEARCHER_PASSWORD);
->>>>>>>
         JsonObject jsonObject = getPayload(response);
         return jsonObject.getString("token");
     }
-<<<<<<<
 
     public static String getKeyFromParticipantEmail() throws MessagingException, IOException {
         Properties properties = new Properties();
@@ -224,10 +198,22 @@ public class TestHelpers {
         return result;
     }
 
-    public static void populateDatabase() throws CreateUserException, CreateInviteException {
+    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
+        // Create researchers
+        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
+        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
+
+        // Create test participants
         Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
         Database.createParticipant(participant1, "power123");
+
+        // Create invites
         Database.createInvite("0123456789", "abc");
+
+        // Create groups
+        for (Group group : testGroups()) {
+            Database.addGroup(group.getName());
+        }
     }
 
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
@@ -254,7 +240,6 @@ public class TestHelpers {
 
         closeConnection(connection);
     }
-=======
 
     /**
      * Fetch testing groups.
@@ -267,5 +252,4 @@ public class TestHelpers {
         list.add(new Group(3, "Group 3", 0));
         return list;
     }
->>>>>>>
 }

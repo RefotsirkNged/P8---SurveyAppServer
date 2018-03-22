@@ -13,7 +13,7 @@ import sw806f18.server.model.Researcher;
 /**
  * Created by chrae on 06-03-2018.
  */
-@Path("/researcher")
+@Path("researcher")
 public class ResearcherResource {
     /**
      * Method adding researcher.

@@ -10,12 +10,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.CPRKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.DeleteUserException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
 import java.sql.*;
@@ -294,7 +297,7 @@ public class Database {
         c.close();
     }
 
-    public static void createInvite(String cpr, String key) throws CreateInviteException{
+    public static void createInvite(String cpr, String key) throws CreateInviteException {
         Connection con = null;
         try {
 
@@ -330,7 +333,7 @@ public class Database {
             Connection conn = createConnection();
             Statement stmt = conn.createStatement();
             String query = "DELETE FROM invite WHERE key = '" + key + "'";
-            stmt.executeQuery(query);
+            stmt.execute(query);
         }
         catch (SQLException e) {
             throw new CPRKeyNotFoundException("Server error, contact system administrator", e);
