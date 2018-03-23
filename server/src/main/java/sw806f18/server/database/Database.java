@@ -1,15 +1,11 @@
 package sw806f18.server.database;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import sw806f18.server.database.NoSqlDatabase;
-import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by augustkorvell on 22/03/2018.
@@ -61,17 +57,17 @@ public class Database {
      * @param password Password.
      * @throws CreateUserException Exception.
      */
-    public static Researcher createResearcher(Researcher researcher, String password) throws CreateUserException{
+    public static Researcher createResearcher(Researcher researcher, String password) throws CreateUserException {
         return RelationalDatabase.createResearcher(researcher, password);
     }
 
-//    /**
-//     * Deletes a researcher by removing it from the database.
-//     * @param email Email.
-//     */
-//    public static void deleteResearcher(String email) throws DeleteUserException {
-//        RelationalDatabase.deleteResearcher(email);
-//    }
+    //    /**
+    //     * Deletes a researcher by removing it from the database.
+    //     * @param email Email.
+    //     */
+    //    public static void deleteResearcher(String email) throws DeleteUserException {
+    //        RelationalDatabase.deleteResearcher(email);
+    //    }
 
 
     public static void createInvite(Invite invite) throws CreateInviteException {
@@ -82,27 +78,27 @@ public class Database {
         return RelationalDatabase.getCPRFromKey(key);
     }
 
-    public static void clearInviteFromKey(String key) throws CprKeyNotFoundException{
+    public static void clearInviteFromKey(String key) throws CprKeyNotFoundException {
         RelationalDatabase.clearInviteFromKey(key);
     }
 
-    public static Participant getParticipant(String email, String password) throws LoginException{
+    public static Participant getParticipant(String email, String password) throws LoginException {
         return RelationalDatabase.getParticipant(email, password);
     }
 
-    public static Participant createParticipant(Participant participant, String password) throws CreateUserException{
+    public static Participant createParticipant(Participant participant, String password) throws CreateUserException {
         return RelationalDatabase.createParticipant(participant, password);
     }
 
-    public static int addSurvey(Survey s){
+    public static int addSurvey(Survey s) {
         throw new NotImplementedException();
     }
 
-    public static Survey getSurvey(int id){
+    public static Survey getSurvey(int id) {
         throw new NotImplementedException();
     }
 
-    public static List<Survey> getUsersSurveys(User user){
+    public static List<Survey> getUsersSurveys(User user) {
         throw new NotImplementedException();
     }
 
@@ -118,7 +114,8 @@ public class Database {
         RelationalDatabase.addGroupMember(group1, participant1);
     }
 
-    public static void removeParticipantFromGroup(Group group, Participant participant) throws RemoveParticipantFromGroupException {
+    public static void removeParticipantFromGroup(Group group, Participant participant)
+            throws RemoveParticipantFromGroupException {
         RelationalDatabase.removeParticipantFromGroup(group, participant);
     }
 

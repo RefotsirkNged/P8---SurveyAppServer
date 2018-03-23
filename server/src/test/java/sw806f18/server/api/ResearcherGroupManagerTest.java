@@ -122,7 +122,7 @@ public class ResearcherGroupManagerTest {
     }
 
     @Test
-    public void getMembersByGroup(){
+    public void getMembersByGroup() {
         assertTrue(false);
     }
 }

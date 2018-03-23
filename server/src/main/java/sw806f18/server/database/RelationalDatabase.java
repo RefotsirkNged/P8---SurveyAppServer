@@ -195,8 +195,8 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname" +
-                        " FROM researcher r, users u WHERE r.id = " + userid
+                String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname"
+                        + " FROM researcher r, users u WHERE r.id = " + userid
                         + "AND r.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
@@ -273,28 +273,28 @@ public class RelationalDatabase {
      * Deletes a researcher by removing it from the database.
      * @param email Email.
      */
-//     static void deleteResearcher(String email) throws DeleteUserException {
-//        Connection con = null;
-//        try {
-//
-//            con = createConnection();
-//            Statement stmt = con.createStatement();
-//
-//            String q = "DELETE FROM users WHERE email = '" + email + "';";
-//
-//            stmt.execute(q);
-//            stmt.close();
-//
-//            closeConnection(con);
-//
-//        } catch (SQLException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        } catch (ClassNotFoundException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        }
-//    }
+    //     static void deleteResearcher(String email) throws DeleteUserException {
+    //        Connection con = null;
+    //        try {
+    //
+    //            con = createConnection();
+    //            Statement stmt = con.createStatement();
+    //
+    //            String q = "DELETE FROM users WHERE email = '" + email + "';";
+    //
+    //            stmt.execute(q);
+    //            stmt.close();
+    //
+    //            closeConnection(con);
+    //
+    //        } catch (SQLException e) {
+    //            //Send stacktrace to log
+    //            throw new DeleteUserException("Server error, contact system administrator", e);
+    //        } catch (ClassNotFoundException e) {
+    //            //Send stacktrace to log
+    //            throw new DeleteUserException("Server error, contact system administrator", e);
+    //        }
+    //    }
 
     /**
      * Closes an open Database connection.
@@ -330,8 +330,9 @@ public class RelationalDatabase {
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getString("cpr");
-        } else
+        } else {
             return null;
+        }
     }
 
     static void clearInviteFromKey(String key) throws CprKeyNotFoundException {
@@ -361,8 +362,9 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname" +
-                        " FROM persons p, users u WHERE p.id = " + userid
+                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname"
+                        + " FROM persons p, users u WHERE p.id = "
+                        + userid
                         + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
@@ -395,8 +397,9 @@ public class RelationalDatabase {
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getInt(1) == 1;
-        } else
+        } else {
             return false;
+        }
     }
 
     static Participant createParticipant(Participant participant, String password) throws CreateUserException {
@@ -406,8 +409,8 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) " +
-                    "VALUES ( '" + participant.getEmail() + "' , '"
+            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
+                    + "VALUES ( '" + participant.getEmail() + "' , '"
                     + Security.convertByteArrayToString(Security.hash(password, salt))
                     + "' , '" + Security.convertByteArrayToString(salt)
                     + "', '" + participant.getFirstName() + "', '"
@@ -420,8 +423,8 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO persons (id, cpr)" +
-                    "VALUES (" + id + ", '" + participant.getCpr() + "')";
+            String q2 = "INSERT INTO persons (id, cpr)"
+                    + "VALUES (" + id + ", '" + participant.getCpr() + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -452,7 +455,8 @@ public class RelationalDatabase {
     static void addGroupMember(Group group1, Participant participant1) throws AddGroupMemberException {
     }
 
-    static void removeParticipantFromGroup(Group group, Participant participant) throws RemoveParticipantFromGroupException {
+    static void removeParticipantFromGroup(Group group,
+                                           Participant participant) throws RemoveParticipantFromGroupException {
 
     }
 

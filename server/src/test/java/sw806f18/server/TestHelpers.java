@@ -2,22 +2,6 @@ package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 
-import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.model.*;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.mail.*;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -43,12 +27,20 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.DropdownQuestion;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
+import sw806f18.server.model.NumberQuestion;
 import sw806f18.server.model.Participant;
+import sw806f18.server.model.Question;
 import sw806f18.server.model.Researcher;
+import sw806f18.server.model.Survey;
+import sw806f18.server.model.TextQuestion;
 
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
@@ -59,12 +51,30 @@ public class TestHelpers {
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
     public static final String INVALID_RESEARCHER_PASSWORD = "fake";
 
-    public static Researcher researcher1 = new Researcher("res1@earch.er", "88888888", "res", "earch");
-    public static Researcher researcherCreate = new Researcher("test@testington.com", "50505050", "test", "test");
+    public static Researcher researcher1 = new Researcher("res1@earch.er",
+                                                          "88888888",
+                                                          "res",
+                                                          "earch");
+    public static Researcher researcherCreate = new Researcher("test@testington.com",
+                                                               "50505050",
+                                                               "test",
+                                                               "test");
 
-    public static Participant participant1 = new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1");
-    public static Participant participant2 = new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one");
-    public static Participant participantCreate = new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test");
+    public static Participant participant1 = new Participant(-1,
+                                                             "test1@testesen.dk",
+                                                             "0123456789",
+                                                             "partic",
+                                                             "ipant1");
+    public static Participant participant2 = new Participant(-1,
+                                                             "test2@testesen.dk",
+                                                             "0123456780",
+                                                             "name",
+                                                             "one");
+    public static Participant participantCreate = new Participant(-1,
+                                                                  "test3@testesen.dk",
+                                                                  "0123456798",
+                                                                  "test",
+                                                                  "test");
 
     public static Group group1 = new Group("Group 1", 0);
     public static Group group2 = new Group("Group 2", 0);
@@ -74,7 +84,15 @@ public class TestHelpers {
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
 
-    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException {
+    /**
+     * Populates the database.
+     * @throws CreateUserException
+     * @throws CreateInviteException
+     * @throws AddGroupException
+     * @throws AddGroupMemberException
+     */
+    public static void populateDatabase() throws CreateUserException, CreateInviteException,
+                                                 AddGroupException, AddGroupMemberException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
 
@@ -212,7 +230,7 @@ public class TestHelpers {
             message.setFlag(Flags.Flag.DELETED, true);
         }
 
-        emailFolder.expunge();
+        emailFolder.close(true);
 
         return key;
     }
@@ -319,24 +337,31 @@ public class TestHelpers {
     }
 
     /**
-     * @return Test surveys.
+     * Used to test surveys.
+     * @return Test surveys
      */
-    public static List<Survey> testSurveys(){
+    public static List<Survey> testSurveys() {
         List<Survey> results = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
             String title = "Test" + i;
             String description = "Description" + i;
             Survey survey = new Survey(title, description);
-            survey.addQuestion(new TextQuestion(1,"Text question" + i, "Text question description" + i));
+            survey.addQuestion(new TextQuestion(1,
+                                                "Text question" + i,
+                                                "Text question description" + i));
 
             List<String> values = new ArrayList<>();
             values.add("A" + i);
             values.add("B" + i);
             values.add("C" + i);
 
-            survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING, "Drop question" + i, "Drop question description" + i, values));
-            survey.addQuestion(new NumberQuestion(3,"Number question" + 1, "Number question description" + 1));
+            survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING,
+                                                    "Drop question" + i,
+                                                    "Drop question description" + i, values));
+            survey.addQuestion(new NumberQuestion(3,
+                                                  "Number question" + 1,
+                                                  "Number question description" + 1));
 
             results.add(survey);
         }

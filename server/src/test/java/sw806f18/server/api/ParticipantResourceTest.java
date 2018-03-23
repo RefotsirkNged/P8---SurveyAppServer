@@ -1,5 +1,8 @@
 package sw806f18.server.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 
 import javax.json.JsonObject;
@@ -20,12 +23,7 @@ import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.LoginException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 
 public class ParticipantResourceTest {
     private HttpServer server;
@@ -64,18 +62,28 @@ public class ParticipantResourceTest {
      */
     @Test
     public void createParticipant() throws IOException, MessagingException, InterruptedException, LoginException {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
+        Response response = TestHelpers.login(target,
+                TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.researcher1.getEmail(),
+                TestHelpers.PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
 
-        target.path("researcher").path("participant").request().header("token", token).header("cpr", TestHelpers.participantCreate.getCpr()).header("email", TestHelpers.participantCreate.getEmail()).post(Entity.text(""));
+        target.path("researcher").path("participant").request()
+                .header("token", token)
+                .header("cpr", TestHelpers.participantCreate.getCpr())
+                .header("email", TestHelpers.participantCreate.getEmail())
+                .post(Entity.text(""));
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();
         assertNotNull(key);
-        Response response1 = target.path("participant").request().header("key", key).header("email", TestHelpers.participantCreate.getEmail()).header("password", TestHelpers.PASSWORD).post(Entity.text(""));
+        Response response1 = target.path("participant")
+                .request().header("key", key)
+                .header("email", TestHelpers.participantCreate.getEmail())
+                .header("password", TestHelpers.PASSWORD).post(Entity.text(""));
         assertEquals(response1.getStatus(), 200);
-      //  assertTrue(fullParticipant.equals(partialParticipant));
+        //  assertTrue(fullParticipant.equals(partialParticipant));
         boolean success = true;
         try {
             Database.clearInviteFromKey(key);

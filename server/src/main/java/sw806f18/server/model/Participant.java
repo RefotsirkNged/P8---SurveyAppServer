@@ -3,7 +3,7 @@ package sw806f18.server.model;
 public class Participant extends User {
     private String cpr;
 
-    public Participant(int id, String email, String cpr, String firstName, String lastName){
+    public Participant(int id, String email, String cpr, String firstName, String lastName) {
         super(id, email, firstName, lastName);
         this.cpr = cpr;
     }
