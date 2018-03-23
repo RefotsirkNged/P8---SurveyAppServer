@@ -1,27 +1,20 @@
 package sw806f18.server.database;
 
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
+import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import sw806f18.server.Configurations;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Survey;
@@ -44,12 +37,11 @@ public class DatabaseTest {
     }
 
     @Test
-    public void createResearcher()
-    {
+    public void createResearcher() {
         boolean hasError = false;
         Researcher researcher = null;
 
-        try{
+        try {
             researcher = Database.createResearcher(TestHelpers.researcherCreate, "power123");
         } catch (CreateUserException e) {
             hasError = true;
@@ -60,12 +52,11 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getResearcher()
-    {
+    public void getResearcher() {
         Researcher researcher = null;
         boolean hasError = false;
 
-        try{
+        try {
             researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), "power123");
         } catch (LoginException e) {
             hasError = true;
@@ -221,7 +212,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getMembersByGroup(){
+    public void getMembersByGroup() {
         boolean hasError = false;
         List<Participant> participants = null;
         try {
@@ -239,11 +230,11 @@ public class DatabaseTest {
         List<Survey> surveys = TestHelpers.testSurveys();
         List<Survey> addedSurveys;
 
-        for (Survey survey : surveys){
+        for (Survey survey : surveys) {
             survey.id = Database.addSurvey(survey);
         }
 
-        for (Survey survey : surveys){
+        for (Survey survey : surveys) {
             assertTrue(survey.equals(Database.getSurvey(survey.id)));
         }
     }

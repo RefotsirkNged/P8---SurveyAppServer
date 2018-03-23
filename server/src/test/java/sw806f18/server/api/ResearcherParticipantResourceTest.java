@@ -58,7 +58,12 @@ public class ResearcherParticipantResourceTest {
     @Test
     public void inviteParticipant() throws MessagingException, IOException, InterruptedException {
         Participant participant = new Participant(-1, "sw806f18@gmail.com", "0123456789", "test", "test");
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
+        Response response =
+                        TestHelpers.login(target,
+                        TestHelpers.RESEARCHER_LOGIN_PATH,
+                        TestHelpers.researcher1.getEmail(),
+                        TestHelpers.PASSWORD);
+
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");

@@ -45,11 +45,11 @@ public class Survey {
     public int frequencyValue;
     public String frequencyType;
 
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 
@@ -144,11 +144,12 @@ public class Survey {
     public boolean equals(Object obj) {
         Survey other = (Survey)obj;
 
-        if(other.questions.size() != this.questions.size())
+        if (other.questions.size() != this.questions.size()) {
             return false;
+        }
 
         for (int i = 0; i < this.questions.size(); i++) {
-            if(!this.questions.get(i).equals(other.questions.get(i))){
+            if (!this.questions.get(i).equals(other.questions.get(i))) {
                 return false;
             }
         }

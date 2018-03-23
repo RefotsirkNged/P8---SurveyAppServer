@@ -5,6 +5,13 @@ package sw806f18.server.model;
  */
 public abstract class User {
 
+    /**
+     * Class representing a participant in the system.
+     * @param id User ID.
+     * @param email User email.
+     * @param firstName Users first name.
+     * @param lastName Users last name.
+     */
     public User(int id, String email, String firstName, String lastName) {
         this.id = id;
         this.email = email;
