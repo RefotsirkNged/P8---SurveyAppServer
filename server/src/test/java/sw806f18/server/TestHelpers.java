@@ -234,7 +234,7 @@ public class TestHelpers {
     public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
         Connection connection = createConnection();
 
-        String query = "SELECT truncate_tables('postgres')";
+        String query = "SELECT truncate_tables('" + Configurations.instance.getPostgresDatabase() + "')";
 
         Statement statement = connection.createStatement();
 
