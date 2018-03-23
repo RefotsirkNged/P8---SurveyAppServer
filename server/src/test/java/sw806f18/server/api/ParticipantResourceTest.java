@@ -56,9 +56,11 @@ public class ParticipantResourceTest {
         String cpr = "0123456789";
         String password = "power123";
         String emailPassword = "p0wer123";
+        String firstname = "test";
+        String lastname = "test";
 
-        sw806f18.server.model.Participant partialParticipant = new Participant(-1,  email, cpr);
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
+        Participant partialParticipant = new Participant(-1,  email, cpr, firstname, lastname);
+        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
@@ -69,7 +71,7 @@ public class ParticipantResourceTest {
 
         assertNotNull(key);
 
-        Response response1 = target.path("participant").request().header("key", key).header("email", partialParticipant.email).header("password", password).post(Entity.text(""));
+        Response response1 = target.path("participant").request().header("key", key).header("email", partialParticipant.getEmail()).header("password", password).post(Entity.text(""));
 
         Participant fullParticipant = Database.getParticipant(email,password);
 

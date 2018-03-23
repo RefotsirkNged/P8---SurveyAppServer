@@ -2,9 +2,11 @@ package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
@@ -33,11 +35,42 @@ public class TestHelpers {
     public static final String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
     public static final String RENEW_TOKEN_PATH = "renewtoken";
 
-    public static final String VALID_RESEARCHER_EMAIL = "researcher1@email.com";
-    public static final String VALID_RESEARCHER_PASSWORD = "pypass";
-
+    public static final String PASSWORD = "power123";
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
     public static final String INVALID_RESEARCHER_PASSWORD = "fake";
+
+    public static Researcher researcher1 = new Researcher("res1@earch.er", "88888888", "res", "earch");
+    public static Researcher researcherCreate = new Researcher("test@testington.com", "50505050", "test", "test");
+
+    public static Participant participant1 = new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1");
+    public static Participant participant2 = new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one");
+    public static Participant participantCreate = new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test");
+
+    public static Group group1 = new Group("Group 1", 0);
+    public static Group group2 = new Group("Group 2", 0);
+    public static Group group3 = new Group("Group 3", 0);
+    public static Group groupCreate = new Group("TestGroup", 0);
+
+    public static final Invite invite1 = new Invite("0011223344", "qwerty");
+    public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
+
+    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException {
+        // Create researchers
+        researcher1 = Database.createResearcher(researcher1, PASSWORD);
+
+        // Create test participants
+        participant1 = Database.createParticipant(participant1, PASSWORD);
+        participant2 = Database.createParticipant(participant2, PASSWORD);
+
+        // Create invites
+        Database.createInvite(invite1);
+
+        group1 = Database.addGroup(group1);
+        group2 = Database.addGroup(group2);
+        group3 = Database.addGroup(group3);
+
+        Database.addGroupMember(group1, participant1);
+    }
 
     private TestHelpers() {
         // Don't instantiate me
@@ -45,6 +78,7 @@ public class TestHelpers {
 
     /**
      * Get payload.
+     *
      * @param response Response.
      * @return Payload.
      */
@@ -58,9 +92,10 @@ public class TestHelpers {
 
     /**
      * Login function.
-     * @param target Web target.
-     * @param path Endpoint.
-     * @param email Email.
+     *
+     * @param target   Web target.
+     * @param path     Endpoint.
+     * @param email    Email.
      * @param password Password.
      * @return Response.
      */
@@ -71,9 +106,10 @@ public class TestHelpers {
 
     /**
      * Get all groups.
+     *
      * @param target Web target.
-     * @param path Endpoint.
-     * @param token Token.
+     * @param path   Endpoint.
+     * @param token  Token.
      * @return All groups.
      */
     public static Response getAllGroups(WebTarget target, String path, String token) {
@@ -82,10 +118,11 @@ public class TestHelpers {
 
     /**
      * Add group to database.
+     *
      * @param target Web target.
-     * @param path Endpoint.
-     * @param name Group name
-     * @param token Token.
+     * @param path   Endpoint.
+     * @param name   Group name
+     * @param token  Token.
      * @return
      */
     public static Response addGroup(WebTarget target, String path, String name, String token) {
@@ -95,10 +132,11 @@ public class TestHelpers {
 
     /**
      * Delete group in the database.
+     *
      * @param target Web target.
-     * @param path Endpoint.
-     * @param id Group id.
-     * @param token Token.
+     * @param path   Endpoint.
+     * @param id     Group id.
+     * @param token  Token.
      * @return Response.
      */
     public static Response deleteGroup(WebTarget target, String path, int id, String token) {
@@ -107,12 +145,13 @@ public class TestHelpers {
 
     /**
      * Get the test researcher's login token.
+     *
      * @param target Web target.
      * @return Login token.
      */
     public static String getResearcherLoginToken(WebTarget target) {
         Response response = login(target, "researcher/login",
-                VALID_RESEARCHER_EMAIL, VALID_RESEARCHER_PASSWORD);
+                researcher1.getEmail(), PASSWORD);
         JsonObject jsonObject = getPayload(response);
         return jsonObject.getString("token");
     }
@@ -129,7 +168,7 @@ public class TestHelpers {
         emailSession.setDebug(true);
         POP3Store emailStore = (POP3Store) emailSession.getStore("pop3s");
 
-        emailStore.connect("pop.gmail.com","sw806f18@gmail.com", "p0wer123");
+        emailStore.connect("pop.gmail.com", "sw806f18@gmail.com", "p0wer123");
 
         Folder emailFolder = emailStore.getFolder("INBOX");
         emailFolder.open(Folder.READ_WRITE);
@@ -192,28 +231,10 @@ public class TestHelpers {
         } else if (bodyPart.isMimeType("text/html")) {
             String html = (String) bodyPart.getContent();
             result = org.jsoup.Jsoup.parse(html).text();
-        } else if (bodyPart.getContent() instanceof MimeMultipart){
-            result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+        } else if (bodyPart.getContent() instanceof MimeMultipart) {
+            result = getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent());
         }
         return result;
-    }
-
-    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
-        // Create researchers
-        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
-        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
-
-        // Create test participants
-        Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
-        Database.createParticipant(participant1, "power123");
-
-        // Create invites
-        Database.createInvite("0123456789", "abc");
-
-        // Create groups
-        for (Group group : testGroups()) {
-            Database.addGroup(group.getName());
-        }
     }
 
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
@@ -243,13 +264,26 @@ public class TestHelpers {
 
     /**
      * Fetch testing groups.
+     *
      * @return Test groups.
      */
     public static List<Group> testGroups() {
         List<Group> list = new ArrayList<>();
-        list.add(new Group(1, "Group 1", 0));
-        list.add(new Group(2, "Group 2", 0));
-        list.add(new Group(3, "Group 3", 0));
+        list.add(group1);
+        list.add(group2);
+        list.add(group3);
+        return list;
+    }
+
+    /**
+     * Fetch testing participants.
+     *
+     * @return Test participants.
+     */
+    public static List<Participant> participants() {
+        List<Participant> list = new ArrayList<>();
+        list.add(participant1);
+        list.add(participant2);
         return list;
     }
 }

@@ -1,6 +1,5 @@
 package sw806f18.server;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sw806f18.server.exceptions.*;
@@ -18,23 +17,16 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Group;
-import sw806f18.server.model.Researcher;
 
 /**
  * Created by augustkorvell on 13/03/2018.
  */
 
 public class DatabaseTest {
-    private String email = "test@testington.com";
-
     /**
      * Before.
      *
@@ -48,22 +40,35 @@ public class DatabaseTest {
     }
 
     @Test
-    public void createGetDeleteResearcher() throws Exception {
-        Researcher researcher = new Researcher(email, "50505050");
-        assertTrue(Database.createResearcher(researcher, "1234").equals(researcher));
-        assertTrue(Database.getResearcher(email, "1234").equals(researcher));
+    public void createResearcher()
+    {
+        boolean hasError = false;
+        Researcher researcher = null;
 
-        Database.deleteResearcher(researcher.email);
-        boolean deleted = false;
-
-
-        try {
-            Database.getResearcher(researcher.email, "1234");
-        } catch (LoginException e) {
-            deleted = true;
+        try{
+            researcher = Database.createResearcher(TestHelpers.researcherCreate, "power123");
+        } catch (CreateUserException e) {
+            hasError = true;
         }
 
-        assertTrue(deleted);
+        assertFalse(hasError);
+        assertTrue(researcher.equals(TestHelpers.researcherCreate));
+    }
+
+    @Test
+    public void getResearcher()
+    {
+        Researcher researcher = null;
+        boolean hasError = false;
+
+        try{
+            researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), "power123");
+        } catch (LoginException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertEquals(researcher, TestHelpers.researcher1);
     }
 
     @Test
@@ -76,107 +81,72 @@ public class DatabaseTest {
 
     @Test
     public void addGroup() {
-        Group group = new Group("TestGroup", 0);
+        Group group = null;
+        boolean hasError = false;
         try {
-            group.setId(Database.addGroup(group.getName()));
-            List<Group> groups = Database.getAllGroups();
-            assertTrue(groups.contains(group));
-            Database.deleteGroup(group.getId());
-        } catch (GetGroupsException e) {
-            e.printStackTrace();
-        } catch (DeleteGroupException e) {
-            e.printStackTrace();
+            group = Database.addGroup(TestHelpers.groupCreate);
         } catch (AddGroupException e) {
-            e.printStackTrace();
+            hasError = true;
         }
+
+        assertFalse(hasError);
+        assertEquals(group, TestHelpers.groupCreate);
     }
 
     @Test
     public void createInvite() {
-        assertTrue(createHelperInvite());
-    }
-
-    private boolean createHelperInvite() {
-        boolean created = true;
+        boolean hasError = false;
         try {
-            Database.createInvite("0123456789", "abc");
+            Database.createInvite(TestHelpers.inviteCreate);
         } catch (CreateInviteException ex) {
-            created = false;
+            hasError = true;
         }
-        return created;
+        assertFalse(hasError);
     }
 
     @Test
     public void deleteGroup() {
-        Group group = new Group("TestGroup", 0);
+        boolean hasError = false;
+
         try {
-            group.setId(Database.addGroup(group.getName()));
-            Database.deleteGroup(group.getId());
-            List<Group> groups = Database.getAllGroups();
-            assertFalse(groups.contains(group));
-        } catch (GetGroupsException e) {
-            e.printStackTrace();
+            Database.deleteGroup(TestHelpers.group1.getId());
         } catch (DeleteGroupException e) {
-            e.printStackTrace();
-        } catch (AddGroupException e) {
-            e.printStackTrace();
+            hasError = true;
         }
+
+        assertFalse(hasError);
     }
 
     @Test
     public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
-    }
-
-    @Test
-    public void removeGroupMember() {
-        assertTrue(false);
-    }
-
-    @Test
-    public void findUserByName() {
-        assertTrue(false);
+        assertEquals(Database.getCPRFromKey(TestHelpers.invite1.getKey()), TestHelpers.invite1.getCpr());
     }
 
     @Test
     public void createParticipant() throws SQLException, ClassNotFoundException {
-        assertTrue(createHelperInvite());
-
-
-        Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
-
-        boolean success = true;
+        boolean hasError = false;
 
         try {
-            Database.createParticipant(participant, "power123");
+            Database.createParticipant(TestHelpers.participantCreate, "power123");
         } catch (CreateUserException e) {
-            success = false;
+            hasError = true;
         }
 
-        assertTrue(success);
-    }
-
-    @Test
-    public void addGroupMember() {
-        assertTrue(false);
+        assertFalse(hasError);
     }
 
     @Test
     public void getParticipant() {
-
-        Participant participant = new Participant(-1, "test@testesen.dk", "0123456789");
         Participant createdParticipant = null;
-        boolean success = true;
-
-
+        boolean hasError = false;
         try {
-            createdParticipant = Database.getParticipant(participant.email, "power123");
+            createdParticipant = Database.getParticipant(TestHelpers.participant1.getEmail(), "power123");
         } catch (LoginException ex) {
-            success = false;
+            hasError = true;
         }
+        assertFalse(hasError);
+        assertEquals(createdParticipant, TestHelpers.participant1);
 
-        assertTrue(participant.equals(createdParticipant));
-        assertTrue(success);
     }
 
     private static Connection createConnection() throws SQLException, ClassNotFoundException {
@@ -193,13 +163,71 @@ public class DatabaseTest {
 
     @Test
     public void clearInviteFromKey() {
-        boolean success = true;
+        boolean hasError = false;
         try {
-            Database.clearInviteFromKey("abc");
+            Database.clearInviteFromKey(TestHelpers.invite1.getKey());
         } catch (CPRKeyNotFoundException ex) {
-            success = false;
+            hasError = true;
         }
-        assertTrue(success);
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getAllParticipants() {
+        List<Participant> participants = Database.getAllParticipants();
+        List<Participant> expected = TestHelpers.participants();
+        assertTrue(participants.equals(expected));
+    }
+
+    @Test
+    public void findUserByName() {
+        List<Participant> participants = Database.getParticipantsByName("name");
+        assertEquals(participants.size(), 1);
+        assertTrue(participants.get(0).equals(TestHelpers.participant2));
+    }
+
+    @Test
+    public void removeGroupMember() {
+        boolean hasError = false;
+        try {
+            Database.removeParticipantFromGroup(TestHelpers.group1, TestHelpers.participant1);
+        } catch (RemoveParticipantFromGroupException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void addGroupMember() {
+        boolean hasError = false;
+        List<Participant> participants = null;
+
+        try {
+            Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
+            participants = Database.getGroupMembers(TestHelpers.group1);
+        } catch (AddGroupMemberException e) {
+            hasError = true;
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertTrue(participants.contains(TestHelpers.participant2));
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getMembersByGroup(){
+        boolean hasError = false;
+        List<Participant> participants = null;
+        try {
+             participants = Database.getGroupMembers(TestHelpers.group1);
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertEquals(participants.get(0), TestHelpers.participant1);
+        assertFalse(hasError);
     }
 
 }

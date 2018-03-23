@@ -48,6 +48,8 @@ public class ResearcherGroupManagerTest {
         // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
         target = c.target(Main.BASE_URI);
+        TestHelpers.resetDatabase();
+        TestHelpers.populateDatabase();
     }
 
     @After
@@ -56,48 +58,30 @@ public class ResearcherGroupManagerTest {
     }
 
     @Test
-    public void addGroupMember() {
-        assertTrue(false);
-    }
-
-    @Test
     public void addGroup() {
-        Group group = new Group("TestGroup", 0);
         try {
             Response response = TestHelpers.addGroup(target,
-                    TestHelpers.RESEARCHER_GROUPMANAGER_PATH, group.getName(), token);
+                    TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
             assertEquals(response.getStatus(), 200);
             JsonObject jsonObject = TestHelpers.getPayload(response);
-            group.setId(jsonObject.getInt("success"));
+            TestHelpers.groupCreate.setId(jsonObject.getInt("groupid"));
             List<Group> groups = Database.getAllGroups();
-            assertTrue(groups.contains(group));
-            Database.deleteGroup(group.getId());
+            assertTrue(groups.contains(TestHelpers.groupCreate));
         } catch (GetGroupsException e) {
-            e.printStackTrace();
-        } catch (DeleteGroupException e) {
             e.printStackTrace();
         }
     }
 
     @Test
     public void removeGroup() {
-        Group group = new Group("TestGroup", 0);
         try {
-            group.setId(Database.addGroup(group.getName()));
             TestHelpers.deleteGroup(target, TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
-                    group.getId(), token);
+                    TestHelpers.group1.getId(), token);
             List<Group> groups = Database.getAllGroups();
-            assertFalse(groups.contains(group));
+            assertFalse(groups.contains(TestHelpers.group1));
         } catch (GetGroupsException e) {
             e.printStackTrace();
-        } catch (AddGroupException e) {
-            e.printStackTrace();
         }
-    }
-
-    @Test
-    public void removeGroupMember() {
-        assertTrue(false);
     }
 
     @Test
@@ -121,6 +105,21 @@ public class ResearcherGroupManagerTest {
 
     @Test
     public void findUserByName() {
+        assertTrue(false);
+    }
+
+    @Test
+    public void removeGroupMember() {
+        assertTrue(false);
+    }
+
+    @Test
+    public void addGroupMember() {
+        assertTrue(false);
+    }
+
+    @Test
+    public void getMembersByGroup(){
         assertTrue(false);
     }
 }

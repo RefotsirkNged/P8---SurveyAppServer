@@ -25,7 +25,7 @@ public class ResearcherLoginResource {
     public JsonObject login(@HeaderParam("email") String email,
                             @HeaderParam("password") String password) {
         try {
-            int userid = Database.getResearcher(email, password).id;
+            int userid = Database.getResearcher(email, password).getId();
             String token = Authentication.instance.getToken(userid);
 
             return Json.createObjectBuilder().add("token", token).build();

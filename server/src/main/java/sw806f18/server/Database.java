@@ -9,15 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.CPRKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.DeleteUserException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
@@ -108,11 +102,11 @@ public class Database {
 
     /**
      * Adds group to database.
-     * @param name Name of group.
+     * @param group group.
      * @return ID of group.
      * @throws AddGroupException Exception.
      */
-    public static int addGroup(String name) throws AddGroupException {
+    public static Group addGroup(Group group) throws AddGroupException {
         Connection con;
         int id = 0;
 
@@ -120,17 +114,18 @@ public class Database {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO groups (name, hub) VALUES ('"
-                    + name + "', null) RETURNING id";
+                    + group.getName() + "', null) RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
             con.close();
+
+            return new Group(id, group.getName(), group.getHub());
         } catch (SQLException e) {
             throw new AddGroupException(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new AddGroupException(e.getMessage());
         }
-        return id;
     }
 
     /**
@@ -195,11 +190,16 @@ public class Database {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT phone FROM researcher WHERE id = " + userid;
+                String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname" +
+                        " FROM researcher r, users u WHERE r.id = " + userid
+                        + "AND r.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
-                    researcher = new Researcher(userid, email, resultSet.getString("phone"));
+                    researcher = new Researcher(userid, email,
+                            resultSet.getString("phone"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"));
                 }
             }
 
@@ -229,10 +229,12 @@ public class Database {
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt) "
-                    + "VALUES ( '" + researcher.email + "' , '"
+            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
+                    + "VALUES ( '" + researcher.getEmail() + "' , '"
                     + Security.convertByteArrayToString(Security.hash(password, salt))
-                    + "' , '" + Security.convertByteArrayToString(salt) + "' ) "
+                    + "' , '" + Security.convertByteArrayToString(salt) + "',"
+                    + " '" + researcher.getFirstName() + "',"
+                    + " '" + researcher.getLastName() + "' ) "
                     + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
@@ -255,7 +257,7 @@ public class Database {
         }
 
         try {
-            return getResearcher(researcher.email, password);
+            return getResearcher(researcher.getEmail(), password);
         } catch (LoginException e) {
             throw new CreateUserException("Server error, contact system administrator", e);
         }
@@ -265,28 +267,28 @@ public class Database {
      * Deletes a researcher by removing it from the database.
      * @param email Email.
      */
-    public static void deleteResearcher(String email) throws DeleteUserException {
-        Connection con = null;
-        try {
-
-            con = createConnection();
-            Statement stmt = con.createStatement();
-
-            String q = "DELETE FROM users WHERE email = '" + email + "';";
-
-            stmt.execute(q);
-            stmt.close();
-
-            closeConnection(con);
-
-        } catch (SQLException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e) {
-            //Send stacktrace to log
-            throw new DeleteUserException("Server error, contact system administrator", e);
-        }
-    }
+//    public static void deleteResearcher(String email) throws DeleteUserException {
+//        Connection con = null;
+//        try {
+//
+//            con = createConnection();
+//            Statement stmt = con.createStatement();
+//
+//            String q = "DELETE FROM users WHERE email = '" + email + "';";
+//
+//            stmt.execute(q);
+//            stmt.close();
+//
+//            closeConnection(con);
+//
+//        } catch (SQLException e) {
+//            //Send stacktrace to log
+//            throw new DeleteUserException("Server error, contact system administrator", e);
+//        } catch (ClassNotFoundException e) {
+//            //Send stacktrace to log
+//            throw new DeleteUserException("Server error, contact system administrator", e);
+//        }
+//    }
 
     /**
      * Closes an open Database connection.
@@ -297,13 +299,13 @@ public class Database {
         c.close();
     }
 
-    public static void createInvite(String cpr, String key) throws CreateInviteException {
+    public static void createInvite(Invite invite) throws CreateInviteException {
         Connection con = null;
         try {
 
             con = createConnection();
             Statement stmt = con.createStatement();
-            String query = "INSERT INTO invite VALUES ('" + cpr + "','" + key + "')";
+            String query = "INSERT INTO invite VALUES ('" + invite.getCpr() + "','" + invite.getKey() + "')";
             stmt.execute(query);
         }
         catch (SQLException | ClassNotFoundException e) {
@@ -358,11 +360,16 @@ public class Database {
             }
             else{
                 Statement statement = connection.createStatement();
-                String query = "SELECT cpr FROM persons WHERE id = " + userid;
+                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname" +
+                        " FROM persons p, users u WHERE p.id = " + userid
+                        + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
-                    participant = new Participant(userid, email, resultSet.getString("cpr"));
+                    participant = new Participant(userid, email,
+                            resultSet.getString("cpr"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"));
                 }
             }
 
@@ -399,9 +406,13 @@ public class Database {
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt) " +
-                    "VALUES ( '" + participant.email + "' , '" + Security.convertByteArrayToString(Security.hash(password, salt)) + "' , '" + Security.convertByteArrayToString(salt) + "' ) " +
-                    "RETURNING id";
+            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) " +
+                    "VALUES ( '" + participant.getEmail() + "' , '"
+                    + Security.convertByteArrayToString(Security.hash(password, salt))
+                    + "' , '" + Security.convertByteArrayToString(salt)
+                    + "', '" + participant.getFirstName() + "', '"
+                    + participant.getLastName() + "' ) "
+                    + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -410,7 +421,7 @@ public class Database {
 
             Statement stmt2 = con.createStatement();
             String q2 = "INSERT INTO persons (id, cpr)" +
-                    "VALUES (" + id + ", '" + participant.cpr + "')";
+                    "VALUES (" + id + ", '" + participant.getCpr() + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -423,9 +434,28 @@ public class Database {
         }
 
         try {
-            return getParticipant(participant.email, password);
+            return getParticipant(participant.getEmail(), password);
         } catch (LoginException e) {
             throw new CreateUserException("Server error, contact system administrator", e);
         }
+    }
+
+
+    public static List<Participant> getAllParticipants() {
+        return new ArrayList<>();
+    }
+
+    public static List<Participant> getParticipantsByName(String name) {
+        return new ArrayList<>();
+    }
+
+    public static void addGroupMember(Group group1, Participant participant1) throws AddGroupMemberException {    }
+
+    public static void removeParticipantFromGroup(Group group, Participant participant) throws RemoveParticipantFromGroupException{
+
+    }
+
+    public static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
+    return new ArrayList<>();
     }
 }

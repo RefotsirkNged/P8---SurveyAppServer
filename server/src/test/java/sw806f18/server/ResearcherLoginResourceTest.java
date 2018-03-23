@@ -32,6 +32,7 @@ public class ResearcherLoginResourceTest {
      */
     @Before
     public void setUp() throws Exception {
+        Configurations.instance = new Configurations("test-config.json");
         // start the server
         server = Main.startServer();
         // create the client
@@ -44,6 +45,8 @@ public class ResearcherLoginResourceTest {
         // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
         target = c.target(Main.BASE_URI);
+        TestHelpers.resetDatabase();
+        TestHelpers.populateDatabase();
     }
 
     @After
@@ -54,7 +57,7 @@ public class ResearcherLoginResourceTest {
     @Test
     public void legalUserLogin() {
         Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
+                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
@@ -74,7 +77,7 @@ public class ResearcherLoginResourceTest {
     @Test
     public void wrongPasswordUserLogin() {
         Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.INVALID_RESEARCHER_PASSWORD);
+                TestHelpers.researcher1.getEmail(), TestHelpers.INVALID_RESEARCHER_PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String error = jsonObject.getString("error");
@@ -85,7 +88,7 @@ public class ResearcherLoginResourceTest {
     @Test
     public void validUserToken() {
         Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
+                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
