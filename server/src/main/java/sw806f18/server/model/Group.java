@@ -75,6 +75,6 @@ public class Group {
         }
 
         Group obj = (Group) other;
-        return this.id == obj.id && this.name.equals(obj.name);
+        return this.name.equals(obj.name);
     }
 }

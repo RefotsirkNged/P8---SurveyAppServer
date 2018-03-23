@@ -11,7 +11,8 @@ public class Survey {
 
     /**
      * Ctor.
-     * @param title The title
+     *
+     * @param title       The title
      * @param description Description
      */
     public Survey(String title, String description) {
@@ -23,8 +24,9 @@ public class Survey {
 
     /**
      * Ctor.
-     * @param id Id of the survey
-     * @param title The title
+     *
+     * @param id          Id of the survey
+     * @param title       The title
      * @param description Description
      */
     public Survey(int id, String title, String description) {
@@ -39,16 +41,17 @@ public class Survey {
     private String description;
     public int id;
 
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 
     /**
      * Adds (append) a Question to the survey.
+     *
      * @param question the question to add
      */
     public void addQuestion(Question question) {
@@ -57,8 +60,9 @@ public class Survey {
 
     /**
      * Add Question to the survey at index.
+     *
      * @param question question to be added
-     * @param index the index at which it should be added
+     * @param index    the index at which it should be added
      */
     public void addQuestion(Question question, int index) {
         questions.add(index, question);
@@ -67,8 +71,9 @@ public class Survey {
 
     /**
      * Move a question.
+     *
      * @param currrentIndex current position of question
-     * @param newIndex new position of question
+     * @param newIndex      new position of question
      */
     public void moveQuestion(int currrentIndex, int newIndex) {
         Question temp = questions.remove(currrentIndex);
@@ -80,6 +85,7 @@ public class Survey {
 
     /**
      * Get html representation of Question.
+     *
      * @return Survey as HTML
      */
     public String getHTML() {
@@ -93,21 +99,21 @@ public class Survey {
         builder.append("<meta charset='UTF-8' content='width=device-width, initial-scale=1.0'>");
 
         builder.append("<!-- Latest compiled and minified CSS -->\n"
-                + "<link rel=\"stylesheet\" "
-                + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
-                + "type=\"text/css\">\n"
-                + "\n"
-                + "<!-- jQuery library -->\n"
-                + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
-                + "type='text/javascript'></script>\n"
-                + "\n"
-                + "<!-- Popper JS -->\n"
-                + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
-                + "type='text/javascript'></script>\n"
-                + "\n"
-                + "<!-- Latest compiled JavaScript -->\n"
-                + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
-                + "type='text/javascript'></script>");
+            + "<link rel=\"stylesheet\" "
+            + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
+            + "type=\"text/css\">\n"
+            + "\n"
+            + "<!-- jQuery library -->\n"
+            + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
+            + "type='text/javascript'></script>\n"
+            + "\n"
+            + "<!-- Popper JS -->\n"
+            + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
+            + "type='text/javascript'></script>\n"
+            + "\n"
+            + "<!-- Latest compiled JavaScript -->\n"
+            + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
+            + "type='text/javascript'></script>");
 
         builder.append("</head>");
 
@@ -136,13 +142,14 @@ public class Survey {
 
     @Override
     public boolean equals(Object obj) {
-        Survey other = (Survey)obj;
+        Survey other = (Survey) obj;
 
-        if(other.questions.size() != this.questions.size())
+        if (other.questions.size() != this.questions.size()) {
             return false;
+        }
 
         for (int i = 0; i < this.questions.size(); i++) {
-            if(!this.questions.get(i).equals(other.questions.get(i))){
+            if (!this.questions.get(i).equals(other.questions.get(i))) {
                 return false;
             }
         }

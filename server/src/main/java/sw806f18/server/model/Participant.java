@@ -3,7 +3,7 @@ package sw806f18.server.model;
 public class Participant extends User {
     private String cpr;
 
-    public Participant(int id, String email, String cpr, String firstName, String lastName){
+    public Participant(int id, String email, String cpr, String firstName, String lastName) {
         super(id, email, firstName, lastName);
         this.cpr = cpr;
     }
@@ -18,10 +18,10 @@ public class Participant extends User {
 
     @Override
     public boolean equals(Object obj) {
-        Participant other = (Participant)obj;
+        Participant other = (Participant) obj;
         return getEmail().equals(other.getEmail()) && cpr.equals(other.cpr)
-                && getFirstName().equals(other.getFirstName())
-                && getLastName().equals(other.getLastName());
+            && getFirstName().equals(other.getFirstName())
+            && getLastName().equals(other.getLastName());
     }
 }
 

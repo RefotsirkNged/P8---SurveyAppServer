@@ -75,22 +75,6 @@ public class ReseacherGroupManagerResource {
     }
 
     /**
-     * Add group member endpoint.
-     * @param groupId Group ID.
-     * @param userId User ID.
-     * @param token Token.
-     * @return Response.
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("member")
-    public String addGroupMember(@HeaderParam("groupID") int groupId,
-                                 @HeaderParam("userID") int userId,
-                                 @HeaderParam("token") String token) {
-        return "";
-    }
-
-    /**
      * Delete group endpoint.
      * @param groupId Group ID.
      * @param token Login Token.
@@ -109,5 +93,21 @@ public class ReseacherGroupManagerResource {
             return Json.createObjectBuilder().add("success", 1).build();
         }
         return Json.createObjectBuilder().add("error", "Invalid token").build();
+    }
+
+    /**
+     * Add group member endpoint.
+     * @param groupId Group ID.
+     * @param userId User ID.
+     * @param token Token.
+     * @return Response.
+     */
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("member")
+    public String addGroupMember(@HeaderParam("groupID") int groupId,
+                                 @HeaderParam("userID") int userId,
+                                 @HeaderParam("token") String token) {
+        return "";
     }
 }

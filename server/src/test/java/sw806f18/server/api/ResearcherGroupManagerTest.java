@@ -33,6 +33,7 @@ public class ResearcherGroupManagerTest {
 
     /**
      * Setup.
+     *
      * @throws Exception Exception.
      */
     @Before
@@ -64,7 +65,7 @@ public class ResearcherGroupManagerTest {
     public void addGroup() {
         try {
             Response response = TestHelpers.addGroup(target,
-                    TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
+                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
             assertEquals(response.getStatus(), 200);
             JsonObject jsonObject = TestHelpers.getPayload(response);
             TestHelpers.groupCreate.setId(jsonObject.getInt("groupid"));
@@ -79,7 +80,7 @@ public class ResearcherGroupManagerTest {
     public void removeGroup() {
         try {
             TestHelpers.deleteGroup(target, TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
-                    TestHelpers.group1.getId(), token);
+                TestHelpers.group1.getId(), token);
             List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(TestHelpers.group1));
         } catch (GetGroupsException e) {
@@ -92,7 +93,7 @@ public class ResearcherGroupManagerTest {
         List<Group> expected = TestHelpers.testGroups();
 
         Response response = TestHelpers.getAllGroups(target,
-                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
+            TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
 
@@ -108,6 +109,8 @@ public class ResearcherGroupManagerTest {
 
     @Test
     public void findUserByName() {
+
+
         assertTrue(false);
     }
 
@@ -122,7 +125,7 @@ public class ResearcherGroupManagerTest {
     }
 
     @Test
-    public void getMembersByGroup(){
+    public void getMembersByGroup() {
         assertTrue(false);
     }
 }

@@ -12,8 +12,24 @@ import java.util.List;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.*;
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.exceptions.DeleteGroupException;
+import sw806f18.server.exceptions.GetAllParticipantsException;
+import sw806f18.server.exceptions.GetGroupMemberException;
+import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sw806f18.server.exceptions.SurveyException;
+import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
+import sw806f18.server.model.Survey;
+import sw806f18.server.model.User;
 
 public class RelationalDatabase {
 
@@ -28,12 +44,12 @@ public class RelationalDatabase {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/"
-                                + Configurations.instance.getPostgresDatabase(),
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
+            .getConnection("jdbc:postgresql://"
+                    + Configurations.instance.getPostgresIp() + ":"
+                    + Configurations.instance.getPostgresPort() + "/"
+                    + Configurations.instance.getPostgresDatabase(),
+                Configurations.instance.getPostgresUser(),
+                Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -47,9 +63,9 @@ public class RelationalDatabase {
      * @throws SQLException SQL Exception.
      */
     private static int getUser(Connection connection, String email, String password)
-            throws SQLException {
+        throws SQLException {
         String query = "SELECT id, password, salt FROM users "
-                + "WHERE email = '" + email + "'";
+            + "WHERE email = '" + email + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if (!resultSet.next()) {
@@ -57,9 +73,9 @@ public class RelationalDatabase {
         }
 
         byte[] saltedPassword = Security
-                .convertStringToByteArray(resultSet.getString("password"));
+            .convertStringToByteArray(resultSet.getString("password"));
         byte[] salt = Security
-                .convertStringToByteArray(resultSet.getString("salt"));
+            .convertStringToByteArray(resultSet.getString("salt"));
         int id = resultSet.getInt("id");
 
         byte[] hashedPassword = Security.hash(password, salt);
@@ -89,8 +105,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 groups.add(new Group(resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getInt("hub")));
+                    resultSet.getString("name"),
+                    resultSet.getInt("hub")));
             }
             con.close();
             return groups;
@@ -116,7 +132,7 @@ public class RelationalDatabase {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO groups (name, hub) VALUES ('"
-                    + group.getName() + "', null) RETURNING id";
+                + group.getName() + "', null) RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -142,8 +158,11 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "DELETE FROM groups WHERE id=" + id;
-            statement.executeUpdate(query);
+            String q1 = "DELETE FROM hasgroup WHERE \"group\"=" + id;
+            statement.executeUpdate(q1);
+
+            String q2 = "DELETE FROM groups WHERE id=" + id;
+            statement.executeUpdate(q2);
             con.close();
         } catch (SQLException e) {
             throw new DeleteGroupException(e.getMessage());
@@ -195,16 +214,16 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname" +
-                        " FROM researcher r, users u WHERE r.id = " + userid
-                        + "AND r.id = u.id";
+                String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname"
+                    + " FROM researcher r, users u WHERE r.id = " + userid
+                    + "AND r.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
                     researcher = new Researcher(userid, email,
-                            resultSet.getString("phone"),
-                            resultSet.getString("firstname"),
-                            resultSet.getString("lastname"));
+                        resultSet.getString("phone"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"));
                 }
             }
 
@@ -228,7 +247,7 @@ public class RelationalDatabase {
      * @throws CreateUserException Exception.
      */
     static Researcher createResearcher(Researcher researcher, String password)
-            throws CreateUserException {
+        throws CreateUserException {
         Connection con = null;
         try {
             con = createConnection();
@@ -236,12 +255,12 @@ public class RelationalDatabase {
             byte[] salt = Security.getNextSalt();
 
             String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
-                    + "VALUES ( '" + researcher.getEmail() + "' , '"
-                    + Security.convertByteArrayToString(Security.hash(password, salt))
-                    + "' , '" + Security.convertByteArrayToString(salt) + "',"
-                    + " '" + researcher.getFirstName() + "',"
-                    + " '" + researcher.getLastName() + "' ) "
-                    + "RETURNING id";
+                + "VALUES ( '" + researcher.getEmail() + "' , '"
+                + Security.convertByteArrayToString(Security.hash(password, salt))
+                + "' , '" + Security.convertByteArrayToString(salt) + "',"
+                + " '" + researcher.getFirstName() + "',"
+                + " '" + researcher.getLastName() + "' ) "
+                + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -250,7 +269,7 @@ public class RelationalDatabase {
 
             Statement stmt2 = con.createStatement();
             String q2 = "INSERT INTO researcher (id, phone)"
-                    + "VALUES (" + id + ", " + researcher.phone + ")";
+                + "VALUES (" + id + ", " + researcher.phone + ")";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -268,33 +287,6 @@ public class RelationalDatabase {
             throw new CreateUserException("Server error, contact system administrator", e);
         }
     }
-
-    /**
-     * Deletes a researcher by removing it from the database.
-     * @param email Email.
-     */
-//     static void deleteResearcher(String email) throws DeleteUserException {
-//        Connection con = null;
-//        try {
-//
-//            con = createConnection();
-//            Statement stmt = con.createStatement();
-//
-//            String q = "DELETE FROM users WHERE email = '" + email + "';";
-//
-//            stmt.execute(q);
-//            stmt.close();
-//
-//            closeConnection(con);
-//
-//        } catch (SQLException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        } catch (ClassNotFoundException e) {
-//            //Send stacktrace to log
-//            throw new DeleteUserException("Server error, contact system administrator", e);
-//        }
-//    }
 
     /**
      * Closes an open Database connection.
@@ -330,8 +322,9 @@ public class RelationalDatabase {
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getString("cpr");
-        } else
+        } else {
             return null;
+        }
     }
 
     static void clearInviteFromKey(String key) throws CprKeyNotFoundException {
@@ -361,16 +354,16 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname" +
-                        " FROM persons p, users u WHERE p.id = " + userid
-                        + "AND p.id = u.id";
+                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname"
+                    + " FROM persons p, users u WHERE p.id = " + userid
+                    + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
                     participant = new Participant(userid, email,
-                            resultSet.getString("cpr"),
-                            resultSet.getString("firstname"),
-                            resultSet.getString("lastname"));
+                        resultSet.getString("cpr"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"));
                 }
             }
 
@@ -395,8 +388,9 @@ public class RelationalDatabase {
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getInt(1) == 1;
-        } else
+        } else {
             return false;
+        }
     }
 
     static Participant createParticipant(Participant participant, String password) throws CreateUserException {
@@ -406,13 +400,13 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) " +
-                    "VALUES ( '" + participant.getEmail() + "' , '"
-                    + Security.convertByteArrayToString(Security.hash(password, salt))
-                    + "' , '" + Security.convertByteArrayToString(salt)
-                    + "', '" + participant.getFirstName() + "', '"
-                    + participant.getLastName() + "' ) "
-                    + "RETURNING id";
+            String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
+                + "VALUES ( '" + participant.getEmail() + "' , '"
+                + Security.convertByteArrayToString(Security.hash(password, salt))
+                + "' , '" + Security.convertByteArrayToString(salt)
+                + "', '" + participant.getFirstName() + "', '"
+                + participant.getLastName() + "' ) "
+                + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -420,8 +414,8 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO persons (id, cpr)" +
-                    "VALUES (" + id + ", '" + participant.getCpr() + "')";
+            String q2 = "INSERT INTO persons (id, cpr)"
+                + "VALUES (" + id + ", '" + participant.getCpr() + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -441,23 +435,98 @@ public class RelationalDatabase {
     }
 
 
-    static List<Participant> getAllParticipants() {
-        return new ArrayList<>();
-    }
+    static List<Participant> getAllParticipants() throws GetAllParticipantsException {
+        List<Participant> ret = new ArrayList<>();
+        Connection con = null;
 
-    static List<Participant> getParticipantsByName(String name) {
-        return new ArrayList<>();
+        try {
+            con = createConnection();
+            Statement stmt1 = con.createStatement();
+
+            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
+                + " FROM users u, persons p WHERE u.id = p.id";
+
+            ResultSet rs = stmt1.executeQuery(q1);
+            while(rs.next()){
+                ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
+                    rs.getString("cpr"), rs.getString("firstname"),
+                    rs.getString("lastname")));
+            }
+            closeConnection(con);
+        } catch (SQLException e) {
+            throw new GetAllParticipantsException("Server error, contact system administrator", e);
+        } catch (ClassNotFoundException e){
+            throw new GetAllParticipantsException("Server error, contact system administrator", e);
+        }
+
+        return ret;
     }
 
     static void addGroupMember(Group group1, Participant participant1) throws AddGroupMemberException {
+        Connection con = null;
+
+        try {
+            con = createConnection();
+            Statement stmt1 = con.createStatement();
+
+            String q1 = "INSERT INTO hasgroup (person, \"group\")"
+                + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
+
+            stmt1.executeUpdate(q1);
+            closeConnection(con);
+        } catch (SQLException e) {
+            throw new AddGroupMemberException("Server error, contact system administrator", e);
+        } catch (ClassNotFoundException e){
+            throw new AddGroupMemberException("Server error, contact system administrator", e);
+        }
     }
 
-    static void removeParticipantFromGroup(Group group, Participant participant) throws RemoveParticipantFromGroupException {
+    static void removeParticipantFromGroup(Group group, Participant participant)
+        throws RemoveParticipantFromGroupException {
+        Connection con = null;
 
+        try {
+            con = createConnection();
+            Statement stmt1 = con.createStatement();
+
+            String q1 = "DELETE FROM hasgroup WHERE person = " + participant.getId()
+                + " AND \"group\" = " + group.getId();
+
+            stmt1.executeUpdate(q1);
+            closeConnection(con);
+        } catch (SQLException e) {
+            throw new RemoveParticipantFromGroupException("Server error, contact system administrator", e);
+        } catch (ClassNotFoundException e){
+            throw new RemoveParticipantFromGroupException("Server error, contact system administrator", e);
+        }
     }
 
     static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
-        return new ArrayList<>();
+        List<Participant> ret = new ArrayList<>();
+        Connection con = null;
+
+        try {
+            con = createConnection();
+            Statement stmt1 = con.createStatement();
+
+            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
+                + " FROM users u, persons p, hasgroup h WHERE u.id = p.id AND h.group = " + group1.getId()
+                + " AND h.person = u.id";
+
+            ResultSet rs = stmt1.executeQuery(q1);
+            while(rs.next()){
+                ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
+                    rs.getString("cpr"), rs.getString("firstname"),
+                    rs.getString("lastname")));
+            }
+            closeConnection(con);
+        } catch (SQLException e) {
+            throw new GetGroupMemberException("Server error, contact system administrator", e);
+        } catch (ClassNotFoundException e){
+            throw new GetGroupMemberException("Server error, contact system administrator", e);
+        }
+
+        return ret;
     }
 
     static int addSurvey(Survey s) throws SurveyException {

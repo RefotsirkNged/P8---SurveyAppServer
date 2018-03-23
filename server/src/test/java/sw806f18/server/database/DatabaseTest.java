@@ -1,13 +1,6 @@
 package sw806f18.server.database;
 
-import org.junit.Before;
-import org.junit.Test;
-import sw806f18.server.Configurations;
-import sw806f18.server.TestHelpers;
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -15,15 +8,27 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+import sw806f18.server.Configurations;
+import sw806f18.server.TestHelpers;
+
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.GetAllParticipantsException;
+import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
 import sw806f18.server.model.Survey;
 
 /**
@@ -44,12 +49,11 @@ public class DatabaseTest {
     }
 
     @Test
-    public void createResearcher()
-    {
+    public void createResearcher() {
         boolean hasError = false;
         Researcher researcher = null;
 
-        try{
+        try {
             researcher = Database.createResearcher(TestHelpers.researcherCreate, "power123");
         } catch (CreateUserException e) {
             hasError = true;
@@ -60,12 +64,11 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getResearcher()
-    {
+    public void getResearcher() {
         Researcher researcher = null;
         boolean hasError = false;
 
-        try{
+        try {
             researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), "power123");
         } catch (LoginException e) {
             hasError = true;
@@ -157,11 +160,11 @@ public class DatabaseTest {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/postgres",
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
+            .getConnection("jdbc:postgresql://"
+                    + Configurations.instance.getPostgresIp() + ":"
+                    + Configurations.instance.getPostgresPort() + "/postgres",
+                Configurations.instance.getPostgresUser(),
+                Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -178,16 +181,17 @@ public class DatabaseTest {
 
     @Test
     public void getAllParticipants() {
-        List<Participant> participants = Database.getAllParticipants();
+        boolean hasError = false;
+        List<Participant> participants = null;
+
+        try {
+            participants = Database.getAllParticipants();
+        } catch(GetAllParticipantsException e) {
+            hasError = true;
+        }
         List<Participant> expected = TestHelpers.participants();
         assertTrue(participants.equals(expected));
-    }
-
-    @Test
-    public void findUserByName() {
-        List<Participant> participants = Database.getParticipantsByName("name");
-        assertEquals(participants.size(), 1);
-        assertTrue(participants.get(0).equals(TestHelpers.participant2));
+        assertFalse(hasError);
     }
 
     @Test
@@ -221,7 +225,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getMembersByGroup(){
+    public void getMembersByGroup() {
         boolean hasError = false;
         List<Participant> participants = null;
         try {
@@ -230,6 +234,7 @@ public class DatabaseTest {
             hasError = true;
         }
 
+        assertEquals(participants.size(), 1);
         assertEquals(participants.get(0), TestHelpers.participant1);
         assertFalse(hasError);
     }
@@ -239,11 +244,11 @@ public class DatabaseTest {
         List<Survey> surveys = TestHelpers.testSurveys();
         List<Survey> addedSurveys;
 
-        for (Survey survey : surveys){
+        for (Survey survey : surveys) {
             survey.id = Database.addSurvey(survey);
         }
 
-        for (Survey survey : surveys){
+        for (Survey survey : surveys) {
             assertTrue(survey.equals(Database.getSurvey(survey.id)));
         }
     }
