@@ -129,6 +129,6 @@ public class Database {
     }
 
     public static void linkModuleToGroup(Survey survey, Group group){
-        
+        throw new NotImplementedException();
     }
 }
