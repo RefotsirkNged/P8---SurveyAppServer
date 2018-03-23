@@ -7,7 +7,10 @@ import javax.ws.rs.Path;
 @Path("participant")
 public class ParticipantResource {
     @POST
-    public void addParticipant(@HeaderParam("key") String key, @HeaderParam("email") String email, @HeaderParam("password") String password) {
+    public void addParticipant(@HeaderParam("key") String key,
+                               @HeaderParam("email") String email,
+                               @HeaderParam("password") String password) {
+
 
     }
 }

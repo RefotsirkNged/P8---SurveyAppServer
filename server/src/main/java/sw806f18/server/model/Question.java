@@ -5,29 +5,29 @@ package sw806f18.server.model;
  */
 public abstract class Question {
     /**
-     * Enum describing the input type of a question
+     * Enum describing the input type of a question.
      */
-    public enum Input{
+    public enum Input {
         TEXT,
         NUMBER,
         DROPDOWN
     }
 
     /**
-     * Enum describing the data type of a question
+     * Enum describing the data type of a question.
      */
-    public enum Type{
+    public enum Type {
         STRING,
         INT
     }
 
     /**
-     * Constructor for abstract class Question
-     * @param id
-     * @param title
-     * @param description
+     * Constructor for abstract class Question.
+     * @param id The id of a question
+     * @param title The title
+     * @param description Description
      */
-    public Question(int id, Type type, Input input, String title, String description){
+    public Question(int id, Type type, Input input, String title, String description) {
         this.id = id;
         this.input = input;
         this.type = type;
@@ -42,6 +42,7 @@ public abstract class Question {
     protected String description;
 
     /**
+     * Get the HTML representation of Question.
      * @return HTML representation of Question
      */
     public abstract String getHTML();

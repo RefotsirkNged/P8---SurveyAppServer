@@ -1,5 +1,10 @@
 package sw806f18.server.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -8,14 +13,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
 
-import javax.validation.constraints.AssertTrue;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by augustkorvell on 14/03/2018.
@@ -24,11 +21,11 @@ public class QuestionTest {
     private Tidy tidy;
 
     @Before
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         tidy = new Tidy();
         tidy.setXHTML(true);
     }
+
     @Test
     public void getHTMLTextQuestion() throws Exception {
         String title = "Test text question";
@@ -40,12 +37,11 @@ public class QuestionTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        //assertTrue(tidy.getParseErrors() == 0);
-        //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals(title.replace(' ', '_')));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("text"));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id")
+                                              .equals(title.replace(' ', '_')));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("text"));
     }
 
     @Test
@@ -58,7 +54,11 @@ public class QuestionTest {
         values.add("B");
         values.add("C");
 
-        Question question = new DropdownQuestion(-1, Question.Type.STRING, title, description, values);
+        Question question = new DropdownQuestion(-1,
+                Question.Type.STRING,
+                title,
+                description,
+                values);
         String html = question.getHTML();
 
         InputStream stream = new ByteArrayInputStream(html.getBytes());
@@ -67,14 +67,15 @@ public class QuestionTest {
         NodeList options = htmlDoc.getElementsByTagName("option");
 
         for (int i = 0; i < options.getLength(); i++) {
-            assertTrue(values.get(i).equals(getHTMLDocAttribute(options.item(i),"value")));
+            Assert.assertTrue(values.get(i).equals(getHTMLDocAttribute(options.item(i),"value")));
         }
 
         //assertTrue(tidy.getParseErrors() == 0);
         //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "select", "id").equals(title.replace(' ', '_')));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "select", "id")
+                                              .equals(title.replace(' ', '_')));
 
 
     }
@@ -90,24 +91,23 @@ public class QuestionTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        //assertTrue(tidy.getParseErrors() == 0);
-        //assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id").equals(title.replace(' ', '_')));
-        assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id")
+                .equals(title.replace(' ', '_')));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
     }
 
 
-    private String getHTMLTagData(Document doc, String tag){
+    private String getHTMLTagData(Document doc, String tag) {
         NodeList nodes = doc.getElementsByTagName(tag);
 
-        for (int i = 0; i < nodes.getLength(); i++){
+        for (int i = 0; i < nodes.getLength(); i++) {
             Element ele = (Element)nodes.item(i);
             NodeList children = ele.getChildNodes();
 
-            for (int j = 0; j < children.getLength(); j++){
-                if(children.item(j).getNodeType() == Node.TEXT_NODE){
+            for (int j = 0; j < children.getLength(); j++) {
+                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
                     org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
                     return tempEle.getData();
                 }
@@ -118,22 +118,19 @@ public class QuestionTest {
         return "-1";
     }
 
-    private String getHTMLTagAttribute(Document doc, String tag, String attribute){
+    private String getHTMLTagAttribute(Document doc, String tag, String attribute) {
         NodeList nodes = doc.getElementsByTagName(tag);
 
-        for (int i = 0; i < nodes.getLength(); i++){
+        for (int i = 0; i < nodes.getLength(); i++) {
             Element ele = (Element)nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
         }
-
         return "-1";
     }
 
-    private String getHTMLDocAttribute(Node node, String attribute){
+    private String getHTMLDocAttribute(Node node, String attribute) {
         return ((Element)node).getAttribute(attribute);
-
-        //return "-1";
     }
 }

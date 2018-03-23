@@ -28,6 +28,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.mail.BodyPart;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
+
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
     public static final String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
@@ -154,9 +176,14 @@ public class TestHelpers {
         return jsonObject.getString("token");
     }
 
+    /**
+     * Extract key from an email.
+     * @return string
+     * @throws MessagingException Ex
+     * @throws IOException Ex
+     */
     public static String getKeyFromParticipantEmail() throws MessagingException, IOException {
         Properties properties = new Properties();
-        // properties.put("mail.store.protocol", "pop3");
         properties.put("mail.pop3.host", "pop.gmail.com");
         properties.put("mail.pop3.port", "995");
         properties.put("mail.pop3.starttls.enable", "true");
@@ -190,7 +217,8 @@ public class TestHelpers {
         return key;
     }
 
-    private static String getTextFromMessage(Message message) throws IOException, MessagingException {
+    private static String getTextFromMessage(Message message) throws IOException,
+                                                                     MessagingException {
         String result = "";
         if (message.isMimeType("text/plain")) {
             result = message.getContent().toString();
@@ -205,13 +233,14 @@ public class TestHelpers {
             MimeMultipart mimeMultipart) throws IOException, MessagingException {
 
         int count = mimeMultipart.getCount();
-        if (count == 0)
+        if (count == 0) {
             throw new MessagingException("Multipart with no body parts not supported.");
-        boolean multipartAlt = new ContentType(mimeMultipart.getContentType()).match("multipart/alternative");
-        if (multipartAlt)
-            // alternatives appear in an order of increasing
-            // faithfulness to the original content. Customize as req'd.
+        }
+        boolean multipartAlt = new ContentType(mimeMultipart.getContentType())
+                                                .match("multipart/alternative");
+        if (multipartAlt) {
             return getTextFromBodyPart(mimeMultipart.getBodyPart(count - 1));
+        }
         String result = "";
         for (int i = 0; i < count; i++) {
             BodyPart bodyPart = mimeMultipart.getBodyPart(i);
@@ -235,12 +264,48 @@ public class TestHelpers {
         return result;
     }
 
+    /**
+     * Populate the database with test users.
+     * @throws CreateUserException Ex
+     * @throws CreateInviteException Ex
+     * @throws AddGroupException Ex
+     */
+    public static void populateDatabase() throws CreateUserException,
+                                                 CreateInviteException,
+                                                 AddGroupException {
+        // Create researchers
+        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
+        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
+
+        // Create test participants
+        Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
+        Database.createParticipant(participant1, "power123");
+
+        // Create invites
+        Database.createInvite("0123456789", "abc");
+
+        // Create groups
+        for (Group group : testGroups()) {
+            Database.addGroup(group.getName());
+        }
+    }
+
+    /**
+     * Create a connection to the database.
+     * @return Connection
+     * @throws SQLException Ex
+     * @throws ClassNotFoundException Ex
+     */
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://" + Configurations.instance.getPostgresIp() + ":" + Configurations.instance.getPostgresPort() + "/" + Configurations.instance.getPostgresDatabase(),
-                        Configurations.instance.getPostgresUser(), Configurations.instance.getPostgresPassword());
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.postgresIp() + ":"
+                                + Configurations.instance.postgresPort() + "/"
+                                + Configurations.instance.postgresDatabase(),
+                        Configurations.instance.postgresUser(),
+                        Configurations.instance.postgresPassword());
         return c;
     }
 
@@ -248,6 +313,12 @@ public class TestHelpers {
         c.close();
     }
 
+    /**
+     * Reset the database completely.
+     * @throws SQLException Ex
+     * @throws ClassNotFoundException Ex
+     * @throws IOException Ex
+     */
     public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
         Connection connection = createConnection();
 

@@ -11,20 +11,28 @@ import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CPRKeyNotFoundException;
 import sw806f18.server.model.Participant;
+import java.io.IOException;
 
 import javax.json.JsonObject;
-import javax.mail.*;
+import javax.mail.MessagingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import junit.framework.Assert;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import java.io.IOException;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import sw806f18.server.Database;
+import sw806f18.server.Main;
+import sw806f18.server.TestHelpers;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.model.Participant;
 
 public class ResearcherParticipantResourceTest {
     private HttpServer server;
@@ -62,17 +70,19 @@ public class ResearcherParticipantResourceTest {
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
 
-        target.path("researcher").path("participant").request().header("token", token).header("cpr", "0123456789").header("email", "sw806f18@gmail.com").post(Entity.text(""));
+        target.path("researcher").path("participant").request()
+                .header("token", token)
+                .header("cpr", "0123456789")
+                .header("email", "sw806f18@gmail.com").post(Entity.text(""));
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();
 
-        assertNotNull(key);
+        Assert.assertNotNull(key);
 
         boolean success = true;
-        try{
+        try {
             Database.clearInviteFromKey(key);
-        }
-        catch(CPRKeyNotFoundException ex){
+        } catch (CprKeyNotFoundException ex) {
             success = false;
         }
         Assert.assertTrue(success);

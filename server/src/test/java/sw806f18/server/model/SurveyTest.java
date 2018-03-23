@@ -1,5 +1,11 @@
 package sw806f18.server.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -7,13 +13,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by augustkorvell on 14/03/2018.
@@ -25,7 +24,7 @@ public class SurveyTest {
 
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         survey = new Survey(title, description);
         survey.addQuestion(new TextQuestion(1,"Text question", "Text question description"));
 
@@ -34,8 +33,11 @@ public class SurveyTest {
         values.add("B");
         values.add("C");
 
-        survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING, "Drop question", "Drop question description", values));
-        survey.addQuestion(new NumberQuestion(3,"Number question", "Number question description"));
+        survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING,
+                "Drop question",
+                "Drop question description", values));
+        survey.addQuestion(new NumberQuestion(3,"Number question",
+                "Number question description"));
     }
 
     @Test
@@ -43,7 +45,7 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion);
 
-        assertTrue(survey.questions.get(survey.questions.size()-1).equals(tempQuestion));
+        Assert.assertTrue(survey.questions.get(survey.questions.size() - 1).equals(tempQuestion));
     }
 
     @Test
@@ -51,15 +53,15 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion, 1);
 
-        assertTrue(survey.questions.get(1).equals(tempQuestion));
+        Assert.assertTrue(survey.questions.get(1).equals(tempQuestion));
     }
 
     @Test
     public void swapQuestion() throws Exception {
         survey.moveQuestion(0, 1);
 
-        assertTrue(survey.questions.get(0).id == 2);
-        assertTrue(survey.questions.get(1).id == 1);
+        Assert.assertTrue(survey.questions.get(0).id == 2);
+        Assert.assertTrue(survey.questions.get(1).id == 1);
     }
 
     @Test
@@ -71,22 +73,21 @@ public class SurveyTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        assertTrue(tidy.getParseErrors() == 0);
-        assertTrue(tidy.getParseWarnings() == 0);
-        assertTrue(getHTMLTagData(htmlDoc, "title").equals(title));
-        //assertTrue(getHTMLTagData(htmlDoc, "h3").equals(description));
+        Assert.assertTrue(tidy.getParseErrors() == 0);
+        Assert.assertTrue(tidy.getParseWarnings() == 0);
+        Assert.assertTrue(getHTMLTagData(htmlDoc, "title").equals(title));
     }
 
 
-    private String getHTMLTagData(Document doc, String tag){
+    private String getHTMLTagData(Document doc, String tag) {
         NodeList nodes = doc.getElementsByTagName(tag);
 
-        for (int i = 0; i < nodes.getLength(); i++){
+        for (int i = 0; i < nodes.getLength(); i++) {
             Element ele = (Element)nodes.item(i);
             NodeList children = ele.getChildNodes();
 
-            for (int j = 0; j < children.getLength(); j++){
-                if(children.item(j).getNodeType() == Node.TEXT_NODE){
+            for (int j = 0; j < children.getLength(); j++) {
+                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
                     org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
                     return tempEle.getData();
                 }
@@ -97,22 +98,20 @@ public class SurveyTest {
         return "-1";
     }
 
-    private String getHTMLTagAttribute(Document doc, String tag, String attribute){
+    private String getHTMLTagAttribute(Document doc, String tag, String attribute) {
         NodeList nodes = doc.getElementsByTagName(tag);
 
-        for (int i = 0; i < nodes.getLength(); i++){
+        for (int i = 0; i < nodes.getLength(); i++) {
             Element ele = (Element)nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
         }
-
         return "-1";
     }
 
-    private String getHTMLDocAttribute(Node node, String attribute){
+    private String getHTMLDocAttribute(Node node, String attribute) {
         return ((Element)node).getAttribute(attribute);
 
-        //return "-1";
     }
 }

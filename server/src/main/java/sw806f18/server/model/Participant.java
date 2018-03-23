@@ -17,7 +17,7 @@ public class Participant extends User {
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         Participant other = (Participant)obj;
         return getEmail().equals(other.getEmail()) && cpr.equals(other.cpr)
                 && getFirstName().equals(other.getFirstName())
