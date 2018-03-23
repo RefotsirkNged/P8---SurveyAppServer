@@ -64,13 +64,13 @@ public class ReseacherGroupManagerResource {
     public JsonObject addGroup(@HeaderParam("name") String name,
                                @HeaderParam("token") String token) {
         if (!Authentication.instance.isTokenExpired(token)) {
-            int id = 0;
+            Group group;
             try {
-                id = Database.addGroup(name);
+                group = Database.addGroup(new Group(name, 0));
             } catch (AddGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }
-            return Json.createObjectBuilder().add("success", id).build();
+            return Json.createObjectBuilder().add("groupid", group.getId()).build();
         }
         return Json.createObjectBuilder().add("error", "Invalid token").build();
     }

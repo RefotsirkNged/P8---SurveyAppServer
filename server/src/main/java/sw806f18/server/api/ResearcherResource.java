@@ -24,10 +24,12 @@ public class ResearcherResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String addResearcher(@HeaderParam("email") String email,
                                 @HeaderParam("password") String password,
+                                @HeaderParam("firstname") String firstname,
+                                @HeaderParam("lastname") String lastname,
                                 @HeaderParam("phone") String phone) {
 
         try {
-            Database.createResearcher(new Researcher(email, phone), password);
+            Database.createResearcher(new Researcher(email, phone, firstname, lastname), password);
         } catch (CreateUserException e) {
             e.printStackTrace();
             return "Fail";

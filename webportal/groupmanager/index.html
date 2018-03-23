@@ -161,11 +161,11 @@
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
             },
             success: function (response) {
-                $('#groupTableBody').append('<tr id="row' + response.success + '"><td>' + name + '</td></tr>');
-                $('#row' + response.success).click(function() {
+                $('#groupTableBody').append('<tr id="row' + response.groupid + '"><td>' + name + '</td></tr>');
+                $('#row' + response.groupid).click(function() {
                     resetRows();
                     $(this).css('background-color','#9a9a9a');
-                    marked = {id: response.success, name: name};
+                    marked = {id: response.groupid, name: name};
                 });
             },
             error: function (response) {
