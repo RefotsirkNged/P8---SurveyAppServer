@@ -170,7 +170,7 @@ public class DatabaseTest {
         boolean hasError = false;
         try {
             Database.clearInviteFromKey(TestHelpers.invite1.getKey());
-        } catch (CPRKeyNotFoundException ex) {
+        } catch (CprKeyNotFoundException e) {
             hasError = true;
         }
         assertFalse(hasError);

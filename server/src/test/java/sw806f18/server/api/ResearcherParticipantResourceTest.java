@@ -9,7 +9,7 @@ import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.CPRKeyNotFoundException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.model.Participant;
 import java.io.IOException;
 
@@ -21,18 +21,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import junit.framework.Assert;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import java.io.IOException;
-
-import sw806f18.server.Database;
-import sw806f18.server.Main;
-import sw806f18.server.TestHelpers;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.model.Participant;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ResearcherParticipantResourceTest {
     private HttpServer server;
@@ -77,7 +70,7 @@ public class ResearcherParticipantResourceTest {
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();
 
-        Assert.assertNotNull(key);
+        assertNotNull(key);
 
         boolean success = true;
         try {
@@ -85,6 +78,6 @@ public class ResearcherParticipantResourceTest {
         } catch (CprKeyNotFoundException ex) {
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 }

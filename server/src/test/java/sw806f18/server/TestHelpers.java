@@ -265,32 +265,6 @@ public class TestHelpers {
     }
 
     /**
-     * Populate the database with test users.
-     * @throws CreateUserException Ex
-     * @throws CreateInviteException Ex
-     * @throws AddGroupException Ex
-     */
-    public static void populateDatabase() throws CreateUserException,
-                                                 CreateInviteException,
-                                                 AddGroupException {
-        // Create researchers
-        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
-        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
-
-        // Create test participants
-        Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
-        Database.createParticipant(participant1, "power123");
-
-        // Create invites
-        Database.createInvite("0123456789", "abc");
-
-        // Create groups
-        for (Group group : testGroups()) {
-            Database.addGroup(group.getName());
-        }
-    }
-
-    /**
      * Create a connection to the database.
      * @return Connection
      * @throws SQLException Ex
@@ -301,11 +275,11 @@ public class TestHelpers {
         Class.forName("org.postgresql.Driver");
         c = DriverManager
                 .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.postgresIp() + ":"
-                                + Configurations.instance.postgresPort() + "/"
-                                + Configurations.instance.postgresDatabase(),
-                        Configurations.instance.postgresUser(),
-                        Configurations.instance.postgresPassword());
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/"
+                                + Configurations.instance.getPostgresDatabase(),
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
         return c;
     }
 

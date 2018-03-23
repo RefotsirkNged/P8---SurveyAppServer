@@ -334,7 +334,7 @@ public class RelationalDatabase {
             return null;
     }
 
-    static void clearInviteFromKey(String key) throws CPRKeyNotFoundException {
+    static void clearInviteFromKey(String key) throws CprKeyNotFoundException {
 
         try {
             Connection conn = createConnection();
@@ -342,9 +342,9 @@ public class RelationalDatabase {
             String query = "DELETE FROM invite WHERE key = '" + key + "'";
             stmt.execute(query);
         } catch (SQLException e) {
-            throw new CPRKeyNotFoundException("Server error, contact system administrator", e);
+            throw new CprKeyNotFoundException("Server error, contact system administrator", e);
         } catch (ClassNotFoundException e) {
-            throw new CPRKeyNotFoundException("Server error, contact system administrator", e);
+            throw new CprKeyNotFoundException("Server error, contact system administrator", e);
         }
     }
 

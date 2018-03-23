@@ -82,7 +82,7 @@ public class Database {
         return RelationalDatabase.getCPRFromKey(key);
     }
 
-    public static void clearInviteFromKey(String key) throws CPRKeyNotFoundException{
+    public static void clearInviteFromKey(String key) throws CprKeyNotFoundException{
         RelationalDatabase.clearInviteFromKey(key);
     }
 
