@@ -5,10 +5,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.database.Database;
-import sw806f18.server.database.RelationalDatabase;
+import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CPRKeyNotFoundException;
 import sw806f18.server.model.Participant;
 
@@ -32,6 +32,7 @@ public class ResearcherParticipantResourceTest {
 
     @Before
     public void setUp() throws Exception {
+        Configurations.instance = new Configurations("test-config.json");
         // start the server
         server = Main.startServer();
         // create the client
@@ -44,6 +45,8 @@ public class ResearcherParticipantResourceTest {
         // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
         target = c.target(Main.BASE_URI);
+        TestHelpers.resetDatabase();
+        TestHelpers.populateDatabase();
     }
 
     @After

@@ -1,15 +1,13 @@
 package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
+
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
+import sw806f18.server.model.*;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -237,28 +235,6 @@ public class TestHelpers {
         return result;
     }
 
-    public static void populateDatabase() throws CreateUserException, CreateInviteException, AddGroupException {
-        // Create researchers
-        Researcher researcher1 = new Researcher(-1, VALID_RESEARCHER_EMAIL, "50505050");
-        Database.createResearcher(researcher1, VALID_RESEARCHER_PASSWORD);
-
-        // Create test participants
-        Participant participant1 = new Participant(-1, "test@testesen.dk", "0123456789");
-        Database.createParticipant(participant1, "power123");
-
-        // Create invites
-        Database.createInvite("0123456789", "abc");
-
-        // Create groups
-        for (Group group : testGroups()) {
-            Database.addGroup(group.getName());
-        }
-
-        for (Survey s : testSurveys()){
-            Database.addSurvey(s);
-        }
-    }
-
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
@@ -275,7 +251,7 @@ public class TestHelpers {
     public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
         Connection connection = createConnection();
 
-        String query = "SELECT truncate_tables('" + Configurations.instance.getPostgresDatabase() + "')";
+        String query = "SELECT truncate_tables('postgres')";
 
         Statement statement = connection.createStatement();
 

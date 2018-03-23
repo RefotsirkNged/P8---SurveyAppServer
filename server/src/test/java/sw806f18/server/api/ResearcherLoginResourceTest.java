@@ -1,4 +1,4 @@
-package sw806f18.server;
+package sw806f18.server.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -20,6 +20,10 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sw806f18.server.Authentication;
+import sw806f18.server.Configurations;
+import sw806f18.server.Main;
+import sw806f18.server.TestHelpers;
 
 
 public class ResearcherLoginResourceTest {

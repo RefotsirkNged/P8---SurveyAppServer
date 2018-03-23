@@ -8,6 +8,7 @@ import sw806f18.server.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +26,12 @@ public class Database {
 
     /**
      * Adds group to database.
-     * @param name Name of group.
+     * @param group group.
      * @return ID of group.
      * @throws AddGroupException Exception.
      */
-    public static int addGroup(String name) throws AddGroupException {
-        return RelationalDatabase.addGroup(name);
+    public static Group addGroup(Group group) throws AddGroupException {
+        return RelationalDatabase.addGroup(group);
     }
 
     /**
@@ -64,17 +65,17 @@ public class Database {
         return RelationalDatabase.createResearcher(researcher, password);
     }
 
-    /**
-     * Deletes a researcher by removing it from the database.
-     * @param email Email.
-     */
-    public static void deleteResearcher(String email) throws DeleteUserException {
-        RelationalDatabase.deleteResearcher(email);
-    }
+//    /**
+//     * Deletes a researcher by removing it from the database.
+//     * @param email Email.
+//     */
+//    public static void deleteResearcher(String email) throws DeleteUserException {
+//        RelationalDatabase.deleteResearcher(email);
+//    }
 
 
-    public static void createInvite(String cpr, String key) throws CreateInviteException {
-        RelationalDatabase.createInvite(cpr, key);
+    public static void createInvite(Invite invite) throws CreateInviteException {
+        RelationalDatabase.createInvite(invite);
     }
 
     public static String getCPRFromKey(String key) throws SQLException, ClassNotFoundException {
@@ -103,5 +104,25 @@ public class Database {
 
     public static List<Survey> getUsersSurveys(User user){
         throw new NotImplementedException();
+    }
+
+    public static List<Participant> getAllParticipants() {
+        return RelationalDatabase.getAllParticipants();
+    }
+
+    public static List<Participant> getParticipantsByName(String name) {
+        return RelationalDatabase.getParticipantsByName(name);
+    }
+
+    public static void addGroupMember(Group group1, Participant participant1) throws AddGroupMemberException {
+        RelationalDatabase.addGroupMember(group1, participant1);
+    }
+
+    public static void removeParticipantFromGroup(Group group, Participant participant) throws RemoveParticipantFromGroupException {
+        RelationalDatabase.removeParticipantFromGroup(group, participant);
+    }
+
+    public static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
+        return RelationalDatabase.getGroupMembers(group1);
     }
 }

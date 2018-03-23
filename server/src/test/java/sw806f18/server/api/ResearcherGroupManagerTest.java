@@ -1,4 +1,4 @@
-package sw806f18.server;
+package sw806f18.server.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,10 +18,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import sw806f18.server.Authentication;
+import sw806f18.server.Configurations;
+import sw806f18.server.Main;
+import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
-import sw806f18.server.database.RelationalDatabase;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.model.Group;
 
@@ -37,7 +38,7 @@ public class ResearcherGroupManagerTest {
     @Before
     public void setUp() throws Exception {
         Configurations.instance = new Configurations("test-config.json");
-        token = Authentication.instance.getToken(1);
+        token = Authentication.instance.getToken(TestHelpers.researcher1.getId());
         // start the server
         server = Main.startServer();
         // create the client

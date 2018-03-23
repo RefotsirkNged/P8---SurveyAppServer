@@ -31,6 +31,209 @@ import sw806f18.server.model.Survey;
  */
 
 public class DatabaseTest {
+    /**
+     * Before.
+     *
+     * @throws Exception Exception.
+     */
+    @Before
+    public void setUp() throws Exception {
+        Configurations.instance = new Configurations("test-config.json");
+        TestHelpers.resetDatabase();
+        TestHelpers.populateDatabase();
+    }
+
+    @Test
+    public void createResearcher()
+    {
+        boolean hasError = false;
+        Researcher researcher = null;
+
+        try{
+            researcher = Database.createResearcher(TestHelpers.researcherCreate, "power123");
+        } catch (CreateUserException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertTrue(researcher.equals(TestHelpers.researcherCreate));
+    }
+
+    @Test
+    public void getResearcher()
+    {
+        Researcher researcher = null;
+        boolean hasError = false;
+
+        try{
+            researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), "power123");
+        } catch (LoginException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertEquals(researcher, TestHelpers.researcher1);
+    }
+
+    @Test
+    public void getAllGroups() throws Exception {
+        // ToDo: Fix pls
+        List<Group> groups = Database.getAllGroups();
+        List<Group> expected = TestHelpers.testGroups();
+        assertTrue(groups.equals(expected));
+    }
+
+    @Test
+    public void addGroup() {
+        Group group = null;
+        boolean hasError = false;
+        try {
+            group = Database.addGroup(TestHelpers.groupCreate);
+        } catch (AddGroupException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertEquals(group, TestHelpers.groupCreate);
+    }
+
+    @Test
+    public void createInvite() {
+        boolean hasError = false;
+        try {
+            Database.createInvite(TestHelpers.inviteCreate);
+        } catch (CreateInviteException ex) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void deleteGroup() {
+        boolean hasError = false;
+
+        try {
+            Database.deleteGroup(TestHelpers.group1.getId());
+        } catch (DeleteGroupException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
+        assertEquals(Database.getCPRFromKey(TestHelpers.invite1.getKey()), TestHelpers.invite1.getCpr());
+    }
+
+    @Test
+    public void createParticipant() throws SQLException, ClassNotFoundException {
+        boolean hasError = false;
+
+        try {
+            Database.createParticipant(TestHelpers.participantCreate, "power123");
+        } catch (CreateUserException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getParticipant() {
+        Participant createdParticipant = null;
+        boolean hasError = false;
+        try {
+            createdParticipant = Database.getParticipant(TestHelpers.participant1.getEmail(), "power123");
+        } catch (LoginException ex) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+        assertEquals(createdParticipant, TestHelpers.participant1);
+
+    }
+
+    private static Connection createConnection() throws SQLException, ClassNotFoundException {
+        Connection c = null;
+        Class.forName("org.postgresql.Driver");
+        c = DriverManager
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/postgres",
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
+        return c;
+    }
+
+    @Test
+    public void clearInviteFromKey() {
+        boolean hasError = false;
+        try {
+            Database.clearInviteFromKey(TestHelpers.invite1.getKey());
+        } catch (CPRKeyNotFoundException ex) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getAllParticipants() {
+        List<Participant> participants = Database.getAllParticipants();
+        List<Participant> expected = TestHelpers.participants();
+        assertTrue(participants.equals(expected));
+    }
+
+    @Test
+    public void findUserByName() {
+        List<Participant> participants = Database.getParticipantsByName("name");
+        assertEquals(participants.size(), 1);
+        assertTrue(participants.get(0).equals(TestHelpers.participant2));
+    }
+
+    @Test
+    public void removeGroupMember() {
+        boolean hasError = false;
+        try {
+            Database.removeParticipantFromGroup(TestHelpers.group1, TestHelpers.participant1);
+        } catch (RemoveParticipantFromGroupException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void addGroupMember() {
+        boolean hasError = false;
+        List<Participant> participants = null;
+
+        try {
+            Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
+            participants = Database.getGroupMembers(TestHelpers.group1);
+        } catch (AddGroupMemberException e) {
+            hasError = true;
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertTrue(participants.contains(TestHelpers.participant2));
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getMembersByGroup(){
+        boolean hasError = false;
+        List<Participant> participants = null;
+        try {
+            participants = Database.getGroupMembers(TestHelpers.group1);
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertEquals(participants.get(0), TestHelpers.participant1);
+        assertFalse(hasError);
+    }
+
     @Test
     public void addAndGetSurvey() throws Exception {
         List<Survey> surveys = TestHelpers.testSurveys();
@@ -48,175 +251,6 @@ public class DatabaseTest {
     @Test
     public void getUsersSurveys() throws Exception {
         assertTrue(false);
-    }
-
-    private String email = "test@testington.com";
-
-    /**
-     * Before.
-     *
-     * @throws Exception Exception.
-     */
-    @Before
-    public void setUp() throws Exception {
-        Configurations.instance = new Configurations("test-config.json");
-        TestHelpers.resetDatabase();
-        TestHelpers.populateDatabase();
-    }
-
-    @Test
-    public void createGetDeleteResearcher() throws Exception {
-        Researcher researcher = new Researcher(email, "50505050");
-        assertTrue(Database.createResearcher(researcher, "1234").equals(researcher));
-        assertTrue(Database.getResearcher(email, "1234").equals(researcher));
-
-        Database.deleteResearcher(researcher.email);
-        boolean deleted = false;
-
-
-        try {
-            Database.getResearcher(researcher.email, "1234");
-        } catch (LoginException e) {
-            deleted = true;
-        }
-
-        assertTrue(deleted);
-    }
-
-    @Test
-    public void getAllGroups() throws Exception {
-        // ToDo: Fix pls
-        List<Group> groups = Database.getAllGroups();
-        List<Group> expected = TestHelpers.testGroups();
-        assertTrue(groups.equals(expected));
-    }
-
-    @Test
-    public void addGroup() {
-        Group group = new Group("TestGroup", 0);
-        try {
-            group.setId(Database.addGroup(group.getName()));
-            List<Group> groups = Database.getAllGroups();
-            assertTrue(groups.contains(group));
-            Database.deleteGroup(group.getId());
-        } catch (GetGroupsException e) {
-            e.printStackTrace();
-        } catch (DeleteGroupException e) {
-            e.printStackTrace();
-        } catch (AddGroupException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void createInvite() {
-        assertTrue(createHelperInvite());
-    }
-
-    private boolean createHelperInvite() {
-        boolean created = true;
-        try {
-            Database.createInvite("0123456789", "abc");
-        } catch (CreateInviteException ex) {
-            created = false;
-        }
-        return created;
-    }
-
-    @Test
-    public void deleteGroup() {
-        Group group = new Group("TestGroup", 0);
-        try {
-            group.setId(Database.addGroup(group.getName()));
-            Database.deleteGroup(group.getId());
-            List<Group> groups = Database.getAllGroups();
-            assertFalse(groups.contains(group));
-        } catch (GetGroupsException e) {
-            e.printStackTrace();
-        } catch (DeleteGroupException e) {
-            e.printStackTrace();
-        } catch (AddGroupException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
-    }
-
-    @Test
-    public void removeGroupMember() {
-        assertTrue(false);
-    }
-
-    @Test
-    public void findUserByName() {
-        assertTrue(false);
-    }
-
-    @Test
-    public void createParticipant() throws SQLException, ClassNotFoundException {
-        assertTrue(createHelperInvite());
-
-
-        Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
-
-        boolean success = true;
-
-        try {
-            Database.createParticipant(participant, "power123");
-        } catch (CreateUserException e) {
-            success = false;
-        }
-
-        assertTrue(success);
-    }
-
-    @Test
-    public void addGroupMember() {
-        assertTrue(false);
-    }
-
-    @Test
-    public void getParticipant() {
-
-        Participant participant = new Participant(-1, "test@testesen.dk", "0123456789");
-        Participant createdParticipant = null;
-        boolean success = true;
-
-
-        try {
-            createdParticipant = Database.getParticipant(participant.email, "power123");
-        } catch (LoginException ex) {
-            success = false;
-        }
-
-        assertTrue(participant.equals(createdParticipant));
-        assertTrue(success);
-    }
-
-    private static Connection createConnection() throws SQLException, ClassNotFoundException {
-        Connection c = null;
-        Class.forName("org.postgresql.Driver");
-        c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/postgres",
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
-        return c;
-    }
-
-    @Test
-    public void clearInviteFromKey() {
-        boolean success = true;
-        try {
-            Database.clearInviteFromKey("abc");
-        } catch (CPRKeyNotFoundException ex) {
-            success = false;
-        }
-        assertTrue(success);
     }
 
 }

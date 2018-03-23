@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
 
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
-import sw806f18.server.database.RelationalDatabase;
 import sw806f18.server.exceptions.LoginException;
 
 @Path("researcher/login")
