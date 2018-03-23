@@ -19,6 +19,8 @@ public class Survey {
         this.description = description;
         questions = new ArrayList<>();
         id = -1;
+        frequencyType = "blank";
+        frequencyValue = 1;
     }
 
     /**
@@ -32,12 +34,16 @@ public class Survey {
         this.description = description;
         questions = new ArrayList<>();
         this.id = id;
+        frequencyType = "blank";
+        frequencyValue = 1;
     }
 
     public List<Question> questions;
     private String title;
     private String description;
     public int id;
+    public int frequencyValue;
+    public String frequencyType;
 
     public String getTitle(){
         return title;

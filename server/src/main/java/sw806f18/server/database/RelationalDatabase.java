@@ -467,7 +467,9 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "INSERT INTO modules (name) VALUES ('" + s.getTitle() + "') RETURNING id";
+            String query = "INSERT INTO modules (name, frequencyvalue, frequencytype) VALUES ('" + s.getTitle() + "', "
+                    + s.frequencyValue + ", '" + s.frequencyType + "') RETURNING id";
+
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -480,7 +482,30 @@ public class RelationalDatabase {
         return id;
     }
 
-    static List<Integer> getUsersSurveyIDs(User user) {
-        throw new NotImplementedException();
+    static List<Integer> getUsersSurveyIDs(User user) throws SurveyException{
+        List<Integer> ids = new ArrayList<>();
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT hasmodule.moduleid FROM hasgroup, hasmodule WHERE hasgroup.participantid = " + user.getId() +
+                    "AND hasgroup.groupid = hasmodule.groupid";
+
+            ResultSet resultSet = statement.executeQuery(query);
+            List<Group> groups = new ArrayList<Group>();
+
+            while (resultSet.next()) {
+                ids.add(resultSet.getInt(1));
+            }
+            con.close();
+
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+
+        return ids;
     }
 }

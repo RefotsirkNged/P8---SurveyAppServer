@@ -1,7 +1,6 @@
 package sw806f18.server.database;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -11,8 +10,12 @@ import sw806f18.server.Configurations;
 import sw806f18.server.model.Survey;
 
 import javax.security.auth.login.Configuration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+
+import static com.mongodb.client.model.Filters.eq;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
@@ -26,7 +29,14 @@ public class NoSqlDatabase {
     private static final String moduleCollection = "module";
 
     private static void openConnection(){
-        client = new MongoClient(Configurations.instance.getMongoIp(), Configurations.instance.getMongoPort() );
+//        MongoCredential credential = MongoCredential.createCredential(Configurations.instance.getMongoUser(),
+//                Configurations.instance.getMongoDatabase(), Configurations.instance.getMongoPassword().toCharArray());
+//        client = new MongoClient(new ServerAddress(Configurations.instance.getMongoIp(),
+//                Configurations.instance.getMongoPort()),
+//                Arrays.asList(credential));
+
+        MongoClientURI uri = new MongoClientURI("mongodb://root:power123@192.168.1.111:27017/?authSource=admin");
+        client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
     }
 
@@ -51,7 +61,20 @@ public class NoSqlDatabase {
         throw new NotImplementedException();
     }
 
-    static Survey getSurveys(List<Integer> surveyIDs){
-        throw new NotImplementedException();
+    static List<Survey> getSurveys(List<Integer> surveyIDs){
+        List<Survey> surveys = new ArrayList<>();
+        openConnection();
+
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+
+        MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
+
+        for (int i : surveyIDs)
+            surveys.add(collection.find((eq("_id", i))).first());
+
+        return surveys;
     }
 }

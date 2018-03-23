@@ -94,16 +94,18 @@ public class Database {
         return RelationalDatabase.createParticipant(participant, password);
     }
 
-    public static int addSurvey(Survey s){
-        throw new NotImplementedException();
+    public static int addSurvey(Survey s) throws SurveyException{
+        s.id = RelationalDatabase.addSurvey(s);
+        NoSqlDatabase.addSurvey(s);
+        return s.id;
     }
 
     public static Survey getSurvey(int id){
         throw new NotImplementedException();
     }
 
-    public static List<Survey> getUsersSurveys(User user){
-        throw new NotImplementedException();
+    public static List<Survey> getUsersSurveys(User user) throws SurveyException{
+        return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
     public static List<Participant> getAllParticipants() {
@@ -124,5 +126,9 @@ public class Database {
 
     public static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
         return RelationalDatabase.getGroupMembers(group1);
+    }
+
+    public static void linkModuleToGroup(Survey survey, Group group){
+        
     }
 }
