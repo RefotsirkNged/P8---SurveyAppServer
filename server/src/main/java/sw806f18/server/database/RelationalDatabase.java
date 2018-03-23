@@ -158,7 +158,7 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String q1 = "DELETE FROM hasgroup WHERE \"group\"=" + id;
+            String q1 = "DELETE FROM hasgroup WHERE groupid=" + id;
             statement.executeUpdate(q1);
 
             String q2 = "DELETE FROM groups WHERE id=" + id;
@@ -355,7 +355,7 @@ public class RelationalDatabase {
             } else {
                 Statement statement = connection.createStatement();
                 String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname"
-                    + " FROM persons p, users u WHERE p.id = " + userid
+                    + " FROM participants p, users u WHERE p.id = " + userid
                     + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
@@ -384,7 +384,7 @@ public class RelationalDatabase {
 
     static boolean isParticipant(Connection conn, int id) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "SELECT COUNT(*) FROM persons WHERE id = " + id;
+        String query = "SELECT COUNT(*) FROM participants WHERE id = " + id;
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getInt(1) == 1;
@@ -414,7 +414,7 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO persons (id, cpr)"
+            String q2 = "INSERT INTO participants (id, cpr)"
                 + "VALUES (" + id + ", '" + participant.getCpr() + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
@@ -444,10 +444,10 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                + " FROM users u, persons p WHERE u.id = p.id";
+                + " FROM users u, participants p WHERE u.id = p.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
-            while(rs.next()){
+            while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
                     rs.getString("cpr"), rs.getString("firstname"),
                     rs.getString("lastname")));
@@ -455,7 +455,7 @@ public class RelationalDatabase {
             closeConnection(con);
         } catch (SQLException e) {
             throw new GetAllParticipantsException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new GetAllParticipantsException("Server error, contact system administrator", e);
         }
 
@@ -469,14 +469,14 @@ public class RelationalDatabase {
             con = createConnection();
             Statement stmt1 = con.createStatement();
 
-            String q1 = "INSERT INTO hasgroup (person, \"group\")"
+            String q1 = "INSERT INTO hasgroup (participantid, groupid)"
                 + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
         } catch (SQLException e) {
             throw new AddGroupMemberException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new AddGroupMemberException("Server error, contact system administrator", e);
         }
     }
@@ -489,14 +489,14 @@ public class RelationalDatabase {
             con = createConnection();
             Statement stmt1 = con.createStatement();
 
-            String q1 = "DELETE FROM hasgroup WHERE person = " + participant.getId()
-                + " AND \"group\" = " + group.getId();
+            String q1 = "DELETE FROM hasgroup WHERE participantid = " + participant.getId()
+                + " AND groupid = " + group.getId();
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
         } catch (SQLException e) {
             throw new RemoveParticipantFromGroupException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new RemoveParticipantFromGroupException("Server error, contact system administrator", e);
         }
     }
@@ -510,11 +510,11 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                + " FROM users u, persons p, hasgroup h WHERE u.id = p.id AND h.group = " + group1.getId()
-                + " AND h.person = u.id";
+                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = " + group1.getId()
+                + " AND h.participantid = u.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
-            while(rs.next()){
+            while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
                     rs.getString("cpr"), rs.getString("firstname"),
                     rs.getString("lastname")));
@@ -522,7 +522,7 @@ public class RelationalDatabase {
             closeConnection(con);
         } catch (SQLException e) {
             throw new GetGroupMemberException("Server error, contact system administrator", e);
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             throw new GetGroupMemberException("Server error, contact system administrator", e);
         }
 

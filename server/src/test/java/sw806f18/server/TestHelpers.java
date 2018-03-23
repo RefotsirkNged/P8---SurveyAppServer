@@ -45,7 +45,9 @@ import sw806f18.server.model.TextQuestion;
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
     public static final String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
-    public static final String RENEW_TOKEN_PATH = "renewtoken";
+    public static final String RESEARCHER_GROUPMANAGER_MEMBER_PATH = "researcher/groupmanager/member";
+    public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
+    public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
@@ -73,6 +75,7 @@ public class TestHelpers {
 
     /**
      * Populate database.
+     *
      * @throws CreateUserException
      * @throws CreateInviteException
      * @throws AddGroupException
@@ -127,6 +130,62 @@ public class TestHelpers {
     public static Response login(WebTarget target, String path, String email, String password) {
         return target.path(path).request().header("email", email)
             .header("password", password).post(Entity.text(""));
+    }
+
+    /**
+     * Add group member.
+     *
+     * @param target      Target.
+     * @param path        Path.
+     * @param participant Participant.
+     * @param group       Group.
+     * @param token       Token.
+     * @return Response.
+     */
+    public static Response addGroupMember(WebTarget target, String path,
+                                          Participant participant, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("userID", participant.getId()).header("token", token).put(Entity.text(""));
+    }
+
+    /**
+     * Get group members.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param group  Group.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response getGroupMembers(WebTarget target, String path, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("token", token).get();
+    }
+
+    /**
+     * Get all participants.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response getAllGroupParticipants(WebTarget target, String path, String token) {
+        return target.path(path).request().header("token", token).get();
+    }
+
+    /**
+     * Remove group member.
+     *
+     * @param target      Target.
+     * @param path        Path.
+     * @param participant Participant.
+     * @param group       Group.
+     * @param token       Token.
+     */
+    public static Response removeGroupMember(WebTarget target, String path, Participant participant, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("userID", participant.getId()).header("token", token).delete();
     }
 
     /**
@@ -328,6 +387,7 @@ public class TestHelpers {
 
     /**
      * Return test surverys.
+     *
      * @return Test surveys.
      */
     public static List<Survey> testSurveys() {
@@ -366,5 +426,20 @@ public class TestHelpers {
         list.add(participant1);
         list.add(participant2);
         return list;
+    }
+
+    /**
+     * Check if a list of participants contains a specific without mail.
+     * @param list List.
+     * @param participant Participant.
+     * @return True is list contains. false otherwise.
+     */
+    public static boolean containsNoMail(List<Participant> list, Participant participant) {
+        for (Participant p : list) {
+            if (p.equalsNoMail(participant)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

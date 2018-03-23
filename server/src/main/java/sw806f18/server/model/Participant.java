@@ -8,8 +8,9 @@ public class Participant extends User {
         this.cpr = cpr;
     }
 
-    public Participant(int id, String email, String firstName, String lastName) {
-        super(id, email, firstName, lastName);
+    public Participant(int id, String cpr, String firstName, String lastName) {
+        super(id, firstName, lastName);
+        this.cpr = cpr;
     }
 
     public String getCpr() {
@@ -22,6 +23,13 @@ public class Participant extends User {
         return getEmail().equals(other.getEmail()) && cpr.equals(other.cpr)
             && getFirstName().equals(other.getFirstName())
             && getLastName().equals(other.getLastName());
+    }
+
+    public boolean equalsNoMail(Participant other){
+        return cpr.equals(other.cpr)
+            && getFirstName().equals(other.getFirstName())
+            && getLastName().equals(other.getLastName())
+            && getId() == other.getId();
     }
 }
 

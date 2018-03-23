@@ -186,7 +186,7 @@ public class DatabaseTest {
 
         try {
             participants = Database.getAllParticipants();
-        } catch(GetAllParticipantsException e) {
+        } catch (GetAllParticipantsException e) {
             hasError = true;
         }
         List<Participant> expected = TestHelpers.participants();
