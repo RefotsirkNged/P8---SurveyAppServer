@@ -1,23 +1,33 @@
 package sw806f18.server.model;
 
-import sw806f18.server.Constants;
-
 import java.util.ArrayList;
 import java.util.List;
+import sw806f18.server.Constants;
 
 /**
  * Created by augustkorvell on 14/03/2018.
  */
 public class Survey {
 
-    public Survey(String title, String description){
+    /**
+     * Ctor.
+     * @param title The title
+     * @param description Description
+     */
+    public Survey(String title, String description) {
         this.title = title;
         this.description = description;
         questions = new ArrayList<>();
         id = -1;
     }
 
-    public Survey(int id, String title, String description){
+    /**
+     * Ctor.
+     * @param id Id of the survey
+     * @param title The title
+     * @param description Description
+     */
+    public Survey(int id, String title, String description) {
         this.title = title;
         this.description = description;
         questions = new ArrayList<>();
@@ -30,29 +40,29 @@ public class Survey {
     private int id;
 
     /**
-     * Adds (append) a Question to the survey
-     * @param question
+     * Adds (append) a Question to the survey.
+     * @param question the question to add
      */
-    public void addQuestion(Question question){
+    public void addQuestion(Question question) {
         questions.add(question);
     }
 
     /**
-     * Add Question to the survey at index
-     * @param question
-     * @param index
+     * Add Question to the survey at index.
+     * @param question question to be added
+     * @param index the index at which it should be added
      */
-    public void addQuestion(Question question, int index){
+    public void addQuestion(Question question, int index) {
         questions.add(index, question);
     }
 
 
     /**
-     * Move a question
-     * @param currrentIndex
-     * @param newIndex
+     * Move a question.
+     * @param currrentIndex current position of question
+     * @param newIndex new position of question
      */
-    public void moveQuestion(int currrentIndex, int newIndex){
+    public void moveQuestion(int currrentIndex, int newIndex) {
         Question temp = questions.remove(currrentIndex);
 
         questions.add(newIndex, temp);
@@ -61,9 +71,10 @@ public class Survey {
     }
 
     /**
+     * Get html representation of Question.
      * @return Survey as HTML
      */
-    public String getHTML(){
+    public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<!DOCTYPE html>");
@@ -73,17 +84,22 @@ public class Survey {
         builder.append("<title>" + title + "</title>");
         builder.append("<meta charset='UTF-8' content='width=device-width, initial-scale=1.0'>");
 
-        builder.append("<!-- Latest compiled and minified CSS -->\n" +
-                       "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" type=\"text/css\">\n" +
-                       "\n" +
-                       "<!-- jQuery library -->\n" +
-                       "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" type='text/javascript'></script>\n" +
-                       "\n" +
-                       "<!-- Popper JS -->\n" +
-                       "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" type='text/javascript'></script>\n" +
-                       "\n" +
-                       "<!-- Latest compiled JavaScript -->\n" +
-                       "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" type='text/javascript'></script>");
+        builder.append("<!-- Latest compiled and minified CSS -->\n"
+                + "<link rel=\"stylesheet\" "
+                + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
+                + "type=\"text/css\">\n"
+                + "\n"
+                + "<!-- jQuery library -->\n"
+                + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
+                + "type='text/javascript'></script>\n"
+                + "\n"
+                + "<!-- Popper JS -->\n"
+                + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
+                + "type='text/javascript'></script>\n"
+                + "\n"
+                + "<!-- Latest compiled JavaScript -->\n"
+                + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
+                + "type='text/javascript'></script>");
 
         builder.append("</head>");
 
@@ -109,27 +125,4 @@ public class Survey {
 
         return builder.toString();
     }
-
-
-
-
-    private   void ABEFEST()  {
-
-
-
-
-
-
-
-
-    }
-
-
-
-
 }
-
-
-
-
-

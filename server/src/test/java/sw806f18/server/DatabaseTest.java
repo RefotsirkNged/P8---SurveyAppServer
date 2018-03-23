@@ -1,31 +1,24 @@
 package sw806f18.server;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import static org.junit.Assert.*;
-
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
+
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 
 /**
@@ -50,8 +43,8 @@ public class DatabaseTest {
     @Test
     public void createGetDeleteResearcher() throws Exception {
         Researcher researcher = new Researcher(email, "50505050");
-        assertTrue(Database.createResearcher(researcher, "1234").equals(researcher));
-        assertTrue(Database.getResearcher(email, "1234").equals(researcher));
+        Assert.assertTrue(Database.createResearcher(researcher, "1234").equals(researcher));
+        Assert.assertTrue(Database.getResearcher(email, "1234").equals(researcher));
 
         Database.deleteResearcher(researcher.email);
         boolean deleted = false;
@@ -63,7 +56,7 @@ public class DatabaseTest {
             deleted = true;
         }
 
-        assertTrue(deleted);
+        Assert.assertTrue(deleted);
     }
 
     @Test
@@ -71,7 +64,7 @@ public class DatabaseTest {
         // ToDo: Fix pls
         List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
-        assertTrue(groups.equals(expected));
+        Assert.assertTrue(groups.equals(expected));
     }
 
     @Test
@@ -80,7 +73,7 @@ public class DatabaseTest {
         try {
             group.setId(Database.addGroup(group.getName()));
             List<Group> groups = Database.getAllGroups();
-            assertTrue(groups.contains(group));
+            Assert.assertTrue(groups.contains(group));
             Database.deleteGroup(group.getId());
         } catch (GetGroupsException e) {
             e.printStackTrace();
@@ -93,7 +86,7 @@ public class DatabaseTest {
 
     @Test
     public void createInvite() {
-        assertTrue(createHelperInvite());
+        Assert.assertTrue(createHelperInvite());
     }
 
     private boolean createHelperInvite() {
@@ -113,7 +106,7 @@ public class DatabaseTest {
             group.setId(Database.addGroup(group.getName()));
             Database.deleteGroup(group.getId());
             List<Group> groups = Database.getAllGroups();
-            assertFalse(groups.contains(group));
+            Assert.assertFalse(groups.contains(group));
         } catch (GetGroupsException e) {
             e.printStackTrace();
         } catch (DeleteGroupException e) {
@@ -125,22 +118,22 @@ public class DatabaseTest {
 
     @Test
     public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(Database.getCPRFromKey("abc"), "0123456789");
+        Assert.assertEquals(Database.getCprFromKey("abc"), "0123456789");
     }
 
     @Test
     public void removeGroupMember() {
-        assertTrue(false);
+        Assert.assertTrue(false);
     }
 
     @Test
     public void findUserByName() {
-        assertTrue(false);
+        Assert.assertTrue(false);
     }
 
     @Test
     public void createParticipant() throws SQLException, ClassNotFoundException {
-        assertTrue(createHelperInvite());
+        Assert.assertTrue(createHelperInvite());
 
 
         Participant participant = new Participant(-1, "test1@testesen.dk", "0123456798");
@@ -153,12 +146,12 @@ public class DatabaseTest {
             success = false;
         }
 
-        assertTrue(success);
+        Assert.assertTrue(success);
     }
 
     @Test
     public void addGroupMember() {
-        assertTrue(false);
+        Assert.assertTrue(false);
     }
 
     @Test
@@ -175,8 +168,8 @@ public class DatabaseTest {
             success = false;
         }
 
-        assertTrue(participant.equals(createdParticipant));
-        assertTrue(success);
+        Assert.assertTrue(participant.equals(createdParticipant));
+        Assert.assertTrue(success);
     }
 
     private static Connection createConnection() throws SQLException, ClassNotFoundException {
@@ -196,10 +189,10 @@ public class DatabaseTest {
         boolean success = true;
         try {
             Database.clearInviteFromKey("abc");
-        } catch (CPRKeyNotFoundException ex) {
+        } catch (CprKeyNotFoundException ex) {
             success = false;
         }
-        assertTrue(success);
+        Assert.assertTrue(success);
     }
 
 }

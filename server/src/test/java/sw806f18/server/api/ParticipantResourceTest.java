@@ -1,15 +1,6 @@
 package sw806f18.server.api;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import sw806f18.server.Database;
-import sw806f18.server.Main;
-import sw806f18.server.TestHelpers;
-import sw806f18.server.exceptions.CPRKeyNotFoundException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.model.Participant;
+import java.io.IOException;
 
 import javax.json.JsonObject;
 import javax.mail.MessagingException;
@@ -19,11 +10,19 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import java.io.IOException;
+import junit.framework.Assert;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import sw806f18.server.Database;
+import sw806f18.server.Main;
+import sw806f18.server.TestHelpers;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.model.Participant;
+
 
 public class ParticipantResourceTest {
     private HttpServer server;
@@ -50,37 +49,53 @@ public class ParticipantResourceTest {
         server.shutdown();
     }
 
+    /**
+     * Test for userstory 3's implementation.
+     * @throws IOException
+     * @throws MessagingException
+     * @throws InterruptedException
+     * @throws LoginException
+     */
     @Test
     public void createParticipant() throws IOException, MessagingException, InterruptedException, LoginException {
-        String email = "sw806f18@gmail.com";
-        String cpr = "0123456789";
-        String password = "power123";
-        String emailPassword = "p0wer123";
-
-        sw806f18.server.model.Participant partialParticipant = new Participant(-1,  email, cpr);
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH, TestHelpers.VALID_RESEARCHER_EMAIL, TestHelpers.VALID_RESEARCHER_PASSWORD);
-        assertEquals(response.getStatus(), 200);
+        Response response = TestHelpers.login(target,
+                TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.VALID_RESEARCHER_EMAIL,
+                TestHelpers.VALID_RESEARCHER_PASSWORD);
+        Assert.assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
 
-        target.path("researcher").path("participant").request().header("token", token).header("cpr", cpr).header("email", email).post(Entity.text(""));
+        String email = "sw806f18@gmail.com";
+        String cpr = "0123456789";
+        String password = "power123";
+        //String emailPassword = "p0wer123";
+        Participant fullParticipant = Database.getParticipant(email,password);
+        Participant partialParticipant = new Participant(-1,  email, cpr);
+
+        target.path("researcher").path("participant").request()
+                .header("token", token)
+                .header("cpr", cpr)
+                .header("email", email).post(Entity.text(""));
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();
 
-        assertNotNull(key);
+        Assert.assertNotNull(key);
 
-        Response response1 = target.path("participant").request().header("key", key).header("email", partialParticipant.email).header("password", password).post(Entity.text(""));
+        Response response1 = target.path("participant").request()
+                .header("key", key)
+                .header("email", partialParticipant.email)
+                .header("password", password).post(Entity.text(""));
 
-        Participant fullParticipant = Database.getParticipant(email,password);
 
-        assertTrue(fullParticipant.equals(partialParticipant));
+
+        org.junit.Assert.assertTrue(fullParticipant.equals(partialParticipant));
         boolean success = true;
-        try{
+        try {
             Database.clearInviteFromKey(key);
-        }
-        catch(CPRKeyNotFoundException ex){
+        } catch (CprKeyNotFoundException ex) {
             success = false;
         }
-        assertTrue(success);
+        org.junit.Assert.assertTrue(success);
     }
 }

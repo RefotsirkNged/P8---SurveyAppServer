@@ -1,20 +1,23 @@
 package sw806f18.server.api;
 
-import sw806f18.server.Authentication;
-import sw806f18.server.Database;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.model.*;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import sw806f18.server.model.DropdownQuestion;
+import sw806f18.server.model.NumberQuestion;
+import sw806f18.server.model.Question;
+import sw806f18.server.model.Survey;
+import sw806f18.server.model.TextQuestion;
+
+
+
 
 /**
  * Created by augustkorvell on 14/03/2018.
@@ -23,18 +26,20 @@ import java.util.List;
 public class SurveyResource {
 
     /**
-     * Get a survey as html by id
+     * Get a survey as html by id.
      * @param id
-     * @return
+     * @return stream
      */
     @GET
     @Path("/{id}")
     @Produces(MediaType.TEXT_HTML)
-    public InputStream getSurvey(@PathParam("id") int id)
-    {
-        Survey survey = new Survey("Barn 0-5 år", "Dette spørgeskema vedrører dit barn.");
-        survey.addQuestion(new NumberQuestion(3,"Barents højde", "Skriv barnets højde i centimeter:"));
-        survey.addQuestion(new NumberQuestion(3,"Barnets vægt", "Skriv barents vægt i gram:"));
+    public InputStream getSurvey(@PathParam("id") int id) {
+        Survey survey = new Survey("Barn 0-5 år",
+                                                    "Dette spørgeskema vedrører dit barn.");
+        survey.addQuestion(new NumberQuestion(3,"Barents højde",
+                                                    "Skriv barnets højde i centimeter:"));
+        survey.addQuestion(new NumberQuestion(3,"Barnets vægt",
+                                                    "Skriv barents vægt i gram:"));
 
         List<String> values = new ArrayList<>();
         values.add("0");
@@ -42,7 +47,10 @@ public class SurveyResource {
         values.add("6-10");
         values.add("10+");
 
-        survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING, "Barnets helbred", "Hvor mange gange har din barn været syg inden for de sidste 6 måneder:", values));
+        survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Barnets helbred",
+                "Hvor mange gange har din barn været syg inden for de sidste 6 måneder:",
+                values));
         survey.addQuestion(new TextQuestion(1,"Barnets livret", "Udfyld kun hvis relevant:"));
 
 

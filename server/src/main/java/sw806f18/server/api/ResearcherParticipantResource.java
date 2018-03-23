@@ -7,7 +7,9 @@ import javax.ws.rs.Path;
 @Path("researcher/participant")
 public class ResearcherParticipantResource {
     @POST
-    public void inviteParticipant(@HeaderParam("token") String token, @HeaderParam("cpr") int cpr, @HeaderParam("email") String email) {
+    public void inviteParticipant(@HeaderParam("token") String token,
+                                  @HeaderParam("cpr") int cpr,
+                                  @HeaderParam("email") String email) {
 
     }
 }

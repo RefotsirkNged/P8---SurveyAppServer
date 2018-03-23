@@ -1,30 +1,23 @@
 package sw806f18.server.model;
 
-import org.w3c.tidy.Node;
-import org.w3c.tidy.Tidy;
-
-import java.util.List;
-
 /**
  * Created by augustkorvell on 14/03/2018.
  */
 public class TextQuestion extends Question {
     /**
-     * Constructor for abstract class Question
-     *
-     * @param ID
-     * @param title
-     * @param description
+     * Constructor for abstract class Question.
+     * @param id The id of the question
+     * @param title the title
+     * @param description Description
      */
-    public TextQuestion(int ID, String title, String description) {
-        super(ID, Type.STRING, Input.TEXT, title, description);
+    public TextQuestion(int id, String title, String description) {
+        super(id, Type.STRING, Input.TEXT, title, description);
     }
 
     /**
-     * Constructor for abstract class Question
-     *
-     * @param title
-     * @param description
+     * Constructor for abstract class Question.
+     * @param title The title
+     * @param description Description
      */
     public TextQuestion(String title, String description) {
         super(-1, Type.STRING, Input.TEXT, title, description);
@@ -32,6 +25,7 @@ public class TextQuestion extends Question {
 
 
     /**
+     * Get HTML representation of Question.
      * @return HTML representation of Question
      */
     @Override
@@ -40,8 +34,8 @@ public class TextQuestion extends Question {
 
         builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<input id='" + title.replace(" ","_") + "' type='text' class='form-control'>");
-
+        builder.append("<input id='" + title.replace(" ","_")
+                + "' type='text' class='form-control'>");
         return  builder.toString();
     }
 }

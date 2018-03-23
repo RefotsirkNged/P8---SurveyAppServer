@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.CPRKeyNotFoundException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
@@ -20,9 +20,6 @@ import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
-
-import java.sql.*;
-import java.util.Arrays;
 
 public class Database {
     /**
@@ -297,6 +294,12 @@ public class Database {
         c.close();
     }
 
+    /**
+     * Creates a new invite in the database, using the given parameters.
+     * @param cpr
+     * @param key
+     * @throws CreateInviteException
+     */
     public static void createInvite(String cpr, String key) throws CreateInviteException {
         Connection con = null;
         try {
@@ -305,45 +308,59 @@ public class Database {
             Statement stmt = con.createStatement();
             String query = "INSERT INTO invite VALUES ('" + cpr + "','" + key + "')";
             stmt.execute(query);
-        }
-        catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             //Send stacktrace to log
             throw new CreateInviteException("Server error, contact system administrator", e);
         }
     }
 
-
-    public static String getCPRFromKey(String key) throws SQLException, ClassNotFoundException {
+    /**
+     * Extract the cpr from a key used in an invite.
+     * @param key
+     * @return string
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static String getCprFromKey(String key) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         Statement stmt = conn.createStatement();
 
         String query = "SELECT cpr FROM invite WHERE key = '" + key + "'";
 
         ResultSet res = stmt.executeQuery(query);
-        if (res.next()){
+        if (res.next()) {
             return res.getString("cpr");
-        }
-        else
+        } else {
             return null;
+        }
     }
 
-    public static void clearInviteFromKey(String key) throws CPRKeyNotFoundException{
-
-        try{
+    /**
+     * Clear an invites coupling with a key.
+     * @param key invite identifier
+     * @throws CprKeyNotFoundException
+     */
+    public static void clearInviteFromKey(String key) throws CprKeyNotFoundException {
+        try {
             Connection conn = createConnection();
             Statement stmt = conn.createStatement();
             String query = "DELETE FROM invite WHERE key = '" + key + "'";
             stmt.execute(query);
-        }
-        catch (SQLException e) {
-            throw new CPRKeyNotFoundException("Server error, contact system administrator", e);
-        }
-        catch (ClassNotFoundException e) {
-            throw new CPRKeyNotFoundException("Server error, contact system administrator", e);
+        } catch (SQLException e) {
+            throw new CprKeyNotFoundException("Server error, contact system administrator", e);
+        } catch (ClassNotFoundException e) {
+            throw new CprKeyNotFoundException("Server error, contact system administrator", e);
         }
     }
 
-    public static Participant getParticipant(String email, String password) throws LoginException{
+    /**
+     * get a participant from email/password combo.
+     * @param email user email
+     * @param password user password
+     * @return a participant
+     * @throws LoginException
+     */
+    public static Participant getParticipant(String email, String password) throws LoginException {
         Connection connection = null;
         int userid = -1;
         Participant participant = null;
@@ -352,11 +369,9 @@ public class Database {
             connection = createConnection();
             userid = getUser(connection, email, password);
 
-            if(userid == -1 || !isParticipant(connection, userid))
-            {
+            if (userid == -1 || !isParticipant(connection, userid)) {
                 throw new LoginException("Invalid email or password!");
-            }
-            else{
+            } else {
                 Statement statement = connection.createStatement();
                 String query = "SELECT cpr FROM persons WHERE id = " + userid;
                 ResultSet resultSet = statement.executeQuery(query);
@@ -374,34 +389,45 @@ public class Database {
             e.printStackTrace();
             throw new LoginException("Server error, contact system administrator");
         }
-
-
         return participant;
-
-
     }
 
+    /**
+     * check if a userid is a participant.
+     * @param conn connection to the database
+     * @param id user id
+     * @return boolean
+     * @throws SQLException
+     */
     public static boolean isParticipant(Connection conn, int id) throws SQLException {
         Statement stmt = conn.createStatement();
         String query = "SELECT COUNT(*) FROM persons WHERE id = " + id;
         ResultSet res = stmt.executeQuery(query);
-        if (res.next()){
+        if (res.next()) {
             return res.getInt(1) == 1;
-        }
-        else
+        } else {
             return false;
+        }
     }
 
-    public static Participant createParticipant(Participant participant, String password) throws CreateUserException{
+    /**
+     * Create a new participant in the database.
+     * @param participant Object containing new participant data
+     * @param password password of the participant
+     * @return participant
+     * @throws CreateUserException
+     */
+    public static Participant createParticipant(Participant participant, String password) throws CreateUserException {
         Connection con = null;
         try {
             con = createConnection();
             Statement stmt1 = con.createStatement();
             byte[] salt = Security.getNextSalt();
 
-            String q1 = "INSERT INTO users(email, password, salt) " +
-                    "VALUES ( '" + participant.email + "' , '" + Security.convertByteArrayToString(Security.hash(password, salt)) + "' , '" + Security.convertByteArrayToString(salt) + "' ) " +
-                    "RETURNING id";
+            String q1 = "INSERT INTO users(email, password, salt) "
+                    + "VALUES ( '" + participant.email + "' , '"
+                    + Security.convertByteArrayToString(Security.hash(password, salt)) + "' , '"
+                    + Security.convertByteArrayToString(salt) + "' ) " + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -409,8 +435,8 @@ public class Database {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO persons (id, cpr)" +
-                    "VALUES (" + id + ", '" + participant.cpr + "')";
+            String q2 = "INSERT INTO persons (id, cpr)"
+                    + "VALUES (" + id + ", '" + participant.cpr + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);

@@ -8,12 +8,12 @@ import com.mongodb.MongoClient;
 public class NoSqlDatabase {
     private static MongoClient client;
 
-    private static void openConnectiona(){
-        client = new MongoClient( "192.168.1.125" , 27017 );
+    private static void openConnectiona() {
+        client = new MongoClient("192.168.1.125", 27017);
 
     }
 
-    private static void closeConnection(){
+    private static void closeConnection() {
         client.close();
     }
 }
