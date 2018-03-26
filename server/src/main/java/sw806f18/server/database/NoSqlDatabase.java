@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
+import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.model.Survey;
 
 /**
@@ -46,11 +46,11 @@ public class NoSqlDatabase {
         collection.insertOne(s);
     }
 
-    static Survey getSurvey(int surveyID) {
-        throw new NotImplementedException();
+    static Survey getSurvey(int surveyID) throws NotImplementedException {
+        throw new NotImplementedException("Not implemented");
     }
 
-    static Survey getSurveys(List<Integer> surveyIDs) {
-        throw new NotImplementedException();
+    static Survey getSurveys(List<Integer> surveyIDs) throws NotImplementedException {
+        throw new NotImplementedException("Not implemented");
     }
 }

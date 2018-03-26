@@ -1,5 +1,6 @@
 package sw806f18.server.exceptions;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,7 +20,9 @@ public class P8Exception extends Exception {
     @Override
     public void printStackTrace() {
         try {
-            FileOutputStream log = new FileOutputStream("~/log/exceptions.log", true);
+            File logFile = new File("exceptions.log");
+            logFile.createNewFile();
+            FileOutputStream log = new FileOutputStream(logFile, true);
             PrintStream stream = new PrintStream(log);
             super.printStackTrace(stream);
             stream.close();
@@ -27,6 +30,5 @@ public class P8Exception extends Exception {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
