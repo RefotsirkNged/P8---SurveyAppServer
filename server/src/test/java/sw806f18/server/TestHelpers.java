@@ -31,14 +31,27 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 
+import sw806f18.server.database.Database;
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.DropdownQuestion;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
+import sw806f18.server.model.NumberQuestion;
 import sw806f18.server.model.Participant;
+import sw806f18.server.model.Question;
 import sw806f18.server.model.Researcher;
+import sw806f18.server.model.Survey;
+import sw806f18.server.model.TextQuestion;
 
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
     public static final String RESEARCHER_GROUPMANAGER_PATH = "researcher/groupmanager";
-    public static final String RENEW_TOKEN_PATH = "renewtoken";
+    public static final String RESEARCHER_GROUPMANAGER_MEMBER_PATH = "researcher/groupmanager/member";
+    public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
+    public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
@@ -123,7 +136,64 @@ public class TestHelpers {
      */
     public static Response login(WebTarget target, String path, String email, String password) {
         return target.path(path).request().header("email", email)
-                .header("password", password).post(Entity.text(""));
+            .header("password", password).post(Entity.text(""));
+    }
+
+    /**
+     * Add group member.
+     *
+     * @param target      Target.
+     * @param path        Path.
+     * @param participant Participant.
+     * @param group       Group.
+     * @param token       Token.
+     * @return Response.
+     */
+    public static Response addGroupMember(WebTarget target, String path,
+                                          Participant participant, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("userID", participant.getId()).header("token", token).put(Entity.text(""));
+    }
+
+    /**
+     * Get group members.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param group  Group.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response getGroupMembers(WebTarget target, String path, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("token", token).get();
+    }
+
+    /**
+     * Get all participants.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response getAllGroupParticipants(WebTarget target, String path, String token) {
+        return target.path(path).request().header("token", token).get();
+    }
+
+    /**
+     * Remove group member.
+     *
+     * @param target      Target.
+     * @param path        Path.
+     * @param participant Participant.
+     * @param group       Group.
+     * @param token       Token.
+     */
+    public static Response removeGroupMember(WebTarget target, String path,
+                                             Participant participant, Group group, String token) {
+        return target.path(path).request().header("groupID", group.getId())
+            .header("userID", participant.getId()).header("token", token).delete();
     }
 
     /**
@@ -149,7 +219,7 @@ public class TestHelpers {
      */
     public static Response addGroup(WebTarget target, String path, String name, String token) {
         return target.path(path).request().header("name", name)
-                .header("token", token).put(Entity.text(""));
+            .header("token", token).put(Entity.text(""));
     }
 
     /**
@@ -173,16 +243,17 @@ public class TestHelpers {
      */
     public static String getResearcherLoginToken(WebTarget target) {
         Response response = login(target, "researcher/login",
-                researcher1.getEmail(), PASSWORD);
+            researcher1.getEmail(), PASSWORD);
         JsonObject jsonObject = getPayload(response);
         return jsonObject.getString("token");
     }
 
     /**
      * Extract key from an email.
+     *
      * @return string
      * @throws MessagingException Ex
-     * @throws IOException Ex
+     * @throws IOException        Ex
      */
     public static String getKeyFromParticipantEmail() throws MessagingException, IOException {
         Properties properties = new Properties();
@@ -220,7 +291,7 @@ public class TestHelpers {
     }
 
     private static String getTextFromMessage(Message message) throws IOException,
-                                                                     MessagingException {
+        MessagingException {
         String result = "";
         if (message.isMimeType("text/plain")) {
             result = message.getContent().toString();
@@ -232,14 +303,14 @@ public class TestHelpers {
     }
 
     private static String getTextFromMimeMultipart(
-            MimeMultipart mimeMultipart) throws IOException, MessagingException {
+        MimeMultipart mimeMultipart) throws IOException, MessagingException {
 
         int count = mimeMultipart.getCount();
         if (count == 0) {
             throw new MessagingException("Multipart with no body parts not supported.");
         }
         boolean multipartAlt = new ContentType(mimeMultipart.getContentType())
-                                                .match("multipart/alternative");
+            .match("multipart/alternative");
         if (multipartAlt) {
             return getTextFromBodyPart(mimeMultipart.getBodyPart(count - 1));
         }
@@ -252,7 +323,7 @@ public class TestHelpers {
     }
 
     private static String getTextFromBodyPart(
-            BodyPart bodyPart) throws IOException, MessagingException {
+        BodyPart bodyPart) throws IOException, MessagingException {
 
         String result = "";
         if (bodyPart.isMimeType("text/plain")) {
@@ -268,20 +339,21 @@ public class TestHelpers {
 
     /**
      * Create a connection to the database.
+     *
      * @return Connection
-     * @throws SQLException Ex
+     * @throws SQLException           Ex
      * @throws ClassNotFoundException Ex
      */
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/"
-                                + Configurations.instance.getPostgresDatabase(),
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
+            .getConnection("jdbc:postgresql://"
+                    + Configurations.instance.getPostgresIp() + ":"
+                    + Configurations.instance.getPostgresPort() + "/"
+                    + Configurations.instance.getPostgresDatabase(),
+                Configurations.instance.getPostgresUser(),
+                Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -291,9 +363,10 @@ public class TestHelpers {
 
     /**
      * Reset the database completely.
-     * @throws SQLException Ex
+     *
+     * @throws SQLException           Ex
      * @throws ClassNotFoundException Ex
-     * @throws IOException Ex
+     * @throws IOException            Ex
      */
     public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
         Connection connection = createConnection();
@@ -333,7 +406,7 @@ public class TestHelpers {
             String title = "Test" + i;
             String description = "Description" + i;
             Survey survey = new Survey(title, description);
-            survey.addQuestion(new TextQuestion(1,"Text question" + i, "Text question description" + i));
+            survey.addQuestion(new TextQuestion(1, "Text question" + i, "Text question description" + i));
 
             List<String> values = new ArrayList<>();
             values.add("A" + i);
@@ -363,5 +436,20 @@ public class TestHelpers {
         list.add(participant1);
         list.add(participant2);
         return list;
+    }
+
+    /**
+     * Check if a list of participants contains a specific without mail.
+     * @param list List.
+     * @param participant Participant.
+     * @return True is list contains. false otherwise.
+     */
+    public static boolean containsNoMail(List<Participant> list, Participant participant) {
+        for (Participant p : list) {
+            if (p.equalsNoMail(participant)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,5 +1,8 @@
 package sw806f18.server.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 
 import javax.json.JsonObject;
@@ -22,10 +25,6 @@ import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.LoginException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 
 public class ParticipantResourceTest {
     private HttpServer server;
@@ -57,6 +56,7 @@ public class ParticipantResourceTest {
 
     /**
      * Test for userstory 3's implementation.
+     *
      * @throws IOException
      * @throws MessagingException
      * @throws InterruptedException

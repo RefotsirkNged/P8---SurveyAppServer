@@ -19,6 +19,18 @@ public abstract class User {
         this.lastName = lastName;
     }
 
+    /**
+     * Constructor.
+     * @param id ID of user.
+     * @param firstName First name.
+     * @param lastName Last name.
+     */
+    public User(int id, String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     private int id;
     private String email;
     private String firstName;

@@ -1,6 +1,10 @@
 package sw806f18.server.database;
 
 import com.mongodb.*;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -41,7 +45,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+            fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);

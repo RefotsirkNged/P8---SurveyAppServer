@@ -17,9 +17,17 @@ import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
 import sw806f18.server.model.Survey;
 
 import javax.validation.constraints.AssertTrue;
@@ -167,16 +175,17 @@ public class DatabaseTest {
 
     @Test
     public void getAllParticipants() {
-        List<Participant> participants = Database.getAllParticipants();
+        boolean hasError = false;
+        List<Participant> participants = null;
+
+        try {
+            participants = Database.getAllParticipants();
+        } catch (GetAllParticipantsException e) {
+            hasError = true;
+        }
         List<Participant> expected = TestHelpers.participants();
         assertTrue(participants.equals(expected));
-    }
-
-    @Test
-    public void findUserByName() {
-        List<Participant> participants = Database.getParticipantsByName("name");
-        assertEquals(participants.size(), 1);
-        assertTrue(participants.get(0).equals(TestHelpers.participant2));
+        assertFalse(hasError);
     }
 
     @Test
@@ -219,6 +228,7 @@ public class DatabaseTest {
             hasError = true;
         }
 
+        assertEquals(participants.size(), 1);
         assertEquals(participants.get(0), TestHelpers.participant1);
         assertFalse(hasError);
     }

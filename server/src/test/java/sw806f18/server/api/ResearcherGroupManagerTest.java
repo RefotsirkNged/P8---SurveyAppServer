@@ -2,6 +2,7 @@ package sw806f18.server.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -23,8 +24,10 @@ import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
+import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
 
 public class ResearcherGroupManagerTest {
     private HttpServer server;
@@ -65,7 +68,7 @@ public class ResearcherGroupManagerTest {
     public void addGroup() {
         try {
             Response response = TestHelpers.addGroup(target,
-                    TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
+                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
             assertEquals(response.getStatus(), 200);
             JsonObject jsonObject = TestHelpers.getPayload(response);
             TestHelpers.groupCreate.setId(jsonObject.getInt("groupid"));
@@ -80,7 +83,7 @@ public class ResearcherGroupManagerTest {
     public void removeGroup() {
         try {
             TestHelpers.deleteGroup(target, TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
-                    TestHelpers.group1.getId(), token);
+                TestHelpers.group1.getId(), token);
             List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(TestHelpers.group1));
         } catch (GetGroupsException e) {
@@ -93,7 +96,7 @@ public class ResearcherGroupManagerTest {
         List<Group> expected = TestHelpers.testGroups();
 
         Response response = TestHelpers.getAllGroups(target,
-                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
+            TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
 
@@ -102,28 +105,86 @@ public class ResearcherGroupManagerTest {
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonObject element = jsonArray.get(i).asJsonObject();
             assertTrue(element.getString("name").equals(expected.get(i).getName()));
-            // ToDo: Fix pls
             assertTrue(element.getInt("id") == expected.get(i).getId());
         }
     }
 
     @Test
-    public void findUserByName() {
-        assertTrue(false);
-    }
-
-    @Test
     public void removeGroupMember() {
-        assertTrue(false);
+        boolean hasError = false;
+        List<Participant> expected = null;
+
+        Response response = TestHelpers.removeGroupMember(target, TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
+            TestHelpers.participant1, TestHelpers.group1, token);
+        assertEquals(200, response.getStatus());
+        try {
+            expected = Database.getGroupMembers(TestHelpers.group1);
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertNotNull(expected);
+        assertEquals(expected.size(), 0);
     }
 
     @Test
     public void addGroupMember() {
-        assertTrue(false);
+        Response response = TestHelpers.addGroupMember(target, TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
+            TestHelpers.participant2, TestHelpers.group1, token);
+        assertEquals(200, response.getStatus());
+
+        boolean hasError = false;
+        List<Participant> expected = null;
+
+        try {
+            expected = Database.getGroupMembers(TestHelpers.group1);
+        } catch (GetGroupMemberException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertNotNull(expected);
+        assertTrue(expected.contains(TestHelpers.participant2));
     }
 
     @Test
     public void getMembersByGroup() {
-        assertTrue(false);
+        Response response = TestHelpers.getGroupMembers(target, TestHelpers.RESEARCHER_PARTICIPANT_PATH,
+            TestHelpers.group1, token);
+        assertEquals(200, response.getStatus());
+
+        JsonObject jsonObject = TestHelpers.getPayload(response);
+        JsonArray jsonArray = jsonObject.getJsonArray("members");
+        assertEquals(1, jsonArray.size());
+
+        JsonObject element = jsonArray.get(0).asJsonObject();
+
+        Participant received = new Participant(element.getInt("id"), element.getString("cpr"),
+            element.getString("firstname"), element.getString("lastname"));
+
+        assertTrue(TestHelpers.participant1.equalsNoMail(received));
+    }
+
+    @Test
+    public void getAllParticipants() {
+        Response response = TestHelpers.getAllGroupParticipants(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
+            token);
+        assertEquals(200, response.getStatus());
+
+        JsonObject jsonObject = TestHelpers.getPayload(response);
+        JsonArray jsonArray = jsonObject.getJsonArray("participants");
+        assertEquals(2, jsonArray.size());
+
+        JsonObject element = jsonArray.get(0).asJsonObject();
+        Participant p1 = new Participant(element.getInt("id"), element.getString("cpr"),
+            element.getString("firstname"), element.getString("lastname"));
+        element = jsonArray.get(1).asJsonObject();
+        Participant p2 = new Participant(element.getInt("id"), element.getString("cpr"),
+            element.getString("firstname"), element.getString("lastname"));
+
+        List<Participant> list = TestHelpers.participants();
+        assertTrue(TestHelpers.containsNoMail(list, p1));
+        assertTrue(TestHelpers.containsNoMail(list, p2));
     }
 }

@@ -15,9 +15,12 @@ import javax.ws.rs.core.MediaType;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.DeleteGroupException;
 import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Participant;
 
 @Path("researcher/groupmanager")
 public class ReseacherGroupManagerResource {
@@ -75,22 +78,6 @@ public class ReseacherGroupManagerResource {
     }
 
     /**
-     * Add group member endpoint.
-     * @param groupId Group ID.
-     * @param userId User ID.
-     * @param token Token.
-     * @return Response.
-     */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("member")
-    public String addGroupMember(@HeaderParam("groupID") int groupId,
-                                 @HeaderParam("userID") int userId,
-                                 @HeaderParam("token") String token) {
-        return "";
-    }
-
-    /**
      * Delete group endpoint.
      * @param groupId Group ID.
      * @param token Login Token.
@@ -104,6 +91,54 @@ public class ReseacherGroupManagerResource {
             try {
                 Database.deleteGroup(groupId);
             } catch (DeleteGroupException e) {
+                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            }
+            return Json.createObjectBuilder().add("success", 1).build();
+        }
+        return Json.createObjectBuilder().add("error", "Invalid token").build();
+    }
+
+    /**
+     * Add group member endpoint.
+     * @param groupId Group ID.
+     * @param userId User ID.
+     * @param token Token.
+     */
+    @PUT
+    @Path("member")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject addGroupMember(@HeaderParam("groupID") int groupId,
+                                 @HeaderParam("userID") int userId,
+                                 @HeaderParam("token") String token) {
+        if (!Authentication.instance.isTokenExpired(token)) {
+            try {
+                Database.addGroupMember(new Group(groupId, "", 0),
+                    new Participant(userId, "", "",""));
+            } catch (AddGroupMemberException e) {
+                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            }
+            return Json.createObjectBuilder().add("success", 1).build();
+        }
+        return Json.createObjectBuilder().add("error", "Invalid token").build();
+    }
+
+    /**
+     * Add group member endpoint.
+     * @param groupId Group ID.
+     * @param userId User ID.
+     * @param token Token.
+     */
+    @DELETE
+    @Path("member")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject removeGroupMember(@HeaderParam("groupID") int groupId,
+                                 @HeaderParam("userID") int userId,
+                                 @HeaderParam("token") String token) {
+        if (!Authentication.instance.isTokenExpired(token)) {
+            try {
+                Database.removeParticipantFromGroup(new Group(groupId, "", 0),
+                    new Participant(userId, "", "",""));
+            } catch (RemoveParticipantFromGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }
             return Json.createObjectBuilder().add("success", 1).build();
