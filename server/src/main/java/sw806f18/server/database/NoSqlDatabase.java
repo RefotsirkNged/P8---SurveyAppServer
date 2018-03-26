@@ -71,7 +71,22 @@ public class NoSqlDatabase {
     }
 
     static Survey getSurvey(int surveyID) {
-        throw new NotImplementedException();
+        Survey survey;
+        openConnection();
+
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+
+        MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
+
+        survey = collection.find((eq("_id", surveyID))).first();
+
+
+        closeConnection();
+
+        return survey;
     }
 
     static List<Survey> getSurveys(List<Integer> surveyIDs) {

@@ -2,6 +2,9 @@ package sw806f18.server.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bson.BSON;
+import org.bson.BsonDocument;
 import sw806f18.server.Constants;
 
 /**
@@ -10,8 +13,14 @@ import sw806f18.server.Constants;
 public class Survey {
 
     /**
+     * Empty constructer.
+     */
+    public Survey() {
+
+    }
+
+    /**
      * Ctor.
-     *
      * @param title       The title
      * @param description Description
      */
@@ -47,26 +56,49 @@ public class Survey {
     public int frequencyValue;
     public String frequencyType;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * Adds (append) a Question to the survey.
-     *
      * @param question the question to add
      */
     public void addQuestion(Question question) {
         questions.add(question);
     }
 
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
     /**
      * Add Question to the survey at index.
-     *
+
      * @param question question to be added
      * @param index    the index at which it should be added
      */
