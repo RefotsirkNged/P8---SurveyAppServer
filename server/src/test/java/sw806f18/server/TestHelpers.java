@@ -183,7 +183,8 @@ public class TestHelpers {
      * @param group       Group.
      * @param token       Token.
      */
-    public static Response removeGroupMember(WebTarget target, String path, Participant participant, Group group, String token) {
+    public static Response removeGroupMember(WebTarget target, String path,
+                                             Participant participant, Group group, String token) {
         return target.path(path).request().header("groupID", group.getId())
             .header("userID", participant.getId()).header("token", token).delete();
     }

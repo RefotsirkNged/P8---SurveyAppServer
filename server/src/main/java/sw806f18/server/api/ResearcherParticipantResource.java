@@ -28,6 +28,13 @@ public class ResearcherParticipantResource {
 
     }
 
+    /**
+     * Get group members.
+     *
+     * @param token Token.
+     * @param groupId Group ID.
+     * @return Group members.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject getGroupMembers(@HeaderParam("token") String token,
@@ -36,7 +43,7 @@ public class ResearcherParticipantResource {
             try {
                 List<Participant> participants = Database.getGroupMembers(new Group(groupId, "", 0));
                 JsonArrayBuilder builder = Json.createArrayBuilder();
-                for(Participant p : participants){
+                for (Participant p : participants) {
                     builder.add(Json.createObjectBuilder().add("id", p.getId())
                         .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
                         .add("lastname", p.getLastName()).build());
@@ -49,6 +56,12 @@ public class ResearcherParticipantResource {
         return Json.createObjectBuilder().add("error", "Invalid token").build();
     }
 
+    /**
+     * Get All Participants.
+     *
+     * @param token Token.
+     * @return All participants.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all")
@@ -57,7 +70,7 @@ public class ResearcherParticipantResource {
             try {
                 List<Participant> participants = Database.getAllParticipants();
                 JsonArrayBuilder builder = Json.createArrayBuilder();
-                for(Participant p : participants){
+                for (Participant p : participants) {
                     builder.add(Json.createObjectBuilder().add("id", p.getId())
                         .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
                         .add("lastname", p.getLastName()).build());

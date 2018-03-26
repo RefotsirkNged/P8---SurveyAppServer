@@ -25,7 +25,13 @@ public class Participant extends User {
             && getLastName().equals(other.getLastName());
     }
 
-    public boolean equalsNoMail(Participant other){
+    /**
+     * Check for equality without email.
+     *
+     * @param other Other.
+     * @return True if equals.
+     */
+    public boolean equalsNoMail(Participant other) {
         return cpr.equals(other.cpr)
             && getFirstName().equals(other.getFirstName())
             && getLastName().equals(other.getLastName())
