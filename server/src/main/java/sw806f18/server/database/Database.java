@@ -135,7 +135,11 @@ public class Database {
         return RelationalDatabase.getGroupMembers(group1);
     }
 
-    public static void linkModuleToGroup(Survey survey, Group group) {
-        throw new NotImplementedException();
+    public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
+        RelationalDatabase.setModuleSurveyLink(survey.id, group.getId());
+    }
+
+    public static void cleanMongoDB(){
+        NoSqlDatabase.cleanMongoDB();
     }
 }

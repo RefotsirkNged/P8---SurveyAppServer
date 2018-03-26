@@ -363,7 +363,7 @@ public class RelationalDatabase {
             } else {
                 Statement statement = connection.createStatement();
                 String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname"
-                        + " FROM persons p, users u WHERE p.id = " + userid
+                        + " FROM participants p, users u WHERE p.id = " + userid
                         + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
@@ -392,7 +392,7 @@ public class RelationalDatabase {
 
     static boolean isParticipant(Connection conn, int id) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "SELECT COUNT(*) FROM persons WHERE id = " + id;
+        String query = "SELECT COUNT(*) FROM participants WHERE id = " + id;
         ResultSet res = stmt.executeQuery(query);
         if (res.next()) {
             return res.getInt(1) == 1;
@@ -422,7 +422,7 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO persons (id, cpr)"
+            String q2 = "INSERT INTO participants (id, cpr)"
                     + "VALUES (" + id + ", '" + participant.getCpr() + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
@@ -497,7 +497,6 @@ public class RelationalDatabase {
                     + "AND hasgroup.groupid = hasmodule.groupid";
 
             ResultSet resultSet = statement.executeQuery(query);
-            List<Group> groups = new ArrayList<Group>();
 
             while (resultSet.next()) {
                 ids.add(resultSet.getInt(1));
@@ -511,5 +510,28 @@ public class RelationalDatabase {
         }
 
         return ids;
+    }
+
+    /**
+     * Links a module to a group.
+     * @param moduleID ID of a module.
+     * @param groupID ID of a group.
+     */
+    static void setModuleSurveyLink(int moduleID, int groupID) throws SurveyException {
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hasModule (groupid, moduleid) VALUES ( " + groupID + " , " + moduleID + " )" ;
+
+            statement.execute(query);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
     }
 }

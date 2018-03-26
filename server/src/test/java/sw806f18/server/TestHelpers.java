@@ -3,10 +3,7 @@ package sw806f18.server;
 import com.sun.mail.pop3.POP3Store;
 
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
 
 import javax.json.Json;
@@ -63,6 +60,7 @@ public class TestHelpers {
     public static Group group2 = new Group("Group 2", 0);
     public static Group group3 = new Group("Group 3", 0);
     public static Group groupCreate = new Group("TestGroup", 0);
+    public static Survey survey1 = new Survey("Test Title", "This is a survey for testing porpesses");
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
@@ -75,7 +73,7 @@ public class TestHelpers {
      * @throws AddGroupMemberException Exception.
      */
     public static void populateDatabase() throws
-            CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException {
+            CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException, SurveyException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
 
@@ -90,7 +88,10 @@ public class TestHelpers {
         group2 = Database.addGroup(group2);
         group3 = Database.addGroup(group3);
 
+        survey1.id = Database.addSurvey(survey1);
+
         Database.addGroupMember(group1, participant1);
+        Database.linkModuleToGroup(survey1, group1);
     }
 
     private TestHelpers() {
@@ -304,6 +305,8 @@ public class TestHelpers {
         statement.execute(query);
 
         closeConnection(connection);
+
+        Database.cleanMongoDB();
     }
 
     /**

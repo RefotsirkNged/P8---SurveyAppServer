@@ -37,6 +37,21 @@ public class NoSqlDatabase {
         client.close();
     }
 
+    static void cleanMongoDB(){
+        openConnection();
+
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
+
+        collection.drop();
+
+        closeConnection();
+
+    }
+
     static void addSurvey(Survey s) {
         openConnection();
 
@@ -47,6 +62,8 @@ public class NoSqlDatabase {
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
 
         collection.insertOne(s);
+
+        closeConnection();
     }
 
     static Survey getSurvey(int surveyID) {
@@ -67,6 +84,8 @@ public class NoSqlDatabase {
         for (int i : surveyIDs) {
             surveys.add(collection.find((eq("_id", i))).first());
         }
+
+        closeConnection();
 
         return surveys;
     }
