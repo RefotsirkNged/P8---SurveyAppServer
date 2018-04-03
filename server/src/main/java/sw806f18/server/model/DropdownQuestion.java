@@ -65,7 +65,7 @@ public class DropdownQuestion extends Question {
         for (int i = 0; i < values.size(); i++) {
             builder.append("<option value='"
                     + values.get(i)
-                    + "' class='form-control'>"
+                    + "' class='form-control p8dropdown'>"
                     + values.get(i)
                     + "</option>");
         }

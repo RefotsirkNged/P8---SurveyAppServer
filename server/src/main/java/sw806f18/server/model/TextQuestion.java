@@ -43,7 +43,7 @@ public class TextQuestion extends Question {
         builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
         builder.append("<input id='" + title.replace(" ","_")
-                + "' type='text' class='form-control'>");
+                + "' type='text' class='form-control p8text'>");
         return  builder.toString();
     }
 }
