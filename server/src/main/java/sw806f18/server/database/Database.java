@@ -102,16 +102,24 @@ public class Database {
         return RelationalDatabase.createParticipant(participant, password);
     }
 
-    public static int addSurvey(Survey s) {
-        throw new NotImplementedException();
+    /**
+     * Adds Survey to database.
+     * @param s Survey to add.
+     * @return new survey ID.
+     * @throws SurveyException Exception.
+     */
+    public static int addSurvey(Survey s) throws SurveyException {
+        s.setId(RelationalDatabase.addSurvey(s));
+        NoSqlDatabase.addSurvey(s);
+        return s.getId();
     }
 
     public static Survey getSurvey(int id) {
-        throw new NotImplementedException();
+        return NoSqlDatabase.getSurvey(id);
     }
 
-    public static List<Survey> getUsersSurveys(User user) {
-        throw new NotImplementedException();
+    public static List<Survey> getUsersSurveys(User user) throws SurveyException {
+        return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
     public static List<Participant> getAllParticipants() throws GetAllParticipantsException {
@@ -129,5 +137,13 @@ public class Database {
 
     public static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
         return RelationalDatabase.getGroupMembers(group1);
+    }
+
+    public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
+        RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
+    }
+
+    public static void cleanMongoDB() {
+        NoSqlDatabase.cleanMongoDB();
     }
 }

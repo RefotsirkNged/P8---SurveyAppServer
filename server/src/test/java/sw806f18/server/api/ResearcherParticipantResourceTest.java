@@ -18,7 +18,6 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
@@ -66,9 +65,9 @@ public class ResearcherParticipantResourceTest {
         String token = jsonObject.getString("token");
 
         target.path("researcher").path("participant").request()
-                .header("token", token)
-                .header("cpr", "0123456789")
-                .header("email", "sw806f18@gmail.com").post(Entity.text(""));
+            .header("token", token)
+            .header("cpr", "0123456789")
+            .header("email", "sw806f18@gmail.com").post(Entity.text(""));
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();
 

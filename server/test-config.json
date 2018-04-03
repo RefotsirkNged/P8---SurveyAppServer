@@ -7,9 +7,9 @@
     "database": "devdb"
   },
   "mongoDB": {
-    "ip": "192.168.1.125",
+    "ip": "192.168.1.111",
     "port": 27017,
-    "database": "devdata",
+    "database": "data",
     "user": "root",
     "password": "power123"
   }

@@ -45,7 +45,7 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion);
 
-        Assert.assertTrue(survey.questions.get(survey.questions.size() - 1).equals(tempQuestion));
+        Assert.assertTrue(survey.getQuestions().get(survey.getQuestions().size() - 1).equals(tempQuestion));
     }
 
     @Test
@@ -53,15 +53,15 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion, 1);
 
-        Assert.assertTrue(survey.questions.get(1).equals(tempQuestion));
+        Assert.assertTrue(survey.getQuestions().get(1).equals(tempQuestion));
     }
 
     @Test
     public void swapQuestion() throws Exception {
         survey.moveQuestion(0, 1);
 
-        Assert.assertTrue(survey.questions.get(0).id == 2);
-        Assert.assertTrue(survey.questions.get(1).id == 1);
+        Assert.assertTrue(survey.getQuestions().get(0).id == 2);
+        Assert.assertTrue(survey.getQuestions().get(1).id == 1);
     }
 
     @Test

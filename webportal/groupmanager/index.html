@@ -80,16 +80,16 @@
         <div class="groupWindow memberWindow">
             <table class="table">
                 <tbody id="groupMemberBody">
-                <tr>
-                    <td>
-                        Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>
-                    </td>
-                </tr>
+                <!--<tr>-->
+                    <!--<td>-->
+                        <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>-->
+                        <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                    <!--</td>-->
+                <!--</tr>-->
                 </tbody>
             </table>
         </div>
@@ -99,16 +99,7 @@
         <div class="groupWindow userWindow">
             <table class="table">
                 <tbody id="allUsersWindow">
-                <tr>
-                    <td>
-                        Test <button type="button" class="btn-success btnMemberList" onclick="deleteGroupToggle()">+</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Test <button type="button" class="btn-success btnMemberList" onclick="deleteGroupToggle()">+</button>
-                    </td>
-                </tr>
+
                 </tbody>
             </table>
         </div>
@@ -119,6 +110,8 @@
 
 <script>
     var marked;
+    var membersInSelectedGroup = [];
+
     function deleteGroupToggle(){
         if(marked === undefined){
             $('#noMarkingModal').modal('toggle');
@@ -139,9 +132,8 @@
             },
             success: function (response) {
                 $('#row' + marked.id).remove();
-            },
-            error: function (response) {
-                console.log(response);
+                deselect();
+                document.getElementById("groupMemberBody").innerHTML = "";
             }
         });
     }
@@ -166,18 +158,107 @@
                     resetRows();
                     $(this).css('background-color','#9a9a9a');
                     marked = {id: response.groupid, name: name};
+                    deselect();
+                    getGroupMembers(response.groupid);
                 });
-            },
-            error: function (response) {
-                console.log(response);
             }
         });
     }
 
     $(document).ready(function() {
         updateTable();
+        getAllParticipants();
     });
 
+    function addMemberToGroup(userid) {
+        $.ajax({
+           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           type: 'PUT',
+           beforeSend: function (request) {
+               request.setRequestHeader("token", sessionStorage.getItem("token"));
+               request.setRequestHeader("userID", userid);
+               request.setRequestHeader("groupID", marked.id);
+           },
+            success: function (response) {
+                getGroupMembers(marked.id);
+            }
+        });
+    }
+    
+    function removeMemberFromGroup(userid, groupid) {
+        $.ajax({
+           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           type: 'DELETE',
+           beforeSend: function (request) {
+               request.setRequestHeader("token", sessionStorage.getItem("token"));
+               request.setRequestHeader("groupID", groupid);
+               request.setRequestHeader("userID", userid);
+           },
+            success: function (response) {
+                deselect();
+                getGroupMembers(groupid);
+            }
+        });
+    }
+
+    function getGroupMembers(groupid) {
+        var g = document.getElementById("groupMemberBody");
+        g.innerHTML = "";
+
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/participant',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+                request.setRequestHeader("groupID", marked.id);
+            },
+            success: function (response) {
+                response.members.forEach(function (value) {
+                   g.innerHTML +=  "<tr>\n" +
+                       "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
+                       " <button id='remparbtn" + value.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeMemberFromGroup(" + value.id + "," + marked.id +")\">-</button>\n" +
+                       "</td>\n" +
+                       "</tr>";
+
+                   membersInSelectedGroup.push(value.id);
+                });
+
+                membersInSelectedGroup.forEach(function (value) {
+                    document.getElementById("addparbtn" + value).hidden = true;
+                });
+            }
+        })
+    }
+
+    function deselect() {
+        membersInSelectedGroup.forEach(function (value) {
+            document.getElementById("addparbtn" + value).hidden = false;
+        });
+        membersInSelectedGroup = [];
+    }
+
+    function getAllParticipants() {
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/participant/all',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function(response){
+                var userTBody = document.getElementById("allUsersWindow");
+                userTBody.innerHTML = "";
+
+                response.participants.forEach(function (value) {
+                    userTBody.innerHTML += "<tr>\n" +
+                        "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
+                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addMemberToGroup(" + value.id + ")\">+</button>\n" +
+                        "</td>\n" +
+                        "</tr>"
+                });
+            }
+        });
+    }
+    
     function updateTable(){
         $('#groupTableBody').innerHTML = "";
         $.ajax({
@@ -193,13 +274,12 @@
                     $('#groupTableBody').append('<tr id="row' + e.id + '"><td>' + e.name + '</td></tr>');
                     $('#row' + e.id).click(function() {
                         resetRows();
+                        deselect();
                         $(this).css('background-color','#9a9a9a');
                         marked = {id:e.id, name: e.name};
+                        getGroupMembers(response.groupid);
                     });
                 });
-            },
-            error: function (response) {
-                console.log(response);
             }
         });
     }

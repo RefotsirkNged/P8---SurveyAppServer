@@ -31,6 +31,8 @@ import sw806f18.server.model.Participant;
 import sw806f18.server.model.Researcher;
 import sw806f18.server.model.Survey;
 
+import javax.validation.constraints.AssertTrue;
+
 /**
  * Created by augustkorvell on 13/03/2018.
  */
@@ -44,8 +46,13 @@ public class DatabaseTest {
     @Before
     public void setUp() throws Exception {
         Configurations.instance = new Configurations("test-config.json");
-        TestHelpers.resetDatabase();
+
         TestHelpers.populateDatabase();
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+        TestHelpers.resetDatabase();
     }
 
     @Test
@@ -156,18 +163,6 @@ public class DatabaseTest {
 
     }
 
-    private static Connection createConnection() throws SQLException, ClassNotFoundException {
-        Connection c = null;
-        Class.forName("org.postgresql.Driver");
-        c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/postgres",
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
-        return c;
-    }
-
     @Test
     public void clearInviteFromKey() {
         boolean hasError = false;
@@ -245,17 +240,29 @@ public class DatabaseTest {
         List<Survey> addedSurveys;
 
         for (Survey survey : surveys) {
-            survey.id = Database.addSurvey(survey);
+            survey.setId(Database.addSurvey(survey));
         }
 
         for (Survey survey : surveys) {
-            assertTrue(survey.equals(Database.getSurvey(survey.id)));
+            assertTrue(survey.equals(Database.getSurvey(survey.getId())));
         }
     }
 
     @Test
     public void getUsersSurveys() throws Exception {
-        assertTrue(false);
+        List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant1);
+
+        assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
+    }
+
+    @Test
+    public void linkModuleToGroup() throws Exception {
+        Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
+        //Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+
+        List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant2);
+
+        assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
     }
 
 }

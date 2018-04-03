@@ -55,6 +55,7 @@ public class ParticipantResourceTest {
 
     /**
      * Test for userstory 3's implementation.
+     *
      * @throws IOException
      * @throws MessagingException
      * @throws InterruptedException

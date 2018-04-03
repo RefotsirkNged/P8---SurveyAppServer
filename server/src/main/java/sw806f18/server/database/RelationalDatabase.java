@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
 import sw806f18.server.exceptions.AddGroupException;
@@ -22,6 +21,7 @@ import sw806f18.server.exceptions.GetAllParticipantsException;
 import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
 import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.Group;
@@ -44,12 +44,12 @@ public class RelationalDatabase {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-                .getConnection("jdbc:postgresql://"
-                                + Configurations.instance.getPostgresIp() + ":"
-                                + Configurations.instance.getPostgresPort() + "/"
-                                + Configurations.instance.getPostgresDatabase(),
-                        Configurations.instance.getPostgresUser(),
-                        Configurations.instance.getPostgresPassword());
+            .getConnection("jdbc:postgresql://"
+                    + Configurations.instance.getPostgresIp() + ":"
+                    + Configurations.instance.getPostgresPort() + "/"
+                    + Configurations.instance.getPostgresDatabase(),
+                Configurations.instance.getPostgresUser(),
+                Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -63,9 +63,9 @@ public class RelationalDatabase {
      * @throws SQLException SQL Exception.
      */
     private static int getUser(Connection connection, String email, String password)
-            throws SQLException {
+        throws SQLException {
         String query = "SELECT id, password, salt FROM users "
-                + "WHERE email = '" + email + "'";
+            + "WHERE email = '" + email + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if (!resultSet.next()) {
@@ -73,9 +73,9 @@ public class RelationalDatabase {
         }
 
         byte[] saltedPassword = Security
-                .convertStringToByteArray(resultSet.getString("password"));
+            .convertStringToByteArray(resultSet.getString("password"));
         byte[] salt = Security
-                .convertStringToByteArray(resultSet.getString("salt"));
+            .convertStringToByteArray(resultSet.getString("salt"));
         int id = resultSet.getInt("id");
 
         byte[] hashedPassword = Security.hash(password, salt);
@@ -105,8 +105,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 groups.add(new Group(resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getInt("hub")));
+                    resultSet.getString("name"),
+                    resultSet.getInt("hub")));
             }
             con.close();
             return groups;
@@ -132,7 +132,7 @@ public class RelationalDatabase {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO groups (name, hub) VALUES ('"
-                    + group.getName() + "', null) RETURNING id";
+                + group.getName() + "', null) RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -221,9 +221,9 @@ public class RelationalDatabase {
 
                 if (resultSet.next()) {
                     researcher = new Researcher(userid, email,
-                            resultSet.getString("phone"),
-                            resultSet.getString("firstname"),
-                            resultSet.getString("lastname"));
+                        resultSet.getString("phone"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"));
                 }
             }
 
@@ -247,7 +247,7 @@ public class RelationalDatabase {
      * @throws CreateUserException Exception.
      */
     static Researcher createResearcher(Researcher researcher, String password)
-            throws CreateUserException {
+        throws CreateUserException {
         Connection con = null;
         try {
             con = createConnection();
@@ -255,12 +255,12 @@ public class RelationalDatabase {
             byte[] salt = Security.getNextSalt();
 
             String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
-                    + "VALUES ( '" + researcher.getEmail() + "' , '"
-                    + Security.convertByteArrayToString(Security.hash(password, salt))
-                    + "' , '" + Security.convertByteArrayToString(salt) + "',"
-                    + " '" + researcher.getFirstName() + "',"
-                    + " '" + researcher.getLastName() + "' ) "
-                    + "RETURNING id";
+                + "VALUES ( '" + researcher.getEmail() + "' , '"
+                + Security.convertByteArrayToString(Security.hash(password, salt))
+                + "' , '" + Security.convertByteArrayToString(salt) + "',"
+                + " '" + researcher.getFirstName() + "',"
+                + " '" + researcher.getLastName() + "' ) "
+                + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -269,7 +269,7 @@ public class RelationalDatabase {
 
             Statement stmt2 = con.createStatement();
             String q2 = "INSERT INTO researcher (id, phone)"
-                    + "VALUES (" + id + ", " + researcher.phone + ")";
+                + "VALUES (" + id + ", " + researcher.phone + ")";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -361,9 +361,9 @@ public class RelationalDatabase {
 
                 if (resultSet.next()) {
                     participant = new Participant(userid, email,
-                            resultSet.getString("cpr"),
-                            resultSet.getString("firstname"),
-                            resultSet.getString("lastname"));
+                        resultSet.getString("cpr"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"));
                 }
             }
 
@@ -444,13 +444,13 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                    + " FROM users u, participants p WHERE u.id = p.id";
+                + " FROM users u, participants p WHERE u.id = p.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
-                        rs.getString("cpr"), rs.getString("firstname"),
-                        rs.getString("lastname")));
+                    rs.getString("cpr"), rs.getString("firstname"),
+                    rs.getString("lastname")));
             }
             closeConnection(con);
         } catch (SQLException e) {
@@ -470,7 +470,7 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "INSERT INTO hasgroup (participantid, groupid)"
-                    + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
+                + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
@@ -482,7 +482,7 @@ public class RelationalDatabase {
     }
 
     static void removeParticipantFromGroup(Group group, Participant participant)
-            throws RemoveParticipantFromGroupException {
+        throws RemoveParticipantFromGroupException {
         Connection con = null;
 
         try {
@@ -490,7 +490,7 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "DELETE FROM hasgroup WHERE participantid = " + participant.getId()
-                    + " AND groupid = " + group.getId();
+                + " AND groupid = " + group.getId();
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
@@ -510,14 +510,14 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                    + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = " + group1.getId()
-                    + " AND h.participantid = u.id";
+                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = " + group1.getId()
+                + " AND h.participantid = u.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
-                        rs.getString("cpr"), rs.getString("firstname"),
-                        rs.getString("lastname")));
+                    rs.getString("cpr"), rs.getString("firstname"),
+                    rs.getString("lastname")));
             }
             closeConnection(con);
         } catch (SQLException e) {
@@ -536,7 +536,9 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "INSERT INTO modules (name) VALUES ('" + s.getTitle() + "') RETURNING id";
+            String query = "INSERT INTO modules (name, frequencyvalue, frequencytype) VALUES ('" + s.getTitle() + "', "
+                    + s.getFrequencyValue() + ", '" + s.getFrequencyType() + "') RETURNING id";
+
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -549,7 +551,53 @@ public class RelationalDatabase {
         return id;
     }
 
-    static List<Integer> getUsersSurveyIDs(User user) {
-        throw new NotImplementedException();
+    static List<Integer> getUsersSurveyIDs(User user) throws SurveyException {
+        List<Integer> ids = new ArrayList<>();
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT hasmodule.moduleid FROM hasgroup, hasmodule WHERE hasgroup.participantid = "
+                    + user.getId()
+                    + "AND hasgroup.groupid = hasmodule.groupid";
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                ids.add(resultSet.getInt(1));
+            }
+            con.close();
+
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+
+        return ids;
+    }
+
+    /**
+     * Links a module to a group.
+     * @param moduleID ID of a module.
+     * @param groupID ID of a group.
+     */
+    static void setModuleSurveyLink(int moduleID, int groupID) throws SurveyException {
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hasModule (groupid, moduleid) VALUES ( " + groupID + " , " + moduleID + " )";
+
+            statement.execute(query);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
     }
 }
