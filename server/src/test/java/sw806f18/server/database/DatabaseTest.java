@@ -239,11 +239,11 @@ public class DatabaseTest {
         List<Survey> addedSurveys;
 
         for (Survey survey : surveys) {
-            survey.id = Database.addSurvey(survey);
+            survey.setId(Database.addSurvey(survey));
         }
 
         for (Survey survey : surveys) {
-            assertTrue(survey.equals(Database.getSurvey(survey.id)));
+            assertTrue(survey.equals(Database.getSurvey(survey.getId())));
         }
     }
 
@@ -251,17 +251,17 @@ public class DatabaseTest {
     public void getUsersSurveys() throws Exception {
         List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant1);
 
-        assertTrue(surveys.size() > 0 && surveys.get(0).id == TestHelpers.survey1.id);
+        assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
     }
 
     @Test
-    public void linkModuleToGroup() throws Exception{
+    public void linkModuleToGroup() throws Exception {
         Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
         //Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
 
         List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant2);
 
-        assertTrue(surveys.size() > 0 && surveys.get(0).id == TestHelpers.survey1.id);
+        assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
     }
 
 }

@@ -49,12 +49,12 @@ public class Survey {
         frequencyValue = 1;
     }
 
-    public List<Question> questions;
+    private List<Question> questions;
     private String title;
     private String description;
-    public int id;
-    public int frequencyValue;
-    public String frequencyType;
+    private int id;
+    private int frequencyValue;
+    private String frequencyType;
 
     public int getId() {
         return id;
@@ -80,12 +80,20 @@ public class Survey {
         this.description = description;
     }
 
-    /**
-     * Adds (append) a Question to the survey.
-     * @param question the question to add
-     */
-    public void addQuestion(Question question) {
-        questions.add(question);
+    public void setFrequencyValue(int value) {
+        this.frequencyValue = value;
+    }
+
+    public int getFrequencyValue() {
+        return frequencyValue;
+    }
+
+    public void setFrequencyType(String type) {
+        this.frequencyType = type;
+    }
+
+    public String getFrequencyType() {
+        return frequencyType;
     }
 
     public List<Question> getQuestions() {
@@ -106,6 +114,13 @@ public class Survey {
         questions.add(index, question);
     }
 
+    /**
+     * Adds (append) a Question to the survey.
+     * @param question the question to add
+     */
+    public void addQuestion(Question question) {
+        questions.add(question);
+    }
 
     /**
      * Move a question.

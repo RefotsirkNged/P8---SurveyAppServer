@@ -101,7 +101,7 @@ public class TestHelpers {
         group2 = Database.addGroup(group2);
         group3 = Database.addGroup(group3);
 
-        survey1.id = Database.addSurvey(survey1);
+        survey1.setId(Database.addSurvey(survey1));
 
         Database.addGroupMember(group1, participant1);
         Database.linkModuleToGroup(survey1, group1);

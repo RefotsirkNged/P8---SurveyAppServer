@@ -537,7 +537,7 @@ public class RelationalDatabase {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO modules (name, frequencyvalue, frequencytype) VALUES ('" + s.getTitle() + "', "
-                    + s.frequencyValue + ", '" + s.frequencyType + "') RETURNING id";
+                    + s.getFrequencyValue() + ", '" + s.getFrequencyType() + "') RETURNING id";
 
             ResultSet rs = statement.executeQuery(query);
             rs.next();
@@ -590,7 +590,7 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "INSERT INTO hasModule (groupid, moduleid) VALUES ( " + groupID + " , " + moduleID + " )" ;
+            String query = "INSERT INTO hasModule (groupid, moduleid) VALUES ( " + groupID + " , " + moduleID + " )";
 
             statement.execute(query);
             con.close();

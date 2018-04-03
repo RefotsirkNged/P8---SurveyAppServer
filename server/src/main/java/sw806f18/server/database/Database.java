@@ -99,9 +99,9 @@ public class Database {
      * @throws SurveyException Exception.
      */
     public static int addSurvey(Survey s) throws SurveyException {
-        s.id = RelationalDatabase.addSurvey(s);
+        s.setId(RelationalDatabase.addSurvey(s));
         NoSqlDatabase.addSurvey(s);
-        return s.id;
+        return s.getId();
     }
 
     public static Survey getSurvey(int id) {
@@ -130,10 +130,10 @@ public class Database {
     }
 
     public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
-        RelationalDatabase.setModuleSurveyLink(survey.id, group.getId());
+        RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
     }
 
-    public static void cleanMongoDB(){
+    public static void cleanMongoDB() {
         NoSqlDatabase.cleanMongoDB();
     }
 }
