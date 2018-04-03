@@ -2,6 +2,18 @@ package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 
+import sw806f18.server.database.Database;
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.*;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -12,20 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
@@ -56,22 +60,23 @@ public class TestHelpers {
     public static final String INVALID_EMAIL = "fake1@email.com";
     public static final String INVALID_PASSWORD = "fake";
 
-    public static Researcher researcher1 = new Researcher("res1@earch.er",
-        "88888888", "res", "earch");
-    public static Researcher researcherCreate = new Researcher("test@testington.com",
-        "50505050", "test", "test");
+    public static Researcher researcher1 =
+            new Researcher("res1@earch.er", "88888888", "res", "earch");
+    public static Researcher researcherCreate =
+            new Researcher("test@testington.com", "50505050", "test", "test");
 
-    public static Participant participant1 = new Participant(-1,
-        "test1@testesen.dk", "0123456789", "partic", "ipant1");
-    public static Participant participant2 = new Participant(-1,
-        "test2@testesen.dk", "0123456780", "name", "one");
-    public static Participant participantCreate = new Participant(-1,
-        "test3@testesen.dk", "0123456798", "test", "test");
+    public static Participant participant1 =
+            new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1");
+    public static Participant participant2 =
+            new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one");
+    public static Participant participantCreate =
+            new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test");
 
     public static Group group1 = new Group("Group 1", 0);
     public static Group group2 = new Group("Group 2", 0);
     public static Group group3 = new Group("Group 3", 0);
     public static Group groupCreate = new Group("TestGroup", 0);
+    public static Survey survey1 = new Survey("Test Title", "This is a survey for testing porpesses");
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
@@ -79,15 +84,14 @@ public class TestHelpers {
     public static final Survey survey = new Survey("Test survey 1", "");
 
     /**
-     * Populate database.
-     *
-     * @throws CreateUserException
-     * @throws CreateInviteException
-     * @throws AddGroupException
-     * @throws AddGroupMemberException
+     * Populates database with test data.
+     * @throws CreateUserException Exception.
+     * @throws CreateInviteException Exception.
+     * @throws AddGroupException Exception.
+     * @throws AddGroupMemberException Exception.
      */
-    public static void populateDatabase() throws CreateUserException,
-        CreateInviteException, AddGroupException, AddGroupMemberException {
+    public static void populateDatabase() throws
+            CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException, SurveyException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
 
@@ -102,7 +106,10 @@ public class TestHelpers {
         group2 = Database.addGroup(group2);
         group3 = Database.addGroup(group3);
 
+        survey1.setId(Database.addSurvey(survey1));
+
         Database.addGroupMember(group1, participant1);
+        Database.linkModuleToGroup(survey1, group1);
     }
 
     private TestHelpers() {
@@ -376,6 +383,8 @@ public class TestHelpers {
         statement.execute(query);
 
         closeConnection(connection);
+
+        Database.cleanMongoDB();
     }
 
     /**
@@ -392,8 +401,7 @@ public class TestHelpers {
     }
 
     /**
-     * Return test surverys.
-     *
+     * Generates surveys for test database.
      * @return Test surveys.
      */
     public static List<Survey> testSurveys() {
@@ -410,10 +418,11 @@ public class TestHelpers {
             values.add("B" + i);
             values.add("C" + i);
 
-            survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
-                "Drop question" + i, "Drop question description" + i, values));
-            survey.addQuestion(new NumberQuestion(3, "Number question" + 1,
-                "Number question description" + 1));
+            survey.addQuestion(
+                    new DropdownQuestion(2,Question.Type.STRING,
+                            "Drop question" + i,
+                            "Drop question description" + i, values));
+            survey.addQuestion(new NumberQuestion(3,"Number question" + 1, "Number question description" + 1));
 
             results.add(survey);
         }

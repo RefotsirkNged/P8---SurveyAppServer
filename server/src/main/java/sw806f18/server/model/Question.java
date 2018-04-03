@@ -22,6 +22,13 @@ public abstract class Question {
     }
 
     /**
+     * Base counstructer.
+     */
+    public Question() {
+
+    }
+
+    /**
      * Constructor for abstract class Question.
      * @param id The id of a question
      * @param title The title
@@ -36,10 +43,50 @@ public abstract class Question {
     }
 
     public int id;
-    protected Type type;
-    protected Input input;
-    protected String title;
-    protected String description;
+    public Type type;
+    public Input input;
+    public String title;
+    public String description;
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Input getInput() {
+        return input;
+    }
+
+    public void setInput(Input input) {
+        this.input = input;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Get the HTML representation of Question.

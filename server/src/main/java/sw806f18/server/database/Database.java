@@ -15,6 +15,7 @@ import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Invite;
 import sw806f18.server.model.Participant;
@@ -101,16 +102,24 @@ public class Database {
         return RelationalDatabase.createParticipant(participant, password);
     }
 
-    public static int addSurvey(Survey s) throws NotImplementedException {
-        throw new NotImplementedException("Not implemented");
+    /**
+     * Adds Survey to database.
+     * @param s Survey to add.
+     * @return new survey ID.
+     * @throws SurveyException Exception.
+     */
+    public static int addSurvey(Survey s) throws SurveyException {
+        s.setId(RelationalDatabase.addSurvey(s));
+        NoSqlDatabase.addSurvey(s);
+        return s.getId();
     }
 
-    public static Survey getSurvey(int id) throws NotImplementedException {
-        throw new NotImplementedException("Not implemented");
+    public static Survey getSurvey(int id) {
+        return NoSqlDatabase.getSurvey(id);
     }
 
-    public static List<Survey> getUsersSurveys(User user) throws NotImplementedException {
-        throw new NotImplementedException("Not implemented");
+    public static List<Survey> getUsersSurveys(User user) throws SurveyException {
+        return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
     public static List<Participant> getAllParticipants() throws GetAllParticipantsException {
@@ -122,11 +131,19 @@ public class Database {
     }
 
     public static void removeParticipantFromGroup(Group group, Participant participant)
-        throws RemoveParticipantFromGroupException {
+            throws RemoveParticipantFromGroupException {
         RelationalDatabase.removeParticipantFromGroup(group, participant);
     }
 
     public static List<Participant> getGroupMembers(Group group1) throws GetGroupMemberException {
         return RelationalDatabase.getGroupMembers(group1);
+    }
+
+    public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
+        RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
+    }
+
+    public static void cleanMongoDB() {
+        NoSqlDatabase.cleanMongoDB();
     }
 }
