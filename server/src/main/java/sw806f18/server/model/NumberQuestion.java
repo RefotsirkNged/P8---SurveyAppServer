@@ -24,6 +24,13 @@ public class NumberQuestion extends Question {
     }
 
     /**
+     * Empty constructor.
+     */
+    public NumberQuestion() {
+        super();
+    }
+
+    /**
      * Get the HTML representation of Question.
      * @return HTML representation of Question
      */
@@ -35,7 +42,7 @@ public class NumberQuestion extends Question {
         builder.append("<p>" + description + "</p>");
         builder.append("<input id='"
                 + title.replace(" ","_")
-                + "' type='number' class='form-control'>");
+                + "' type='number' class='form-control p8number'>");
 
         return  builder.toString();
     }

@@ -6,6 +6,8 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.ClassModel;
+import org.bson.codecs.pojo.ClassModelBuilder;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 import com.mongodb.MongoClient;
@@ -19,7 +21,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import sw806f18.server.Configurations;
 import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.model.Survey;
+import sw806f18.server.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.List;
 public class NoSqlDatabase {
     private static MongoClient client;
     private static MongoDatabase database;
+    private static PojoCodecProvider surveyPojoCodecProvider;
 
     private static final String moduleCollection = "module";
 
@@ -39,6 +42,19 @@ public class NoSqlDatabase {
         MongoClientURI uri = new MongoClientURI("mongodb://root:power123@192.168.1.111:27017/?authSource=admin");
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
+
+        ClassModel<Survey> surveyModel = ClassModel.builder(Survey.class).build();
+        ClassModel<Question> questionModel = ClassModel.builder(Question.class).enableDiscriminator(true).build();
+        ClassModel<DropdownQuestion> dropdownQuestionModel =
+                ClassModel.builder(DropdownQuestion.class).enableDiscriminator(true).build();
+        ClassModel<TextQuestion> textQuestionModel =
+                ClassModel.builder(TextQuestion.class).enableDiscriminator(true).build();
+        ClassModel<NumberQuestion> numberQuestionModel =
+                ClassModel.builder(NumberQuestion.class).enableDiscriminator(true).build();
+
+        surveyPojoCodecProvider = PojoCodecProvider.builder().register(
+                surveyModel, questionModel, dropdownQuestionModel, textQuestionModel, numberQuestionModel).build();
+
     }
 
 
@@ -64,8 +80,10 @@ public class NoSqlDatabase {
     static void addSurvey(Survey s) {
         openConnection();
 
+
+
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                fromProviders(surveyPojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
@@ -80,7 +98,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                fromProviders(surveyPojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 
@@ -99,7 +117,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                fromProviders(surveyPojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 

@@ -4,6 +4,14 @@ package sw806f18.server.model;
  * Created by augustkorvell on 14/03/2018.
  */
 public class TextQuestion extends Question {
+
+    /**
+     * Empty constructor.
+     */
+    public TextQuestion() {
+        super();
+    }
+
     /**
      * Constructor for abstract class Question.
      * @param id The id of the question
@@ -35,7 +43,7 @@ public class TextQuestion extends Question {
         builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
         builder.append("<input id='" + title.replace(" ","_")
-                + "' type='text' class='form-control'>");
+                + "' type='text' class='form-control p8text'>");
         return  builder.toString();
     }
 }

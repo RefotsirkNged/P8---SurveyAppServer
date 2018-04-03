@@ -10,6 +10,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import sw806f18.server.database.Database;
 import sw806f18.server.model.DropdownQuestion;
 import sw806f18.server.model.NumberQuestion;
 import sw806f18.server.model.Question;
@@ -53,6 +55,8 @@ public class SurveyResource {
                 values));
         survey.addQuestion(new TextQuestion(1,"Barnets livret", "Udfyld kun hvis relevant:"));
 
+        survey.addStyleProperty("body", "background-image", "url(\"https://images.pexels.com/photos/414667/pexels-photo-414667.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260\")");
+        survey.addStyleProperty("p, h1, h2, h3, h4", "color", "white");
 
         InputStream stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
         return stream;

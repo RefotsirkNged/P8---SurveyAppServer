@@ -19,7 +19,7 @@ import org.w3c.tidy.Tidy;
  */
 public class SurveyTest {
     private Survey survey;
-    private  String title = "This is a survey";
+    private String title = "This is a survey";
     private String description = "Here we describe the survey";
 
 

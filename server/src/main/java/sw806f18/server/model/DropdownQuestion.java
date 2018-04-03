@@ -7,7 +7,15 @@ import java.util.List;
  */
 
 public class DropdownQuestion extends Question {
-    public List<String> values;
+    private List<String> values;
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
+    }
 
     /**
      * Constructor for abstract class Question.
@@ -34,6 +42,13 @@ public class DropdownQuestion extends Question {
     }
 
     /**
+     * Empty constructor.
+     */
+    public DropdownQuestion() {
+        super();
+    }
+
+    /**
      * Get the html representation of a question.
      * @return HTML representation of Question.
      */
@@ -50,7 +65,7 @@ public class DropdownQuestion extends Question {
         for (int i = 0; i < values.size(); i++) {
             builder.append("<option value='"
                     + values.get(i)
-                    + "' class='form-control'>"
+                    + "' class='form-control p8dropdown'>"
                     + values.get(i)
                     + "</option>");
         }
