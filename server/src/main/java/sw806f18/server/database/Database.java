@@ -3,19 +3,7 @@ package sw806f18.server.database;
 import java.sql.SQLException;
 import java.util.List;
 
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetAllParticipantsException;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Invite;
 import sw806f18.server.model.Participant;
@@ -140,7 +128,7 @@ public class Database {
     }
 
     public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
-        RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
+        RelationalDatabase.addModuleToGroup(survey.getId(), group.getId());
     }
 
     public static void cleanMongoDB() {

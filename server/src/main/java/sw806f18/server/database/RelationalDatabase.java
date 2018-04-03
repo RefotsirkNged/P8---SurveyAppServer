@@ -583,7 +583,7 @@ public class RelationalDatabase {
      * @param moduleID ID of a module.
      * @param groupID ID of a group.
      */
-    static void setModuleSurveyLink(int moduleID, int groupID) throws SurveyException {
+    static void addModuleToGroup(int moduleID, int groupID) throws SurveyException {
         Connection con;
         int id = 0;
 

@@ -55,7 +55,6 @@ public class TestHelpers {
 
     public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
 
-
     public static final String PASSWORD = "power123";
     public static final String INVALID_EMAIL = "fake1@email.com";
     public static final String INVALID_PASSWORD = "fake";
@@ -67,8 +66,10 @@ public class TestHelpers {
 
     public static Participant participant1 =
             new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1");
+    public static String token1;
     public static Participant participant2 =
             new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one");
+    public static String token2;
     public static Participant participantCreate =
             new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test");
 
@@ -81,7 +82,8 @@ public class TestHelpers {
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
 
-    public static final Survey survey = new Survey("Test survey 1", "");
+    public static Survey survey2 = new Survey("Test survey 2", "");
+    public static Survey survey3 = new Survey("Test survey 3", "");
 
     /**
      * Populates database with test data.
@@ -97,7 +99,9 @@ public class TestHelpers {
 
         // Create test participants
         participant1 = Database.createParticipant(participant1, PASSWORD);
+        token1 = Authentication.instance.getToken(participant1.getId());
         participant2 = Database.createParticipant(participant2, PASSWORD);
+        token2 = Authentication.instance.getToken(participant2.getId());
 
         // Create invites
         Database.createInvite(invite1);
@@ -107,9 +111,11 @@ public class TestHelpers {
         group3 = Database.addGroup(group3);
 
         survey1.setId(Database.addSurvey(survey1));
+        survey2.setId(Database.addSurvey(survey2));
 
         Database.addGroupMember(group1, participant1);
         Database.linkModuleToGroup(survey1, group1);
+        Database.linkModuleToGroup(survey2, group1);
     }
 
     private TestHelpers() {
