@@ -7,7 +7,15 @@ import java.util.List;
  */
 
 public class DropdownQuestion extends Question {
-    public List<String> values;
+    private List<String> values;
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
+    }
 
     /**
      * Constructor for abstract class Question.
@@ -31,6 +39,13 @@ public class DropdownQuestion extends Question {
     public DropdownQuestion(Type type, String title, String description, List<String> values) {
         super(-1, type, Input.DROPDOWN, title, description);
         this.values = values;
+    }
+
+    /**
+     * Empty constructor.
+     */
+    public DropdownQuestion() {
+        super();
     }
 
     /**

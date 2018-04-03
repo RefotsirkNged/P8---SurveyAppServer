@@ -42,11 +42,11 @@ public abstract class Question {
         this.description = description;
     }
 
-    public int id;
-    public Type type;
-    public Input input;
-    public String title;
-    public String description;
+    protected int id;
+    protected Type type;
+    protected Input input;
+    protected String title;
+    protected String description;
 
     public Type getType() {
         return type;
