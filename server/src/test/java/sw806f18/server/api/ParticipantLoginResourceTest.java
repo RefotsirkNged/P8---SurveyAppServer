@@ -1,13 +1,7 @@
 package sw806f18.server.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
-import java.util.Date;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -16,7 +10,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,15 +18,10 @@ import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 
-
-public class ResearcherLoginResourceTest {
+public class ParticipantLoginResourceTest {
     private HttpServer server;
     private WebTarget target;
 
-    /**
-     * Setup.
-     * @throws Exception Exception.
-     */
     @Before
     public void setUp() throws Exception {
         Configurations.instance = new Configurations("test-config.json");
@@ -60,8 +48,8 @@ public class ResearcherLoginResourceTest {
 
     @Test
     public void legalUserLogin() {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
+        Response response = TestHelpers.login(target, TestHelpers.PARTICIPANT_LOGIN_PATH,
+            TestHelpers.participant1.getEmail(), TestHelpers.PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String token = jsonObject.getString("token");
@@ -70,8 +58,8 @@ public class ResearcherLoginResourceTest {
 
     @Test
     public void illegalUserLogin() {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
+        Response response = TestHelpers.login(target, TestHelpers.PARTICIPANT_LOGIN_PATH,
+            TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
         assertEquals(response.getStatus(), 200);            // TODO: What status to return?
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String error = jsonObject.getString("error");
@@ -80,42 +68,11 @@ public class ResearcherLoginResourceTest {
 
     @Test
     public void wrongPasswordUserLogin() {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.researcher1.getEmail(), TestHelpers.INVALID_PASSWORD);
+        Response response = TestHelpers.login(target, TestHelpers.PARTICIPANT_LOGIN_PATH,
+            TestHelpers.participant1.getEmail(), TestHelpers.INVALID_PASSWORD);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
         String error = jsonObject.getString("error");
         assertTrue(error.equals("Invalid email or password!"));
-    }
-
-
-    @Test
-    public void validUserToken() {
-        Response response = TestHelpers.login(target, TestHelpers.RESEARCHER_LOGIN_PATH,
-                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String token = jsonObject.getString("token");
-
-        boolean isValid = true;
-        DecodedJWT decodedJwt = null;
-
-        try {
-            decodedJwt = Authentication.instance.decodeToken(token);
-        } catch (JWTVerificationException e) {
-            isValid = false;
-        }
-
-        assertTrue(isValid);
-
-        long expirationTime = 0;
-
-        try {
-            expirationTime = decodedJwt.getExpiresAt().getTime();
-        } catch (Exception e) {
-            assertFalse(true);
-        }
-
-        assertTrue(expirationTime > new Date().getTime());
     }
 }

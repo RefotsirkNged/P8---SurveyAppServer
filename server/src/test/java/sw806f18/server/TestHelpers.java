@@ -49,9 +49,12 @@ public class TestHelpers {
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
 
+    public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
+
+
     public static final String PASSWORD = "power123";
-    public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
-    public static final String INVALID_RESEARCHER_PASSWORD = "fake";
+    public static final String INVALID_EMAIL = "fake1@email.com";
+    public static final String INVALID_PASSWORD = "fake";
 
     public static Researcher researcher1 = new Researcher("res1@earch.er",
         "88888888", "res", "earch");
@@ -72,6 +75,8 @@ public class TestHelpers {
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
+
+    public static final Survey survey = new Survey("Test survey 1", "");
 
     /**
      * Populate database.
