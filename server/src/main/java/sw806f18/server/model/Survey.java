@@ -16,7 +16,7 @@ public class Survey {
      * Empty constructer.
      */
     public Survey() {
-
+        questions = new ArrayList<>();
     }
 
     /**
@@ -29,7 +29,7 @@ public class Survey {
         this.description = description;
         questions = new ArrayList<>();
         id = -1;
-        frequencyType = "blank";
+        frequencyType = FrequencyType.DAYS;
         frequencyValue = 1;
     }
 
@@ -45,7 +45,7 @@ public class Survey {
         this.description = description;
         questions = new ArrayList<>();
         this.id = id;
-        frequencyType = "blank";
+        frequencyType = FrequencyType.DAYS;
         frequencyValue = 1;
     }
 
@@ -54,7 +54,7 @@ public class Survey {
     private String description;
     private int id;
     private int frequencyValue;
-    private String frequencyType;
+    private FrequencyType frequencyType;
 
     public int getId() {
         return id;
@@ -88,11 +88,11 @@ public class Survey {
         return frequencyValue;
     }
 
-    public void setFrequencyType(String type) {
+    public void setFrequencyType(FrequencyType type) {
         this.frequencyType = type;
     }
 
-    public String getFrequencyType() {
+    public FrequencyType getFrequencyType() {
         return frequencyType;
     }
 

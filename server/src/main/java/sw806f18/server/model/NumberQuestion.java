@@ -24,6 +24,13 @@ public class NumberQuestion extends Question {
     }
 
     /**
+     * Empty constructor.
+     */
+    public NumberQuestion() {
+        super();
+    }
+
+    /**
      * Get the HTML representation of Question.
      * @return HTML representation of Question
      */
