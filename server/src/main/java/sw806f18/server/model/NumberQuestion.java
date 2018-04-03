@@ -40,9 +40,12 @@ public class NumberQuestion extends Question {
 
         builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<input id='"
-                + title.replace(" ","_")
-                + "' type='number' class='form-control p8number'>");
+        builder.append("<input name='"
+                + getHtmlID()
+                + "' type='number' class='form-control p8number'"
+                + (value == null ? "" : "value='" + value + "'") + ">");
+
+        super.getHTML();
 
         return  builder.toString();
     }

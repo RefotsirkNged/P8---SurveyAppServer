@@ -144,17 +144,17 @@ public class Survey {
      */
     public void addStyleProperty(Question.Input inputType, String property, String value) {
         switch (inputType) {
-          case TEXT:
-              addStyleProperty(".p8text", property, value);
-              break;
-          case NUMBER:
-              addStyleProperty(".p8number", property, value);
-              break;
-          case DROPDOWN:
-              addStyleProperty(".p8dropdown", property, value);
-              break;
-          default:
-              break;
+            case TEXT:
+                addStyleProperty(".p8text", property, value);
+                break;
+            case NUMBER:
+                addStyleProperty(".p8number", property, value);
+                break;
+            case DROPDOWN:
+                addStyleProperty(".p8dropdown", property, value);
+                break;
+            default:
+                break;
         }
     }
 
@@ -223,7 +223,7 @@ public class Survey {
         builder.append("<br />");
         builder.append("<h4>" + description + "</h4>");
         builder.append("<hr />");
-        builder.append("<form action='#'>");
+        builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
 
         for (int i = 0; i < questions.size(); i++) {
             builder.append(questions.get(i).getHTML());
@@ -231,7 +231,7 @@ public class Survey {
             builder.append("<br />");
         }
 
-        builder.append("<input type='submit' value='Submit'>");
+        builder.append("<input type='submit' value='Submit' class='btn btn-success'>");
 
         builder.append("</form>");
         builder.append("</div>");
