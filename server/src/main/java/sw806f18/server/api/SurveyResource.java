@@ -138,9 +138,10 @@ public class SurveyResource {
     @GET
     @Path("/test")
     public void postTestSurvey() {
+
         Survey survey1 = new Survey("Spørgeskema under graviditetsforløb",
                 "Dette spørgeskema indeholder spørgsmål vedrørende din livsstil og dit helbred.");
-        survey1.addStyleProperty("body", "background-color", "#5DADE2");
+        survey1.addStyleProperty("body", "background-color", "lightblue");
 
         survey1.addQuestion(new NumberQuestion(3,"Alkohol",
                 "Hvor mange genstande drikker du om ugen?"));
@@ -185,16 +186,21 @@ public class SurveyResource {
 
         Survey survey2 = new Survey("Barn 6 - 10 år",
                 "Dette spørgeskema vedrører dit barn.");
-        survey2.addStyleProperty("body", "background-color", "#FFFFFF");
+        survey2.addStyleProperty("body", "background-image", "url('https://media.istockphoto.com/photos/textured-blue-painted-background-picture-id534129318?k=6&m=534129318&s=612x612&w=0&h=5N2BeInhaXkV_G09cVoIaO2RWoNwGABqVbhw0U_0Jto=')");
+        survey2.addStyleProperty("body", "background-size", "cover");
+
+        survey2.addStyleProperty(".p8label", "font-family", "\"Comic Sans MS\", cursive, sans-serif");
+        survey2.addStyleProperty(".p8label", "color", "white");
+
 
         List<String> ageChart = new ArrayList<>();
-        ageChart.add("6");
-        ageChart.add("7");
-        ageChart.add("8");
-        ageChart.add("9");
-        ageChart.add("10");
+        ageChart.add("6 År");
+        ageChart.add("7 År");
+        ageChart.add("8 År");
+        ageChart.add("9 År");
+        ageChart.add("10 År");
 
-        survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+        survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Barnets alder",
                 "Hvad er barnets alder?",
                 ageChart));
@@ -219,6 +225,8 @@ public class SurveyResource {
         survey3.addQuestion(new NumberQuestion("BMI", "Hvad er din BMI?:"));
         try {
             Database.addSurvey(survey1);
+            Database.addSurvey(survey2);
+            Database.addSurvey(survey3);
         } catch (SurveyException e) {
             e.printStackTrace();
         }
