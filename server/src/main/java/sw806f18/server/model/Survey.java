@@ -1,7 +1,6 @@
 package sw806f18.server.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.bson.BSON;
 import org.bson.BsonDocument;
@@ -25,12 +24,7 @@ public class Survey {
      * @param description Description
      */
     public Survey(String title, String description) {
-        this.title = title;
-        this.description = description;
-        questions = new ArrayList<>();
-        id = -1;
-        frequencyType = FrequencyType.DAYS;
-        frequencyValue = 1;
+        this(-1, title, description);
     }
 
     /**
@@ -47,6 +41,7 @@ public class Survey {
         this.id = id;
         frequencyType = FrequencyType.DAYS;
         frequencyValue = 1;
+        style = new HashMap<>();
     }
 
     private List<Question> questions;
@@ -55,6 +50,7 @@ public class Survey {
     private int id;
     private int frequencyValue;
     private FrequencyType frequencyType;
+    private Map<String, List<String>> style;
 
     public int getId() {
         return id;
@@ -104,9 +100,16 @@ public class Survey {
         this.questions = questions;
     }
 
+    public Map<String, List<String>> getStyle() {
+        return style;
+    }
+
+    public void setStyle(Map<String, List<String>> style) {
+        this.style = style;
+    }
+
     /**
      * Add Question to the survey at index.
-
      * @param question question to be added
      * @param index    the index at which it should be added
      */
@@ -132,13 +135,44 @@ public class Survey {
         Question temp = questions.remove(currrentIndex);
 
         questions.add(newIndex, temp);
+    }
 
+    /**
+     * Add style property to input type.
+     * @param inputType input type to add properties to.
+     * @param property property to add.
+     */
+    public void addStyleProperty(Question.Input inputType, String property, String value) {
+        switch (inputType) {
+            case TEXT:
+                addStyleProperty(".p8text", property, value);
+                break;
+            case NUMBER:
+                addStyleProperty(".p8number", property, value);
+                break;
+            case DROPDOWN:
+                addStyleProperty(".p8dropdown", property, value);
+                break;
+            default:
+                break;
+        }
+    }
 
+    /**
+     * Add style properties to html body.
+     * @param tag the tag to add the property to
+     * @param property properties to add.
+     */
+    public void addStyleProperty(String tag, String property, String value) {
+        if (!style.containsKey(tag)) {
+            style.put(tag, new ArrayList<>());
+        }
+
+        style.get(tag).add(property + ":" + value + ";");
     }
 
     /**
      * Get html representation of Question.
-     *
      * @return Survey as HTML
      */
     public String getHTML() {
@@ -168,21 +202,36 @@ public class Survey {
             + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
             + "type='text/javascript'></script>");
 
+        builder.append("<style type='text/css'>");
+
+        for (String tag : style.keySet()) {
+            builder.append(tag + " {");
+            for (String property : style.get(tag)) {
+                builder.append(property);
+            }
+            builder.append("}");
+        }
+
+
+        builder.append("</style>");
+
         builder.append("</head>");
 
-        builder.append("<body style='background-color:#D0ECE7;'>");
+        builder.append("<body>");
         builder.append("<div class='content' style='padding:1%;'>");
         builder.append("<h2>" + title + "</h2>");
         builder.append("<br />");
         builder.append("<h4>" + description + "</h4>");
         builder.append("<hr />");
-        builder.append("<form action='" + Constants.url + "'>");
+        builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
 
         for (int i = 0; i < questions.size(); i++) {
             builder.append(questions.get(i).getHTML());
             builder.append("<br />");
             builder.append("<br />");
         }
+
+        builder.append("<input type='submit' value='Submit' class='btn btn-success'>");
 
         builder.append("</form>");
         builder.append("</div>");

@@ -47,6 +47,8 @@ public abstract class Question {
     protected Input input;
     protected String title;
     protected String description;
+    protected String value;
+    protected String warning;
 
     public Type getType() {
         return type;
@@ -88,11 +90,39 @@ public abstract class Question {
         this.id = id;
     }
 
+    public String getHtmlID() {
+        return title.replace(" ", "_");
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getWarning() {
+        return warning;
+    }
+
+    public void setWarning(String warning) {
+        this.warning = warning;
+    }
+
     /**
      * Get the HTML representation of Question.
      * @return HTML representation of Question
      */
-    public abstract String getHTML();
+    public String getHTML() {
+        StringBuilder builder = new StringBuilder();
+
+        if (warning != null) {
+            builder.append("<p class='p8warning'>" + warning + "</p>");
+        }
+
+        return  builder.toString();
+    }
 
     @Override
     public boolean equals(Object obj) {

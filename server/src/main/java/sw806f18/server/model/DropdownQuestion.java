@@ -58,19 +58,22 @@ public class DropdownQuestion extends Question {
 
         builder.append("<h4>" + title + "</h4>");
         builder.append("<p>" + description + "</p>");
-        builder.append("<select id='"
-                + title.replace(" ","_")
-                + "' class='form-control'>");
+        builder.append("<select name='"
+                + getHtmlID()
+                + "' class='form-control' >");
 
         for (int i = 0; i < values.size(); i++) {
             builder.append("<option value='"
                     + values.get(i)
-                    + "' class='form-control'>"
+                    + "' class='form-control p8dropdown' "
+                    + (value != null && values.get(i).equals(values) ? "selected='selected'" : "") + ">"
                     + values.get(i)
                     + "</option>");
         }
 
         builder.append("</select>");
+
+        super.getHTML();
 
         return  builder.toString();
     }
