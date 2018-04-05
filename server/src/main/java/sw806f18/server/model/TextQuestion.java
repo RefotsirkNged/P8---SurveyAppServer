@@ -40,10 +40,14 @@ public class TextQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h4>" + title + "</h4>");
-        builder.append("<p>" + description + "</p>");
-        builder.append("<input id='" + title.replace(" ","_")
-                + "' type='text' class='form-control p8text'>");
+        builder.append("<h4 class='p8label'>" + title + "</h4>");
+        builder.append("<p class='p8label'>" + description + "</p>");
+        builder.append(super.getHTML());
+
+        builder.append("<textarea name='" + getHtmlID()
+                + "' type='text' rows='10' class='form-control p8text'>"
+                + (value == null ? "" : value) + "</textarea>");
+
         return  builder.toString();
     }
 }

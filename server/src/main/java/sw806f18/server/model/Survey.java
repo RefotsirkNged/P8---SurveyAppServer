@@ -229,7 +229,7 @@ public class Survey {
         builder.append("<br />");
         builder.append("<h4>" + description + "</h4>");
         builder.append("<hr />");
-        builder.append("<form action='#'>");
+        builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
 
         for (int i = 0; i < questions.size(); i++) {
             builder.append(questions.get(i).getHTML());
@@ -237,7 +237,7 @@ public class Survey {
             builder.append("<br />");
         }
 
-        builder.append("<input type='submit' value='Submit'>");
+        builder.append("<input type='submit' value='Submit' class='btn btn-success'>");
 
         builder.append("</form>");
         builder.append("</div>");

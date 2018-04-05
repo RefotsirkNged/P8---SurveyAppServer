@@ -56,21 +56,26 @@ public class DropdownQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h4>" + title + "</h4>");
-        builder.append("<p>" + description + "</p>");
-        builder.append("<select id='"
-                + title.replace(" ","_")
-                + "' class='form-control'>");
+        builder.append("<h4 class='p8label'>" + title + "</h4>");
+        builder.append("<p class='p8label'>" + description + "</p>");
+
+        builder.append(super.getHTML());
+
+        builder.append("<select name='"
+                + getHtmlID()
+                + "' class='form-control' >");
 
         for (int i = 0; i < values.size(); i++) {
             builder.append("<option value='"
                     + values.get(i)
-                    + "' class='form-control p8dropdown'>"
+                    + "' class='form-control p8dropdown' "
+                    + (value != null && values.get(i).equals(value) ? "selected='selected'" : "") + ">"
                     + values.get(i)
                     + "</option>");
         }
 
         builder.append("</select>");
+
 
         return  builder.toString();
     }

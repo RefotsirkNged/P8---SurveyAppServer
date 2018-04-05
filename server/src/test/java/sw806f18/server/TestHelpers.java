@@ -80,6 +80,7 @@ public class TestHelpers {
     public static Group group3 = new Group("Group 3", 0);
     public static Group groupCreate = new Group("TestGroup", 0);
     public static Survey survey1 = new Survey("Test Title", "This is a survey for testing porpesses");
+    public static Survey survey2;
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
@@ -112,6 +113,21 @@ public class TestHelpers {
         group2 = Database.addGroup(group2);
         group3 = Database.addGroup(group3);
 
+        survey2 = new Survey("Spørgeskema under graviditetsforløb",
+                "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
+        survey2.addQuestion(new NumberQuestion(3,"Alkohol",
+                "Hvor mange genstande drikker du om ugen:"));
+        survey2.addQuestion(new TextQuestion(3,"Rygning",
+                "Hvor mange cigaretter ryger du om dagen:"));
+        List<String> bistrolStoolChart = new ArrayList<>();
+        bistrolStoolChart.add("123");
+
+        survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Afføring",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+                bistrolStoolChart));
+
+        survey2.setId(Database.addSurvey(survey2));
         survey1.setId(Database.addSurvey(survey1));
         survey2.setId(Database.addSurvey(survey2));
 
