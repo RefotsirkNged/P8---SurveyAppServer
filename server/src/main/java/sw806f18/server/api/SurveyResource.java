@@ -140,10 +140,10 @@ public class SurveyResource {
     public void postTestSurvey() {
         Survey survey1 = new Survey("Spørgeskema under graviditetsforløb",
                 "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
+        survey1.addStyleProperty("body", "background-color", "#5DADE2");
+
         survey1.addQuestion(new NumberQuestion(3,"Alkohol",
                 "Hvor mange genstande drikker du om ugen:"));
-        survey1.addQuestion(new NumberQuestion(3,"Rygning",
-                "Hvor mange cigaretter ryger du om dagen:"));
 
         List<String> bistrolStoolChart = new ArrayList<>();
         bistrolStoolChart.add("");
@@ -162,22 +162,61 @@ public class SurveyResource {
         survey1.addQuestion(new TextQuestion(1,"Sygdomsepisoder",
                 "Hvilke sygdosepisoder har du haft inden for det sidste år:"));
 
-        survey1.addStyleProperty("body",
-                "background-image",
-                "url(\"https://images.pexels.com/photos/414667/pexels-photo-414667.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260\")");
+        List<String> rygningList = new ArrayList<>();
+        rygningList.add("Dagligt mere end 4");
+        rygningList.add("Dagligt mindre end 4");
+        rygningList.add("Ugentligt");
+        rygningList.add("Ved sociale begivenheder");
+        rygningList.add("Aldrig");
 
-        survey1.addStyleProperty("p, h1, h2, h3, h4", "color", "white");
+        survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Rygning",
+                "Hvor ofte ryger du?:",
+                rygningList));
 
+        survey1.addQuestion(new TextQuestion("Graviditetsrelaterede begivenheder",
+                "Har du haft nogen specielle episoder?:"));
+        survey1.addQuestion(new TextQuestion("Fødselsrelaterede begivenheder",
+                "Skete der noget specialt under fødselt?:"));
+        survey1.addQuestion(new TextQuestion("Barselsrelaterede begivenheder",
+                "Sket noget i din tid der hjemme?:"));
 
 
 
         Survey survey2 = new Survey("Barn 6 - 10 år",
                 "Dette spørgeskema vedrører dit barn.");
-        survey2.addQuestion(new NumberQuestion(3,"Barents højde",
+        survey2.addStyleProperty("body", "background-color", "#FFFFFF");
+
+        List<String> ageChart = new ArrayList<>();
+        ageChart.add("6");
+        ageChart.add("7");
+        ageChart.add("8");
+        ageChart.add("9");
+        ageChart.add("10");
+
+        survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Barnets alder",
+                "Barnets alder",
+                ageChart));
+        survey2.addQuestion(new NumberQuestion(3,"Barnets højde",
                 "Skriv barnets højde i centimeter:"));
         survey2.addQuestion(new NumberQuestion(3,"Barnets vægt",
                 "Skriv barents vægt i gram:"));
 
+
+        Survey survey3 = new Survey("Efter fødsel til mor", "Uderlige infomation om dig efter fødsel");
+        survey3.addStyleProperty("body", "background-color","#FAD7A0");
+        survey3.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Afføring",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+                bistrolStoolChart));
+        survey3.addQuestion(new NumberQuestion(3,"Alkohol",
+                "Hvor mange genstande drikker du om ugen:"));
+        survey3.addQuestion(new TextQuestion("Kost:",
+                "Hvad består din daglige kost af"
+                        + "\n\"For du mange fibere spiser du rodfrugter eller andet du tænker der intresant\""));
+        survey3.addQuestion(new TextQuestion("Medicin", "Hvad har du fået af medicin:"));
+        survey3.addQuestion(new NumberQuestion("BMI", "Hvad er dit BMI?:"));
         try {
             Database.addSurvey(survey1);
         } catch (SurveyException e) {
