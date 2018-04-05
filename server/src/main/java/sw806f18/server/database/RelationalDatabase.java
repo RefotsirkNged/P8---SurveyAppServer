@@ -5,31 +5,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetAllParticipantsException;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
-import sw806f18.server.exceptions.SurveyException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.User;
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.*;
 
 public class RelationalDatabase {
 
@@ -44,12 +29,12 @@ public class RelationalDatabase {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-            .getConnection("jdbc:postgresql://"
-                    + Configurations.instance.getPostgresIp() + ":"
-                    + Configurations.instance.getPostgresPort() + "/"
-                    + Configurations.instance.getPostgresDatabase(),
-                Configurations.instance.getPostgresUser(),
-                Configurations.instance.getPostgresPassword());
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/"
+                                + Configurations.instance.getPostgresDatabase(),
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -63,9 +48,9 @@ public class RelationalDatabase {
      * @throws SQLException SQL Exception.
      */
     private static int getUser(Connection connection, String email, String password)
-        throws SQLException {
+            throws SQLException {
         String query = "SELECT id, password, salt FROM users "
-            + "WHERE email = '" + email + "'";
+                + "WHERE email = '" + email + "'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         if (!resultSet.next()) {
@@ -73,9 +58,9 @@ public class RelationalDatabase {
         }
 
         byte[] saltedPassword = Security
-            .convertStringToByteArray(resultSet.getString("password"));
+                .convertStringToByteArray(resultSet.getString("password"));
         byte[] salt = Security
-            .convertStringToByteArray(resultSet.getString("salt"));
+                .convertStringToByteArray(resultSet.getString("salt"));
         int id = resultSet.getInt("id");
 
         byte[] hashedPassword = Security.hash(password, salt);
@@ -105,8 +90,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 groups.add(new Group(resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getInt("hub")));
+                        resultSet.getString("name"),
+                        resultSet.getInt("hub")));
             }
             con.close();
             return groups;
@@ -132,7 +117,7 @@ public class RelationalDatabase {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO groups (name, hub) VALUES ('"
-                + group.getName() + "', null) RETURNING id";
+                    + group.getName() + "', null) RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -161,8 +146,11 @@ public class RelationalDatabase {
             String q1 = "DELETE FROM hasgroup WHERE groupid=" + id;
             statement.executeUpdate(q1);
 
-            String q2 = "DELETE FROM groups WHERE id=" + id;
+            String q2 = "DELETE FROM hasmodule WHERE groupid=" + id;
             statement.executeUpdate(q2);
+
+            String q3 = "DELETE FROM groups WHERE id=" + id;
+            statement.executeUpdate(q3);
             con.close();
         } catch (SQLException e) {
             throw new DeleteGroupException(e.getMessage());
@@ -221,9 +209,9 @@ public class RelationalDatabase {
 
                 if (resultSet.next()) {
                     researcher = new Researcher(userid, email,
-                        resultSet.getString("phone"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname"));
+                            resultSet.getString("phone"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"));
                 }
             }
 
@@ -247,7 +235,7 @@ public class RelationalDatabase {
      * @throws CreateUserException Exception.
      */
     static Researcher createResearcher(Researcher researcher, String password)
-        throws CreateUserException {
+            throws CreateUserException {
         Connection con = null;
         try {
             con = createConnection();
@@ -255,12 +243,12 @@ public class RelationalDatabase {
             byte[] salt = Security.getNextSalt();
 
             String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
-                + "VALUES ( '" + researcher.getEmail() + "' , '"
-                + Security.convertByteArrayToString(Security.hash(password, salt))
-                + "' , '" + Security.convertByteArrayToString(salt) + "',"
-                + " '" + researcher.getFirstName() + "',"
-                + " '" + researcher.getLastName() + "' ) "
-                + "RETURNING id";
+                    + "VALUES ( '" + researcher.getEmail() + "' , '"
+                    + Security.convertByteArrayToString(Security.hash(password, salt))
+                    + "' , '" + Security.convertByteArrayToString(salt) + "',"
+                    + " '" + researcher.getFirstName() + "',"
+                    + " '" + researcher.getLastName() + "' ) "
+                    + "RETURNING id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             rs.next();
@@ -269,7 +257,7 @@ public class RelationalDatabase {
 
             Statement stmt2 = con.createStatement();
             String q2 = "INSERT INTO researcher (id, phone)"
-                + "VALUES (" + id + ", " + researcher.phone + ")";
+                    + "VALUES (" + id + ", " + researcher.phone + ")";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -354,16 +342,18 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
-                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname"
+                String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname, "
+                        + "p.primarygroup AS primarygroup"
                         + " FROM participants p, users u WHERE p.id = " + userid
                         + "AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
                     participant = new Participant(userid, email,
-                        resultSet.getString("cpr"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname"));
+                            resultSet.getString("cpr"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"),
+                            resultSet.getInt("primarygroup"));
                 }
             }
 
@@ -376,10 +366,7 @@ public class RelationalDatabase {
             throw new LoginException("Server error, contact system administrator");
         }
 
-
         return participant;
-
-
     }
 
     static boolean isParticipant(Connection conn, int id) throws SQLException {
@@ -414,8 +401,10 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO participants (id, cpr)"
-                    + "VALUES (" + id + ", '" + participant.getCpr() + "')";
+            String q2 = "INSERT INTO participants (id, cpr, birthday)"
+                    + "VALUES (" + id + ", '" + participant.getCpr() + "', '"
+                    + LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
+                    ZoneId.systemDefault()) + "')";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);
@@ -443,14 +432,15 @@ public class RelationalDatabase {
             con = createConnection();
             Statement stmt1 = con.createStatement();
 
-            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                + " FROM users u, participants p WHERE u.id = p.id";
+            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, "
+                    + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
+                    + " FROM users u, participants p WHERE u.id = p.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
-                    rs.getString("cpr"), rs.getString("firstname"),
-                    rs.getString("lastname")));
+                        rs.getString("cpr"), rs.getString("firstname"),
+                        rs.getString("lastname"), rs.getInt("primarygroup")));
             }
             closeConnection(con);
         } catch (SQLException e) {
@@ -470,7 +460,7 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "INSERT INTO hasgroup (participantid, groupid)"
-                + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
+                    + " VALUES (" + participant1.getId() + ", " + group1.getId() + ")";
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
@@ -482,7 +472,7 @@ public class RelationalDatabase {
     }
 
     static void removeParticipantFromGroup(Group group, Participant participant)
-        throws RemoveParticipantFromGroupException {
+            throws RemoveParticipantFromGroupException {
         Connection con = null;
 
         try {
@@ -490,7 +480,7 @@ public class RelationalDatabase {
             Statement stmt1 = con.createStatement();
 
             String q1 = "DELETE FROM hasgroup WHERE participantid = " + participant.getId()
-                + " AND groupid = " + group.getId();
+                    + " AND groupid = " + group.getId();
 
             stmt1.executeUpdate(q1);
             closeConnection(con);
@@ -509,15 +499,16 @@ public class RelationalDatabase {
             con = createConnection();
             Statement stmt1 = con.createStatement();
 
-            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, u.lastname lastname, p.cpr cpr"
-                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = " + group1.getId()
-                + " AND h.participantid = u.id";
+            String q1 = "SELECT u.id id, u.email email, u.firstname firstname, "
+                    + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
+                    + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = " + group1.getId()
+                    + " AND h.participantid = u.id";
 
             ResultSet rs = stmt1.executeQuery(q1);
             while (rs.next()) {
                 ret.add(new Participant(rs.getInt("id"), rs.getString("email"),
-                    rs.getString("cpr"), rs.getString("firstname"),
-                    rs.getString("lastname")));
+                        rs.getString("cpr"), rs.getString("firstname"),
+                        rs.getString("lastname"), rs.getInt("primarygroup")));
             }
             closeConnection(con);
         } catch (SQLException e) {
@@ -536,8 +527,10 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             Statement statement = con.createStatement();
-            String query = "INSERT INTO modules (name, frequencyvalue, frequencytype) VALUES ('" + s.getTitle() + "', "
-                    + s.getFrequencyValue() + ", '" + s.getFrequencyType() + "') RETURNING id";
+            String query = "INSERT INTO modules (name, frequencyvalue, "
+                    + "frequencytype, description) VALUES ('" + s.getTitle() + "', "
+                    + s.getFrequencyValue() + ", '" + s.getFrequencyType()
+                    + "', '" + s.getDescription() + "') RETURNING id";
 
             ResultSet rs = statement.executeQuery(query);
             rs.next();
@@ -580,8 +573,9 @@ public class RelationalDatabase {
 
     /**
      * Links a module to a group.
+     *
      * @param moduleID ID of a module.
-     * @param groupID ID of a group.
+     * @param groupID  ID of a group.
      */
     static void addModuleToGroup(int moduleID, int groupID) throws SurveyException {
         Connection con;
@@ -598,6 +592,110 @@ public class RelationalDatabase {
             throw new SurveyException(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
+        }
+    }
+
+    /**
+     * Get modules by user.
+     *
+     * @param userId User ID.
+     * @return List of modules metadata.
+     */
+    static List<Survey> getModulesByUser(int userId) throws GetModulesByUserException {
+        Connection con;
+        try {
+            List<Survey> surveys = new ArrayList<>();
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT m.id AS id, m.name AS name, m.description AS description\n"
+                    + "FROM modules m, hasmodule hm, groups g, hasgroup hg\n"
+                    + "WHERE m.id = hm.moduleid AND\n"
+                    + "hm.groupid = g.id AND\n"
+                    + "hg.groupid = g.id AND\n"
+                    + "hg.participantid = " + userId + " AND\n"
+                    + "m.id NOT IN (SELECT m.id\n"
+                    + "            FROM modules m, hasanswered h\n"
+                    + "            WHERE h.participantid = " + userId + " AND\n"
+                    + "            h.moduleid = m.id AND\n"
+                    + "            h.timestamp < (SELECT\n"
+                    + "                           CASE WHEN frequencytype='ONCE' THEN to_timestamp(1)\n"
+                    + "                                WHEN frequencytype='DAYS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 day' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='WEEKS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 week' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='MONTHS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 month' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='YEARS'"
+                    + " THEN CURRENT_DATE - INTERVAL '1 year' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='BIRTHDAY' "
+                    + "THEN (SELECT to_timestamp(DATE_PART('year', CURRENT_DATE)-1 || ' ' || "
+                    + "DATE_PART('month', birthday) || ' ' || DATE_PART('day', birthday), 'YYYY-MM-DD') "
+                    + "FROM participants WHERE id = " + userId + ")\n"
+                    + "                                ELSE to_timestamp(frequencyvalue)\n"
+                    + "                           END\n"
+                    + "                           FROM modules\n"
+                    + "                           WHERE id = m.id))";
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                surveys.add(new Survey(resultSet.getInt("id"),
+                        resultSet.getString("name"), resultSet
+                        .getString("description")));
+            }
+            con.close();
+            return surveys;
+        } catch (SQLException e) {
+            throw new GetModulesByUserException("Server error. Contact system administrator.");
+        } catch (ClassNotFoundException e) {
+            throw new GetModulesByUserException("Server error. Contact system administrator.");
+        }
+    }
+
+    static int addHub(Hub hub) throws HubException {
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hubs DEFAULT VALUES RETURNING id";
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            id = rs.getInt(1);
+            con.close();
+        } catch (SQLException e) {
+            throw new HubException("Server error. Contact system administrator");
+        } catch (ClassNotFoundException e) {
+            throw new HubException("Server error. Contact system administrator");
+        }
+        return id;
+    }
+
+    /**
+     * Get hub ID by user ID.
+     *
+     * @return Hub ID.
+     * @throws HubException Exception.
+     */
+    static int getHubIdByUser(int userId) throws HubException {
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT g.hub AS hubid FROM participants p, \"groups\" g "
+                    + "WHERE p.id=" + userId + " AND p.primarygroup=g.id";
+            ResultSet resultSet = statement.executeQuery(query);
+            resultSet.next();
+
+            int hubID = resultSet.getInt("hubid");
+            con.close();
+            return hubID;
+        } catch (SQLException e) {
+            throw new HubException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new HubException(e.getMessage());
         }
     }
 }

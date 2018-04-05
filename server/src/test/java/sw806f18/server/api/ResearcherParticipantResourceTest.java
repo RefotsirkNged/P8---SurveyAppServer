@@ -55,7 +55,7 @@ public class ResearcherParticipantResourceTest {
 
     @Test
     public void inviteParticipant() throws MessagingException, IOException, InterruptedException {
-        Participant participant = new Participant(-1, "sw806f18@gmail.com", "0123456789", "test", "test");
+        Participant participant = new Participant(-1, "sw806f18@gmail.com", "0123456789", "test", "test", -1);
         Response response =
                         TestHelpers.login(target,
                         TestHelpers.RESEARCHER_LOGIN_PATH,

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  * Created by augustkorvell on 15/03/2018.
  */
@@ -35,14 +34,17 @@ public class NoSqlDatabase {
     private static MongoClient client;
     private static MongoDatabase database;
     private static PojoCodecProvider surveyPojoCodecProvider;
+    private static PojoCodecProvider hubPojoCodecProvider;
 
     private static final String moduleCollection = "module";
+    private static final String hubCollection = "hub";
 
     private static void openConnection() {
         MongoClientURI uri = new MongoClientURI("mongodb://root:power123@192.168.1.111:27017/?authSource=admin");
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
 
+        ClassModel<Hub> hubModel = ClassModel.builder(Hub.class).build();
         ClassModel<Survey> surveyModel = ClassModel.builder(Survey.class).build();
         ClassModel<Question> questionModel = ClassModel.builder(Question.class).enableDiscriminator(true).build();
         ClassModel<DropdownQuestion> dropdownQuestionModel =
@@ -54,6 +56,7 @@ public class NoSqlDatabase {
 
         surveyPojoCodecProvider = PojoCodecProvider.builder().register(
                 surveyModel, questionModel, dropdownQuestionModel, textQuestionModel, numberQuestionModel).build();
+        hubPojoCodecProvider = PojoCodecProvider.builder().register(hubModel).build();
 
     }
 
@@ -66,7 +69,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-            fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
@@ -80,8 +83,6 @@ public class NoSqlDatabase {
     static void addSurvey(Survey s) {
         openConnection();
 
-
-
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 fromProviders(surveyPojoCodecProvider));
 
@@ -91,6 +92,32 @@ public class NoSqlDatabase {
         collection.insertOne(s);
 
         closeConnection();
+    }
+
+    static void addHub(Hub h) {
+        openConnection();
+
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(hubPojoCodecProvider));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Hub> collection = database.getCollection(hubCollection, Hub.class);
+
+        collection.insertOne(h);
+
+        closeConnection();
+    }
+
+    static Hub getHub(int hubID) {
+        Hub hub;
+        openConnection();
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(hubPojoCodecProvider));
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Hub> collection = database.getCollection(hubCollection, Hub.class);
+        hub = collection.find((eq("_id", hubID))).first();
+        closeConnection();
+        return hub;
     }
 
     static Survey getSurvey(int surveyID) {

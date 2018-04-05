@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -45,6 +47,7 @@ public class DatabaseTest {
     @Before
     public void setUp() throws Exception {
         Configurations.instance = new Configurations("test-config.json");
+        TestHelpers.resetDatabase();
 
         TestHelpers.populateDatabase();
     }
@@ -264,4 +267,29 @@ public class DatabaseTest {
         assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
     }
 
+    @Test
+    public void getModulesByUser() {
+        int userId = TestHelpers.participant1.getId();
+        boolean hasError = false;
+
+        List<Survey> expected = new ArrayList<>();
+        expected.add(TestHelpers.survey1);
+        expected.add(TestHelpers.survey2);
+
+        List<Survey> actual = new ArrayList<>();
+
+        try {
+            actual = Database.getModulesByUser(userId);
+        } catch (GetModulesByUserException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
+        assertTrue(actual.equals(expected));
+    }
+
+    @Test
+    public void getHubByUser() {
+        assertTrue(false);
+    }
 }

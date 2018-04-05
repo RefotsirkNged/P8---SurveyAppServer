@@ -113,7 +113,7 @@ public class ReseacherGroupManagerResource {
         if (!Authentication.instance.isTokenExpired(token)) {
             try {
                 Database.addGroupMember(new Group(groupId, "", 0),
-                    new Participant(userId, "", "",""));
+                    new Participant(userId, "", "", "", 0));
             } catch (AddGroupMemberException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }
@@ -137,7 +137,7 @@ public class ReseacherGroupManagerResource {
         if (!Authentication.instance.isTokenExpired(token)) {
             try {
                 Database.removeParticipantFromGroup(new Group(groupId, "", 0),
-                    new Participant(userId, "", "",""));
+                    new Participant(userId, "", "","", 0));
             } catch (RemoveParticipantFromGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }

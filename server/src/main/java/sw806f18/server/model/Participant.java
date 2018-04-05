@@ -1,28 +1,63 @@
 package sw806f18.server.model;
 
+import java.util.Date;
+
 public class Participant extends User {
     private String cpr;
+    private Date birthday;
+    private int primaryGroup = 0;
 
-    public Participant(int id, String email, String cpr, String firstName, String lastName) {
+    /**
+     * Constructor.
+     * @param id Id.
+     * @param email Email.
+     * @param cpr CPR.
+     * @param firstName First name.
+     * @param lastName Last name.
+     * @param primaryGroup Primary hub group.
+     */
+    public Participant(int id, String email, String cpr, String firstName, String lastName, int primaryGroup) {
         super(id, email, firstName, lastName);
         this.cpr = cpr;
+        this.birthday = new Date();
     }
 
-    public Participant(int id, String cpr, String firstName, String lastName) {
+    /**
+     * Constructor.
+     * @param id Id.
+     * @param cpr CPR.
+     * @param firstName First name.
+     * @param lastName Last name.
+     * @param primaryGroup Primary hub group.
+     */
+    public Participant(int id, String cpr, String firstName, String lastName, int primaryGroup) {
         super(id, firstName, lastName);
         this.cpr = cpr;
+        this.birthday = new Date();
+    }
+
+    public int getPrimaryGroup() {
+        return primaryGroup;
+    }
+
+    public void setPrimaryGroup(int primaryGroup) {
+        this.primaryGroup = primaryGroup;
     }
 
     public String getCpr() {
         return cpr;
     }
 
+    public Date getBirthday() {
+        return birthday;
+    }
+
     @Override
     public boolean equals(Object obj) {
         Participant other = (Participant) obj;
         return getEmail().equals(other.getEmail()) && cpr.equals(other.cpr)
-            && getFirstName().equals(other.getFirstName())
-            && getLastName().equals(other.getLastName());
+                && getFirstName().equals(other.getFirstName())
+                && getLastName().equals(other.getLastName());
     }
 
     /**
@@ -33,9 +68,9 @@ public class Participant extends User {
      */
     public boolean equalsNoMail(Participant other) {
         return cpr.equals(other.cpr)
-            && getFirstName().equals(other.getFirstName())
-            && getLastName().equals(other.getLastName())
-            && getId() == other.getId();
+                && getFirstName().equals(other.getFirstName())
+                && getLastName().equals(other.getLastName())
+                && getId() == other.getId();
     }
 }
 

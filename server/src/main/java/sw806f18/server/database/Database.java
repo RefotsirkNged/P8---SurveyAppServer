@@ -1,15 +1,11 @@
 package sw806f18.server.database;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.User;
+import sw806f18.server.model.*;
 
 /**
  * Created by augustkorvell on 22/03/2018.
@@ -92,6 +88,7 @@ public class Database {
 
     /**
      * Adds Survey to database.
+     *
      * @param s Survey to add.
      * @return new survey ID.
      * @throws SurveyException Exception.
@@ -133,5 +130,38 @@ public class Database {
 
     public static void cleanMongoDB() {
         NoSqlDatabase.cleanMongoDB();
+    }
+
+    /**
+     * Get modules by user.
+     *
+     * @param userId User ID.
+     * @return List of modules metadata.
+     */
+    public static List<Survey> getModulesByUser(int userId) throws GetModulesByUserException {
+        return RelationalDatabase.getModulesByUser(userId);
+    }
+
+    /**
+     * Add a hub to the database.
+     *
+     * @param hub Hub.
+     * @throws HubException Exception.
+     */
+    public static void addHub(Hub hub) throws HubException {
+        hub.setId(RelationalDatabase.addHub(hub));
+        NoSqlDatabase.addHub(hub);
+    }
+
+    /**
+     * Get Hub by User.
+     *
+     * @param userID User ID.
+     * @return Hub.
+     * @throws HubException Exception.
+     */
+    public static Hub getHubByUser(int userID) throws HubException {
+        int hubID = RelationalDatabase.getHubIdByUser(userID);
+        return NoSqlDatabase.getHub(hubID);
     }
 }

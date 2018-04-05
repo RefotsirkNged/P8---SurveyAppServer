@@ -161,7 +161,7 @@ public class ResearcherGroupManagerTest {
         JsonObject element = jsonArray.get(0).asJsonObject();
 
         Participant received = new Participant(element.getInt("id"), element.getString("cpr"),
-            element.getString("firstname"), element.getString("lastname"));
+            element.getString("firstname"), element.getString("lastname"), element.getInt("primarygroup"));
 
         assertTrue(TestHelpers.participant1.equalsNoMail(received));
     }
@@ -178,10 +178,10 @@ public class ResearcherGroupManagerTest {
 
         JsonObject element = jsonArray.get(0).asJsonObject();
         Participant p1 = new Participant(element.getInt("id"), element.getString("cpr"),
-            element.getString("firstname"), element.getString("lastname"));
+            element.getString("firstname"), element.getString("lastname"), element.getInt("primarygroup"));
         element = jsonArray.get(1).asJsonObject();
         Participant p2 = new Participant(element.getInt("id"), element.getString("cpr"),
-            element.getString("firstname"), element.getString("lastname"));
+            element.getString("firstname"), element.getString("lastname"), element.getInt("primarygroup"));
 
         List<Participant> list = TestHelpers.participants();
         assertTrue(TestHelpers.containsNoMail(list, p1));

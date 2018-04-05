@@ -20,6 +20,7 @@ public class Survey {
 
     /**
      * Ctor.
+     *
      * @param title       The title
      * @param description Description
      */
@@ -110,6 +111,7 @@ public class Survey {
 
     /**
      * Add Question to the survey at index.
+     *
      * @param question question to be added
      * @param index    the index at which it should be added
      */
@@ -119,6 +121,7 @@ public class Survey {
 
     /**
      * Adds (append) a Question to the survey.
+     *
      * @param question the question to add
      */
     public void addQuestion(Question question) {
@@ -139,28 +142,30 @@ public class Survey {
 
     /**
      * Add style property to input type.
+     *
      * @param inputType input type to add properties to.
-     * @param property property to add.
+     * @param property  property to add.
      */
     public void addStyleProperty(Question.Input inputType, String property, String value) {
         switch (inputType) {
-          case TEXT:
-              addStyleProperty(".p8text", property, value);
-              break;
-          case NUMBER:
-              addStyleProperty(".p8number", property, value);
-              break;
-          case DROPDOWN:
-              addStyleProperty(".p8dropdown", property, value);
-              break;
-          default:
-              break;
+            case TEXT:
+                addStyleProperty(".p8text", property, value);
+                break;
+            case NUMBER:
+                addStyleProperty(".p8number", property, value);
+                break;
+            case DROPDOWN:
+                addStyleProperty(".p8dropdown", property, value);
+                break;
+            default:
+                break;
         }
     }
 
     /**
      * Add style properties to html body.
-     * @param tag the tag to add the property to
+     *
+     * @param tag      the tag to add the property to
      * @param property properties to add.
      */
     public void addStyleProperty(String tag, String property, String value) {
@@ -173,6 +178,7 @@ public class Survey {
 
     /**
      * Get html representation of Question.
+     *
      * @return Survey as HTML
      */
     public String getHTML() {
@@ -186,21 +192,21 @@ public class Survey {
         builder.append("<meta charset='UTF-8' content='width=device-width, initial-scale=1.0'>");
 
         builder.append("<!-- Latest compiled and minified CSS -->\n"
-            + "<link rel=\"stylesheet\" "
-            + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
-            + "type=\"text/css\">\n"
-            + "\n"
-            + "<!-- jQuery library -->\n"
-            + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
-            + "type='text/javascript'></script>\n"
-            + "\n"
-            + "<!-- Popper JS -->\n"
-            + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
-            + "type='text/javascript'></script>\n"
-            + "\n"
-            + "<!-- Latest compiled JavaScript -->\n"
-            + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
-            + "type='text/javascript'></script>");
+                + "<link rel=\"stylesheet\" "
+                + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
+                + "type=\"text/css\">\n"
+                + "\n"
+                + "<!-- jQuery library -->\n"
+                + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
+                + "type='text/javascript'></script>\n"
+                + "\n"
+                + "<!-- Popper JS -->\n"
+                + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
+                + "type='text/javascript'></script>\n"
+                + "\n"
+                + "<!-- Latest compiled JavaScript -->\n"
+                + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
+                + "type='text/javascript'></script>");
 
         builder.append("<style type='text/css'>");
 

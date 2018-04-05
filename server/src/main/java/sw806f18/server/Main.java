@@ -6,6 +6,9 @@ import java.net.URI;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import sw806f18.server.database.Database;
+import sw806f18.server.exceptions.HubException;
+import sw806f18.server.model.Hub;
 
 /**
  * Main class.

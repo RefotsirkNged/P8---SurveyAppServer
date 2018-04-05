@@ -54,6 +54,8 @@ public class TestHelpers {
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
 
     public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
+    public static final String PARTICIPANT_HUB_PATH = "participant/hub";
+    public static final String PARTICIPANT_HUB_MODULES_PATH = "participant/hub/modules";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_EMAIL = "fake1@email.com";
@@ -65,13 +67,13 @@ public class TestHelpers {
             new Researcher("test@testington.com", "50505050", "test", "test");
 
     public static Participant participant1 =
-            new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1");
+            new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1", 0);
     public static String token1;
     public static Participant participant2 =
-            new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one");
+            new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one", 0);
     public static String token2;
     public static Participant participantCreate =
-            new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test");
+            new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test", 0);
 
     public static Group group1 = new Group("Group 1", 0);
     public static Group group2 = new Group("Group 2", 0);
@@ -244,6 +246,18 @@ public class TestHelpers {
      */
     public static Response deleteGroup(WebTarget target, String path, int id, String token) {
         return target.path(path).request().header("id", id).header("token", token).delete();
+    }
+
+    /**
+     * Delete group in the database.
+     *
+     * @param target Web target.
+     * @param path   Endpoint.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response getModulesByUser(WebTarget target, String path, String token) {
+        return target.path(path).request().header("token", token).get();
     }
 
     /**

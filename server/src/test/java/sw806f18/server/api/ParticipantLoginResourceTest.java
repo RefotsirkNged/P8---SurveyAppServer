@@ -75,4 +75,9 @@ public class ParticipantLoginResourceTest {
         String error = jsonObject.getString("error");
         assertTrue(error.equals("Invalid email or password!"));
     }
+
+    @Test
+    public void getLoginPage() {
+        assertTrue(false);
+    }
 }

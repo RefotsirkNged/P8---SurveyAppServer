@@ -46,7 +46,7 @@ public class ResearcherParticipantResource {
                 for (Participant p : participants) {
                     builder.add(Json.createObjectBuilder().add("id", p.getId())
                         .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
-                        .add("lastname", p.getLastName()).build());
+                        .add("lastname", p.getLastName()).add("primarygroup", p.getPrimaryGroup()).build());
                 }
                 return Json.createObjectBuilder().add("members", builder.build()).build();
             } catch (GetGroupMemberException e) {
@@ -73,7 +73,7 @@ public class ResearcherParticipantResource {
                 for (Participant p : participants) {
                     builder.add(Json.createObjectBuilder().add("id", p.getId())
                         .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
-                        .add("lastname", p.getLastName()).build());
+                        .add("lastname", p.getLastName()).add("primarygroup", p.getPrimaryGroup()).build());
                 }
                 return Json.createObjectBuilder().add("participants", builder.build()).build();
             } catch (GetAllParticipantsException e) {
