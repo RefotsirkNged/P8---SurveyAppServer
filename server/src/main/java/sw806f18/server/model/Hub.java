@@ -14,6 +14,12 @@ import java.util.Map;
  * Created by chrae on 05-04-2018.
  */
 public class Hub {
+    public enum Input{
+        CARD,
+        HEADER,
+        BODY
+    }
+
     /**
      * Build hun from user ID.
      *
@@ -96,17 +102,16 @@ public class Hub {
      * @param inputType input type to add properties to.
      * @param property  property to add.
      */
-    public void addStyleProperty(Question.Input inputType, String property, String value) {
+    public void addStyleProperty(Input inputType, String property, String value) {
         switch (inputType) {
-            case TEXT:
-                addStyleProperty(".p8text", property, value);
+            case CARD:
+                addStyleProperty(".card", property, value);
                 break;
-            case NUMBER:
-                addStyleProperty(".p8number", property, value);
+            case HEADER:
+                addStyleProperty("h2", property, value);
                 break;
-            case DROPDOWN:
-                addStyleProperty(".p8dropdown", property, value);
-                break;
+            case BODY:
+                addStyleProperty("body", property, value);
             default:
                 break;
         }
@@ -119,6 +124,7 @@ public class Hub {
      * @param property properties to add.
      */
     public void addStyleProperty(String tag, String property, String value) {
+        tag = tag.replace(".", "PUNKTUM");
         if (!style.containsKey(tag)) {
             style.put(tag, new ArrayList<>());
         }
@@ -161,7 +167,7 @@ public class Hub {
         builder.append("<style type='text/css'>");
 
         for (String tag : style.keySet()) {
-            builder.append(tag + " {");
+            builder.append(tag.replace("PUNKTUM", ".") + " {");
             for (String property : style.get(tag)) {
                 builder.append(property);
             }

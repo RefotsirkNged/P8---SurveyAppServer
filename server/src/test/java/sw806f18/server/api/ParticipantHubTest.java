@@ -69,7 +69,7 @@ public class ParticipantHubTest {
         JsonArray jsonArr = json.getJsonArray("modules");
         for (int i = 0; i < jsonArr.size(); i++) {
             JsonObject obj = jsonArr.get(i).asJsonObject();
-            Survey survey = new Survey(obj.getString("title"), obj.getString("description"));
+            Survey survey = new Survey(obj.getInt("id"), obj.getString("title"), obj.getString("description"));
             actual.add(survey);
         }
 

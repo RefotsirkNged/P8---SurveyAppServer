@@ -7,7 +7,7 @@
     "password": "power123"
   },
   "mongoDB": {
-    "ip": "192.168.1.125",
+    "ip": "192.168.1.111",
     "port": 27017,
     "database": "data",
     "user": "root",
