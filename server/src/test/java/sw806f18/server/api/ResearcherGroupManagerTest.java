@@ -19,7 +19,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import javax.xml.crypto.Data;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
@@ -102,7 +101,7 @@ public class ResearcherGroupManagerTest {
     public void getAllGroups() {
         List<Group> expected = TestHelpers.testGroups();
 
-        Response response = TestHelpers.getAllGroups(target,
+        Response response = TestHelpers.getAll(target,
             TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
@@ -175,7 +174,7 @@ public class ResearcherGroupManagerTest {
 
     @Test
     public void getAllParticipants() {
-        Response response = TestHelpers.getAllGroupParticipants(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
+        Response response = TestHelpers.getAll(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
             token);
         assertEquals(200, response.getStatus());
 
@@ -199,21 +198,6 @@ public class ResearcherGroupManagerTest {
     @Test
     public void linkSurveyToGroup() throws P8Exception, SQLException {
         Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
-
-        Connection con = null;
-        int id = 0;
-
-        try {
-            con = createConnection();
-            Statement isAlreadyConnected = con.createStatement();
-            String isAlreadyConnectedQuery = "SELECT COUNT(*) FROM hasModule WHERE moduleid = " + survey1.getId();
-            ResultSet result = isAlreadyConnected.executeQuery(isAlreadyConnectedQuery);
-            result.next();
-            if (result.getInt(1) == 0) {
-                throw new LinkException("Link does not exist!");
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        throw new NotImplementedException("needs to be for api not db test lol");
     }
 }

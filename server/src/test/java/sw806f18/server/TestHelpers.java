@@ -52,6 +52,7 @@ public class TestHelpers {
     public static final String RESEARCHER_GROUPMANAGER_MEMBER_PATH = "researcher/groupmanager/member";
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
+    public static final String SURVEY_PATH = "survey";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";
@@ -178,7 +179,7 @@ public class TestHelpers {
      * @param token  Token.
      * @return Response.
      */
-    public static Response getAllGroupParticipants(WebTarget target, String path, String token) {
+    public static Response getAll(WebTarget target, String path, String token) {
         return target.path(path).request().header("token", token).get();
     }
 
@@ -195,18 +196,6 @@ public class TestHelpers {
                                              Participant participant, Group group, String token) {
         return target.path(path).request().header("groupID", group.getId())
             .header("userID", participant.getId()).header("token", token).delete();
-    }
-
-    /**
-     * Get all groups.
-     *
-     * @param target Web target.
-     * @param path   Endpoint.
-     * @param token  Token.
-     * @return All groups.
-     */
-    public static Response getAllGroups(WebTarget target, String path, String token) {
-        return target.path(path).request().header("token", token).get();
     }
 
     /**

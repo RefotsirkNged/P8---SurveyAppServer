@@ -2,9 +2,14 @@ package sw806f18.server.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +18,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
+import sw806f18.server.Authentication;
+import sw806f18.server.Configurations;
+import sw806f18.server.Main;
+import sw806f18.server.TestHelpers;
+import sw806f18.server.exceptions.LinkException;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import static sw806f18.server.TestHelpers.createConnection;
+import static sw806f18.server.TestHelpers.survey1;
 
 /**
  * Created by augustkorvell on 14/03/2018.
@@ -22,6 +40,9 @@ public class SurveyTest {
     private String title = "This is a survey";
     private String description = "Here we describe the survey";
 
+    private HttpServer server;
+    private WebTarget target;
+    private String token;
 
     @Before
     public void setUp() throws Exception {
@@ -38,6 +59,15 @@ public class SurveyTest {
                 "Drop question description", values));
         survey.addQuestion(new NumberQuestion(3,"Number question",
                 "Number question description"));
+        Configurations.instance = new Configurations("test-config.json");
+        token = Authentication.instance.getToken(TestHelpers.researcher1.getId());
+        server = Main.startServer();
+        Client c = ClientBuilder.newClient();
+
+
+        target = c.target(Main.BASE_URI);
+        TestHelpers.resetDatabase();
+        TestHelpers.populateDatabase();
     }
 
     @Test
@@ -77,7 +107,6 @@ public class SurveyTest {
         Assert.assertTrue(tidy.getParseWarnings() == 0);
         Assert.assertTrue(getHTMLTagData(htmlDoc, "title").equals(title));
     }
-
 
     private String getHTMLTagData(Document doc, String tag) {
         NodeList nodes = doc.getElementsByTagName(tag);
