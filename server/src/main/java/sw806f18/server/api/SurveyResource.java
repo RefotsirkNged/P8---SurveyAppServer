@@ -139,28 +139,28 @@ public class SurveyResource {
     @Path("/test")
     public void postTestSurvey() {
         Survey survey1 = new Survey("Spørgeskema under graviditetsforløb",
-                "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
+                "Dette spørgeskema indeholder spørgsmål vedrørende din livsstil og dit helbred.");
         survey1.addStyleProperty("body", "background-color", "#5DADE2");
 
         survey1.addQuestion(new NumberQuestion(3,"Alkohol",
-                "Hvor mange genstande drikker du om ugen:"));
+                "Hvor mange genstande drikker du om ugen?"));
 
-        List<String> bistrolStoolChart = new ArrayList<>();
-        bistrolStoolChart.add("");
-        bistrolStoolChart.add("Type 1: Separate hårde klumper, som nødder (svære at klemme ud)");
-        bistrolStoolChart.add("Type 2: Pølseformede med buler");
-        bistrolStoolChart.add("Type 3: Som en pølse, men med sprækker i overfladen");
-        bistrolStoolChart.add("Type 4: Som en pølse eller en slange, jævn og blød");
-        bistrolStoolChart.add("Type 5: Bløde klumper med tydelige kanter (lette at klemme ud)");
-        bistrolStoolChart.add("Type 6: Luftige småstykker med ujævn overflade, grødet konsistens");
-        bistrolStoolChart.add("Type 7: Vandet og uden substans, fuldstændig flydende");
+        List<String> bristolStoolChart = new ArrayList<>();
+        bristolStoolChart.add("");
+        bristolStoolChart.add("Type 1: Separate hårde klumper, som nødder (svære at klemme ud)");
+        bristolStoolChart.add("Type 2: Pølseformede med buler");
+        bristolStoolChart.add("Type 3: Som en pølse, men med sprækker i overfladen");
+        bristolStoolChart.add("Type 4: Som en pølse eller en slange, jævn og blød");
+        bristolStoolChart.add("Type 5: Bløde klumper med tydelige kanter (lette at klemme ud)");
+        bristolStoolChart.add("Type 6: Luftige småstykker med ujævn overflade, grødet konsistens");
+        bristolStoolChart.add("Type 7: Vandet og uden substans, fuldstændig flydende");
 
         survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-                bistrolStoolChart));
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
+                bristolStoolChart));
         survey1.addQuestion(new TextQuestion(1,"Sygdomsepisoder",
-                "Hvilke sygdosepisoder har du haft inden for det sidste år:"));
+                "Hvilke sygdomsepisoder har du haft inden for det sidste år?"));
 
         List<String> rygningList = new ArrayList<>();
         rygningList.add("Dagligt mere end 4");
@@ -171,15 +171,15 @@ public class SurveyResource {
 
         survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Rygning",
-                "Hvor ofte ryger du?:",
+                "Hvor ofte ryger du?",
                 rygningList));
 
         survey1.addQuestion(new TextQuestion("Graviditetsrelaterede begivenheder",
-                "Har du haft nogen specielle episoder?:"));
+                "Har du haft nogen specielle episoder?"));
         survey1.addQuestion(new TextQuestion("Fødselsrelaterede begivenheder",
-                "Skete der noget specialt under fødselt?:"));
+                "Skete der noget specielt under fødslen?"));
         survey1.addQuestion(new TextQuestion("Barselsrelaterede begivenheder",
-                "Sket noget i din tid der hjemme?:"));
+                "Er der sket noget i din tid der hjemme?"));
 
 
 
@@ -196,7 +196,7 @@ public class SurveyResource {
 
         survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Barnets alder",
-                "Barnets alder",
+                "Hvad er barnets alder?",
                 ageChart));
         survey2.addQuestion(new NumberQuestion(3,"Barnets højde",
                 "Skriv barnets højde i centimeter:"));
@@ -204,19 +204,19 @@ public class SurveyResource {
                 "Skriv barents vægt i gram:"));
 
 
-        Survey survey3 = new Survey("Efter fødsel til mor", "Uderlige infomation om dig efter fødsel");
+        Survey survey3 = new Survey("Efter fødsel til mor", "Yderlige information om dig efter fødslen");
         survey3.addStyleProperty("body", "background-color","#FAD7A0");
         survey3.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-                bistrolStoolChart));
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
+                bristolStoolChart));
         survey3.addQuestion(new NumberQuestion(3,"Alkohol",
-                "Hvor mange genstande drikker du om ugen:"));
+                "Hvor mange genstande drikker du om ugen?"));
         survey3.addQuestion(new TextQuestion("Kost:",
-                "Hvad består din daglige kost af"
-                        + "\n\"For du mange fibere spiser du rodfrugter eller andet du tænker der intresant\""));
-        survey3.addQuestion(new TextQuestion("Medicin", "Hvad har du fået af medicin:"));
-        survey3.addQuestion(new NumberQuestion("BMI", "Hvad er dit BMI?:"));
+                "Hvad består din daglige kost af?"
+                        + "\n\"Eks: Får du mange fibre? Spiser du sundt?\""));
+        survey3.addQuestion(new TextQuestion("Medicin", "Får du medicin?:"));
+        survey3.addQuestion(new NumberQuestion("BMI", "Hvad er din BMI?:"));
         try {
             Database.addSurvey(survey1);
         } catch (SurveyException e) {
