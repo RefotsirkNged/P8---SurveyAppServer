@@ -169,6 +169,8 @@ public class Survey {
      * @param property properties to add.
      */
     public void addStyleProperty(String tag, String property, String value) {
+        tag = tag.replace(".", "PUNKTUM");
+
         if (!style.containsKey(tag)) {
             style.put(tag, new ArrayList<>());
         }
@@ -211,7 +213,7 @@ public class Survey {
         builder.append("<style type='text/css'>");
 
         for (String tag : style.keySet()) {
-            builder.append(tag + " {");
+            builder.append(tag.replace("PUNKTUM", ".") + " {");
             for (String property : style.get(tag)) {
                 builder.append(property);
             }
@@ -225,9 +227,9 @@ public class Survey {
 
         builder.append("<body>");
         builder.append("<div class='content' style='padding:1%;'>");
-        builder.append("<h2>" + title + "</h2>");
+        builder.append("<h2 class='p8label'>" + title + "</h2>");
         builder.append("<br />");
-        builder.append("<h4>" + description + "</h4>");
+        builder.append("<h4 class='p8label'>" + description + "</h4>");
         builder.append("<hr />");
         builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
 

@@ -89,7 +89,12 @@ public class NoSqlDatabase {
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
 
-        collection.insertOne(s);
+        try {
+            collection.insertOne(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         closeConnection();
     }

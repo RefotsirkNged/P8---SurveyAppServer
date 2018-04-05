@@ -83,7 +83,7 @@ public class SurveyResourceTest {
 
         assertEquals(response.getStatus(), 200);
         assertTrue(!response.readEntity(String.class).equals(SurveyResource.getReturnHTML(Constants.hubUrl)));
-        
+
         //Need to check for wrong parameter in qustion
         assertTrue(false);
     }
