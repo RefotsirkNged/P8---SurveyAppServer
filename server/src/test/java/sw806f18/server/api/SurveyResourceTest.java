@@ -64,12 +64,13 @@ public class SurveyResourceTest {
                     form.add(q.getHtmlID(), "This is a test");
                     break;
                 case NUMBER:
-                    form.add(q.getHtmlID(), "123");
+                    form.add(q.getHtmlID(), "123a");
                     break;
                 case DROPDOWN:
                     form.add(q.getHtmlID(), "123");
                     break;
                 default:
+                    assertTrue(false);
                     break;
             }
         }
@@ -82,6 +83,9 @@ public class SurveyResourceTest {
 
         assertEquals(response.getStatus(), 200);
         assertTrue(!response.readEntity(String.class).equals(SurveyResource.getReturnHTML(Constants.hubUrl)));
+        
+        //Need to check for wrong parameter in qustion
+        assertTrue(false);
     }
 
     @Test
