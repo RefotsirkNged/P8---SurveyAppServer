@@ -38,14 +38,14 @@ public class NumberQuestion extends Question {
     public String getHTML() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("<h4>" + title + "</h4>");
-        builder.append("<p>" + description + "</p>");
+        builder.append("<h4 class='p8label'>" + title + "</h4>");
+        builder.append("<p class='p8label'>" + description + "</p>");
+        builder.append(super.getHTML());
+
         builder.append("<input name='"
                 + getHtmlID()
                 + "' type='number' class='form-control p8number'"
-                + (value == null ? "" : "value='" + value + "'") + ">");
-
-        super.getHTML();
+                + (value == null ? "" : "value='" + value + "'") + " />");
 
         return  builder.toString();
     }

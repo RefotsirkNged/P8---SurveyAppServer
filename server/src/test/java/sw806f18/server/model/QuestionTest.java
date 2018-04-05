@@ -39,9 +39,9 @@ public class QuestionTest {
 
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id")
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "name")
                                               .equals(title.replace(' ', '_')));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("text"));
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "type").equals("text"));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class QuestionTest {
         //assertTrue(tidy.getParseWarnings() == 0);
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "select", "id")
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "select", "name")
                                               .equals(title.replace(' ', '_')));
 
 
@@ -93,7 +93,7 @@ public class QuestionTest {
 
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "id")
+        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "name")
                 .equals(title.replace(' ', '_')));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
     }
