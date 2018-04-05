@@ -4,7 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static sw806f18.server.TestHelpers.createConnection;
+import static sw806f18.server.TestHelpers.survey1;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.json.JsonArray;
@@ -13,6 +19,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.xml.crypto.Data;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.After;
@@ -24,8 +31,7 @@ import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 
@@ -61,6 +67,7 @@ public class ResearcherGroupManagerTest {
 
     @After
     public void tearDown() throws Exception {
+        TestHelpers.resetDatabase();
         server.shutdown();
     }
 
@@ -186,5 +193,27 @@ public class ResearcherGroupManagerTest {
         List<Participant> list = TestHelpers.participants();
         assertTrue(TestHelpers.containsNoMail(list, p1));
         assertTrue(TestHelpers.containsNoMail(list, p2));
+    }
+
+
+    @Test
+    public void linkSurveyToGroup() throws P8Exception, SQLException {
+        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+
+        Connection con = null;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement isAlreadyConnected = con.createStatement();
+            String isAlreadyConnectedQuery = "SELECT COUNT(*) FROM hasModule WHERE moduleid = " + survey1.getId();
+            ResultSet result = isAlreadyConnected.executeQuery(isAlreadyConnectedQuery);
+            result.next();
+            if (result.getInt(1) == 0) {
+                throw new LinkException("Link does not exist!");
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

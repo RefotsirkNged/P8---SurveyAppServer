@@ -11,19 +11,7 @@ import java.util.List;
 
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetAllParticipantsException;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
-import sw806f18.server.exceptions.SurveyException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Invite;
 import sw806f18.server.model.Participant;
@@ -583,21 +571,31 @@ public class RelationalDatabase {
      * @param moduleID ID of a module.
      * @param groupID ID of a group.
      */
-    static void setModuleSurveyLink(int moduleID, int groupID) throws SurveyException {
-        Connection con;
+    static void setModuleSurveyLink(int moduleID, int groupID) throws P8Exception, SQLException {
+        Connection con = null;
         int id = 0;
 
         try {
             con = createConnection();
-            Statement statement = con.createStatement();
-            String query = "INSERT INTO hasModule (groupid, moduleid) VALUES ( " + groupID + " , " + moduleID + " )";
-
-            statement.execute(query);
+            Statement isAlreadyConnected = con.createStatement();
+            String isAlreadyConnectedQuery = "SELECT COUNT(*) FROM hasModule WHERE moduleid = " + moduleID;
+            ResultSet result = isAlreadyConnected.executeQuery(isAlreadyConnectedQuery);
+            result.next();
+            if ((result.getInt(1) == 0)) {
+                Statement statement = con.createStatement();
+                String query = "INSERT INTO hasModule (groupid, moduleid) "
+                        + "VALUES ( " + groupID + " , " + moduleID + " )";
+                statement.execute(query);
+            } else {
+                throw new LinkException("Link already exists");
+            }
             con.close();
         } catch (SQLException e) {
             throw new SurveyException(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
+        } catch (LinkException e) {
+            con.close();
         }
     }
 }

@@ -50,6 +50,7 @@ public class ParticipantResourceTest {
 
     @After
     public void tearDown() throws Exception {
+        TestHelpers.resetDatabase();
         server.shutdown();
     }
 

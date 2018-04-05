@@ -1,5 +1,6 @@
 package sw806f18.server.api;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.json.Json;
@@ -14,13 +15,10 @@ import javax.ws.rs.core.MediaType;
 
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
+import sw806f18.server.model.Survey;
 
 @Path("researcher/groupmanager")
 public class ReseacherGroupManagerResource {
@@ -140,6 +138,37 @@ public class ReseacherGroupManagerResource {
                     new Participant(userId, "", "",""));
             } catch (RemoveParticipantFromGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            }
+            return Json.createObjectBuilder().add("success", 1).build();
+        }
+        return Json.createObjectBuilder().add("error", "Invalid token").build();
+    }
+
+    /**
+     * Linking a group to a survey.
+     * @param surveyID
+     * @param groupID
+     * @param token
+     * @return
+     */
+    @PUT
+    @Path("groups")
+    @Produces(MediaType.APPLICATION_JSON)
+    public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
+                                         @HeaderParam("groupID") int groupID,
+                                         @HeaderParam("token") String token) {
+        if (!Authentication.instance.isTokenExpired(token)) {
+            try {
+                Survey s = new Survey();
+                s.setId(surveyID);
+                Group g = new Group("Dummygroup", groupID);
+                Database.linkModuleToGroup(s, g);
+            } catch (SurveyException e) {
+                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (P8Exception e) {
+                e.printStackTrace();
             }
             return Json.createObjectBuilder().add("success", 1).build();
         }

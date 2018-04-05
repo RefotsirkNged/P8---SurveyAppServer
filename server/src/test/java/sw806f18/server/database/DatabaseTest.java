@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sw806f18.server.Configurations;
@@ -258,7 +259,7 @@ public class DatabaseTest {
     @Test
     public void linkModuleToGroup() throws Exception {
         Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
-        //Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
 
         List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant2);
 

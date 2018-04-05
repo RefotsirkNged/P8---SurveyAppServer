@@ -140,7 +140,7 @@ public class Database {
         return RelationalDatabase.getGroupMembers(group1);
     }
 
-    public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
+    public static void linkModuleToGroup(Survey survey, Group group) throws P8Exception, SQLException {
         RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
     }
 

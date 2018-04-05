@@ -84,9 +84,10 @@ public class TestHelpers {
      * @throws CreateInviteException Exception.
      * @throws AddGroupException Exception.
      * @throws AddGroupMemberException Exception.
+     * @throws P8Exception Exception.
      */
     public static void populateDatabase() throws
-            CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException, SurveyException {
+            P8Exception, SQLException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
 
