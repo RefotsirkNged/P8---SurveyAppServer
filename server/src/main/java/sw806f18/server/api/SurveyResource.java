@@ -104,7 +104,7 @@ public class SurveyResource {
      * @param url url to redirect to.
      * @return HTML that will redirect.
      */
-    private String getReturnHTML(String url) {
+    public static String getReturnHTML(String url) {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>");
         builder.append("<html>");
