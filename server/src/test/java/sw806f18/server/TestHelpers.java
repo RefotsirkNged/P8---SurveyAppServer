@@ -52,6 +52,7 @@ public class TestHelpers {
     public static final String RESEARCHER_GROUPMANAGER_MEMBER_PATH = "researcher/groupmanager/member";
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
+    public static final String SURVEY_PATH = "survey";
 
     public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
     public static final String PARTICIPANT_HUB_PATH = "participant/hub";
@@ -93,9 +94,10 @@ public class TestHelpers {
      * @throws CreateInviteException Exception.
      * @throws AddGroupException Exception.
      * @throws AddGroupMemberException Exception.
+     * @throws P8Exception Exception.
      */
     public static void populateDatabase() throws
-            CreateUserException, CreateInviteException, AddGroupException, AddGroupMemberException, SurveyException {
+            P8Exception, SQLException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
 
@@ -205,7 +207,7 @@ public class TestHelpers {
      * @param token  Token.
      * @return Response.
      */
-    public static Response getAllGroupParticipants(WebTarget target, String path, String token) {
+    public static Response getAll(WebTarget target, String path, String token) {
         return target.path(path).request().header("token", token).get();
     }
 
@@ -222,18 +224,6 @@ public class TestHelpers {
                                              Participant participant, Group group, String token) {
         return target.path(path).request().header("groupID", group.getId())
             .header("userID", participant.getId()).header("token", token).delete();
-    }
-
-    /**
-     * Get all groups.
-     *
-     * @param target Web target.
-     * @param path   Endpoint.
-     * @param token  Token.
-     * @return All groups.
-     */
-    public static Response getAllGroups(WebTarget target, String path, String token) {
-        return target.path(path).request().header("token", token).get();
     }
 
     /**
@@ -325,7 +315,7 @@ public class TestHelpers {
             message.setFlag(Flags.Flag.DELETED, true);
         }
 
-        emailFolder.expunge();
+        emailFolder.close(true);
 
         return key;
     }
@@ -446,18 +436,21 @@ public class TestHelpers {
             String title = "Test" + i;
             String description = "Description" + i;
             Survey survey = new Survey(title, description);
-            survey.addQuestion(new TextQuestion(1, "Text question" + i, "Text question description" + i));
+            survey.addQuestion(new TextQuestion(1,
+                                                "Text question" + i,
+                                                "Text question description" + i));
 
             List<String> values = new ArrayList<>();
             values.add("A" + i);
             values.add("B" + i);
             values.add("C" + i);
 
-            survey.addQuestion(
-                    new DropdownQuestion(2,Question.Type.STRING,
-                            "Drop question" + i,
-                            "Drop question description" + i, values));
-            survey.addQuestion(new NumberQuestion(3,"Number question" + 1, "Number question description" + 1));
+            survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING,
+                                                    "Drop question" + i,
+                                                    "Drop question description" + i, values));
+            survey.addQuestion(new NumberQuestion(3,
+                                                  "Number question" + 1,
+                                                  "Number question description" + 1));
 
             results.add(survey);
         }

@@ -4,7 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static sw806f18.server.TestHelpers.createConnection;
+import static sw806f18.server.TestHelpers.survey1;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.json.JsonArray;
@@ -24,8 +30,7 @@ import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 
@@ -61,6 +66,7 @@ public class ResearcherGroupManagerTest {
 
     @After
     public void tearDown() throws Exception {
+        TestHelpers.resetDatabase();
         server.shutdown();
     }
 
@@ -95,7 +101,7 @@ public class ResearcherGroupManagerTest {
     public void getAllGroups() {
         List<Group> expected = TestHelpers.testGroups();
 
-        Response response = TestHelpers.getAllGroups(target,
+        Response response = TestHelpers.getAll(target,
             TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
@@ -168,7 +174,7 @@ public class ResearcherGroupManagerTest {
 
     @Test
     public void getAllParticipants() {
-        Response response = TestHelpers.getAllGroupParticipants(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
+        Response response = TestHelpers.getAll(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
             token);
         assertEquals(200, response.getStatus());
 
@@ -186,5 +192,12 @@ public class ResearcherGroupManagerTest {
         List<Participant> list = TestHelpers.participants();
         assertTrue(TestHelpers.containsNoMail(list, p1));
         assertTrue(TestHelpers.containsNoMail(list, p2));
+    }
+
+
+    @Test
+    public void linkSurveyToGroup() throws P8Exception, SQLException {
+        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+        throw new NotImplementedException("needs to be for api not db test lol");
     }
 }

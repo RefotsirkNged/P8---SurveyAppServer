@@ -4,8 +4,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.exceptions.DeleteGroupException;
+import sw806f18.server.exceptions.GetAllParticipantsException;
+import sw806f18.server.exceptions.GetGroupMemberException;
+import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.exceptions.*;
-import sw806f18.server.model.*;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
+import sw806f18.server.model.Participant;
+import sw806f18.server.model.Researcher;
+import sw806f18.server.model.Survey;
+import sw806f18.server.model.User;
 
 /**
  * Created by augustkorvell on 22/03/2018.
@@ -88,7 +104,6 @@ public class Database {
 
     /**
      * Adds Survey to database.
-     *
      * @param s Survey to add.
      * @return new survey ID.
      * @throws SurveyException Exception.

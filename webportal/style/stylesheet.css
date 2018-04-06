@@ -1,5 +1,5 @@
-body{
-    padding:10px;
+html, body{
+    overflow: hidden;
 }
 
 .wrapper {
@@ -44,63 +44,79 @@ body{
     cursor: pointer;
 }
 
+.main-container{
+    height: 99vh;
+    width: auto;
+    overflow: hidden;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+.column-container{
+    height: 90%;
+
+}
+
+.content-container{
+    height: 50%;
+}
+
+.table-container{
+    overflow-y: auto;
+    height: 75%;
+}
+
 .groupWindow{
-    border: 2px solid #000;
-    width:500px;
-    height:300px;
-    padding:10px;
-    float:left;
-    overflow:auto;
+    height: 90%;
+    overflow: auto;
 }
 
 .memberWindow{
-    margin-top:20px;
-    height:200px;
+    overflow: auto;
+    height: auto;
 }
 
 .groupWrapper{
-    width:560px;
     overflow: hidden;
-    float:left;
 }
 
 .groupManagerWrapper{
-    width:1090px;
     overflow:hidden;
 }
 
 .allUsersWrapper{
-    float:right;
+    overflow: auto;
+    height: 45%;
 }
 
+.groupSurveysWrapper{
+    overflow: auto;
+    height: 45%;
+}
+
+
+.title-box{
+}
 .btnWrapper{
-    float:right;
-    width:50px;
-    padding-right:10px;
+    padding: 1%;
 }
 
 .userWindow{
-    height:520px;
+}
+
+.surveyWindow{
 }
 
 .btnBack{
-    margin-top:20px;
-    width:200px;
+}
+
+.btnAddSurveysToGroup{
 }
 
 .btnGroupManager{
-    width:50px;
-    height: 50px;
-    margin: 5px;
-    margin-left:0;
 }
 
 .btnMemberList{
-    width:25px;
-    height:25px;
-    line-height:0;
-    padding:0 0;
-    float:right;
     border:0;
     border-radius:0.25rem;
 }

@@ -1,6 +1,8 @@
 package sw806f18.server.database;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,18 +14,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import sun.security.pkcs11.Secmod;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import sw806f18.server.Configurations;
 import sw806f18.server.TestHelpers;
-import sw806f18.server.exceptions.*;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
+
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.exceptions.DeleteGroupException;
+import sw806f18.server.exceptions.GetAllParticipantsException;
+import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
 
@@ -260,7 +266,7 @@ public class DatabaseTest {
     @Test
     public void linkModuleToGroup() throws Exception {
         Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
-        //Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
 
         List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant2);
 
