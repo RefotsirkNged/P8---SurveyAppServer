@@ -35,7 +35,7 @@ public class ParticipantResource {
             e.printStackTrace();
         }
 
-        Participant participant = new Participant(-1, email, cpr, firstname, lastname);
+        Participant participant = new Participant(-1, email, cpr, firstname, lastname, 0);
         try {
             Database.createParticipant(participant, password);
         } catch (CreateUserException e) {

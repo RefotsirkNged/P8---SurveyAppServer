@@ -165,11 +165,8 @@ public class ReseacherGroupManagerResource {
                 Database.linkModuleToGroup(s, g);
             } catch (SurveyException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (P8Exception e) {
-                e.printStackTrace();
             }
+
             return Json.createObjectBuilder().add("success", 1).build();
         }
         return Json.createObjectBuilder().add("error", "Invalid token").build();

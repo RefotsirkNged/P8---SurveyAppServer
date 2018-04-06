@@ -13,25 +13,8 @@ import java.util.List;
 
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetAllParticipantsException;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
-import sw806f18.server.exceptions.SurveyException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.User;
+import sw806f18.server.exceptions.*;
+import sw806f18.server.model.*;
 
 public class RelationalDatabase {
 
@@ -221,7 +204,7 @@ public class RelationalDatabase {
                 Statement statement = connection.createStatement();
                 String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname"
                         + " FROM researcher r, users u WHERE r.id = " + userid
-                        + "AND r.id = u.id";
+                        + " AND r.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
@@ -362,7 +345,7 @@ public class RelationalDatabase {
                 String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname, "
                         + "p.primarygroup AS primarygroup"
                         + " FROM participants p, users u WHERE p.id = " + userid
-                        + "AND p.id = u.id";
+                        + " AND p.id = u.id";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 if (resultSet.next()) {
@@ -570,7 +553,7 @@ public class RelationalDatabase {
             Statement statement = con.createStatement();
             String query = "SELECT hasmodule.moduleid FROM hasgroup, hasmodule WHERE hasgroup.participantid = "
                     + user.getId()
-                    + "AND hasgroup.groupid = hasmodule.groupid";
+                    + " AND hasgroup.groupid = hasmodule.groupid";
 
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -616,6 +599,8 @@ public class RelationalDatabase {
         } catch (SQLException e) {
             throw new SurveyException(e.getMessage());
         } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (LinkException e) {
             throw new SurveyException(e.getMessage());
         }
     }

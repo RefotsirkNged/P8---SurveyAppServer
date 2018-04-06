@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +69,12 @@ public class SurveyTest {
         target = c.target(Main.BASE_URI);
         TestHelpers.resetDatabase();
         TestHelpers.populateDatabase();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        server.shutdown();
+        TestHelpers.resetDatabase();
     }
 
     @Test

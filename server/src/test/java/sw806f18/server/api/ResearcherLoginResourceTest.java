@@ -107,15 +107,5 @@ public class ResearcherLoginResourceTest {
         }
 
         assertTrue(isValid);
-
-        long expirationTime = 0;
-
-        try {
-            expirationTime = decodedJwt.getExpiresAt().getTime();
-        } catch (Exception e) {
-            assertFalse(true);
-        }
-
-        assertTrue(expirationTime > new Date().getTime());
     }
 }

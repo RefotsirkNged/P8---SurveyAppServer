@@ -56,7 +56,7 @@ public class ParticipantHubTest {
 
     @Test
     public void getModulesByUser() {
-        Response response = TestHelpers.getAllGroupParticipants(target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
+        Response response = TestHelpers.getModulesByUser(target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
                 TestHelpers.token1);
         assertEquals(200, response.getStatus());
         JsonObject json = TestHelpers.getPayload(response);
