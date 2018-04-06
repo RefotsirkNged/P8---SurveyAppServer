@@ -80,7 +80,6 @@ public class TestHelpers {
     public static Group group3 = new Group("Group 3", 0);
     public static Group groupCreate = new Group("TestGroup", 0);
     public static Survey survey1 = new Survey("Test Title", "This is a survey for testing porpesses");
-    public static Survey survey2;
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");

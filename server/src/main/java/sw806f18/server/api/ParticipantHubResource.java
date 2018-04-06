@@ -71,6 +71,8 @@ public class ParticipantHubResource {
         } catch (HubException e) {
             String error = "System error. Contact sytem administrator.";
             return new ByteArrayInputStream(error.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            return null;
         }
     }
 }

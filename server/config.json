@@ -1,16 +1,16 @@
 {
   "postgreSQL": {
-    "ip": "192.168.1.123",
+    "ip": "localhost",
     "port": 5432,
-    "database": "db",
+    "database": "postgres",
     "user": "postgres",
     "password": "power123"
   },
   "mongoDB": {
-    "ip": "192.168.1.125",
+    "ip": "localhost",
     "port": 27017,
     "database": "data",
-    "user": "root",
-    "password": "power123"
+    "user": "",
+    "password": ""
   }
 }

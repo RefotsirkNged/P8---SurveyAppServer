@@ -40,7 +40,7 @@ public class NoSqlDatabase {
     private static final String hubCollection = "hub";
 
     private static void openConnection() {
-        MongoClientURI uri = new MongoClientURI("mongodb://root:power123@192.168.1.111:27017/?authSource=admin");
+        MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017/?authSource=admin");
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
 

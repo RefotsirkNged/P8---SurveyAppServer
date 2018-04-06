@@ -39,7 +39,7 @@ public class Authentication {
         // Create a token
         // Token contains info about creation and expiration time, and the user it is tied to.
         return JWT.create().withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(expiryDate).withIssuer("sw806f18")
+                .withIssuer("sw806f18")
                 .withClaim("userid", userid).sign(algorithm);
     }
 
