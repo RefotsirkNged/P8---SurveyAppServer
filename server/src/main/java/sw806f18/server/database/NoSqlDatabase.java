@@ -40,7 +40,9 @@ public class NoSqlDatabase {
     private static final String hubCollection = "hub";
 
     private static void openConnection() {
-        MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017/?authSource=admin");
+        MongoClientURI uri = new MongoClientURI("mongodb://" + Configurations.instance.getMongoUser() + ":"
+                + Configurations.instance.getMongoPassword() + "@" + Configurations.instance.getMongoIp()
+                + ":" + Configurations.instance.getMongoPort() + "/?authSource=admin");
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
 
@@ -89,7 +91,12 @@ public class NoSqlDatabase {
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
 
-        collection.insertOne(s);
+        try {
+            collection.insertOne(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         closeConnection();
     }
@@ -158,5 +165,4 @@ public class NoSqlDatabase {
 
         return surveys;
     }
-
 }
