@@ -266,4 +266,13 @@ public class Survey {
 
         return this.title.equals(other.title) && this.description.equals(other.description);
     }
+
+    /**
+     * Get JSON object.
+     * @return JSON object.
+     */
+    public String getJsonObject() {
+        return "{\"title\": \"" + title + "\","
+                + " \"description\": \"" + description + "\"}";
+    }
 }

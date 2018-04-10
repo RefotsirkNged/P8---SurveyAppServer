@@ -33,11 +33,11 @@ import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
+import sw806f18.server.model.Survey;
 
 public class ResearcherGroupManagerTest {
     private HttpServer server;
     private WebTarget target;
-    private String token;
 
     /**
      * Setup.
@@ -47,7 +47,6 @@ public class ResearcherGroupManagerTest {
     @Before
     public void setUp() throws Exception {
         Configurations.instance = new Configurations("test-config.json");
-        token = Authentication.instance.getToken(TestHelpers.researcher1.getId());
         // start the server
         server = Main.startServer();
         // create the client
@@ -195,10 +194,26 @@ public class ResearcherGroupManagerTest {
         assertTrue(TestHelpers.containsNoMail(list, p2));
     }
 
+    @Test
+    public void getAllSurveys() {
+        Response response = TestHelpers.getAll(target, TestHelpers.SURVEY_PATH,
+                TestHelpers.tokenResearcher1);
+        assertEquals(200, response.getStatus());
+
+        JsonObject jsonObject = TestHelpers.getPayload(response);
+        JsonArray jsonArray = jsonObject.getJsonArray("surveys");
+        JsonObject element = jsonArray.get(0).asJsonObject();
+        Survey s1 = new Survey(element.getString("title"), element.getString("description"));
+        assertTrue(TestHelpers.survey1.getTitle().equals(s1.getTitle()));
+    }
 
     @Test
-    public void linkSurveyToGroup() throws P8Exception, SQLException {
-        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
-        throw new NotImplementedException("needs to be for api not db test lol");
+    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
+        Response response = TestHelpers.linkModuleToSurvey(target, TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
+                TestHelpers.survey1.getId(), TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
+        assertEquals(200, response.getStatus());
+
+        List<Integer> linkedGroups = Database.getModuleLinks(TestHelpers.survey1);
+        assertTrue(linkedGroups.contains(TestHelpers.group1.getId()));
     }
 }

@@ -126,6 +126,10 @@ public class Database {
         return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
+    public static List<Survey> getAllSurveys() {
+        return NoSqlDatabase.getAllSurveys();
+    }
+
     public static List<Participant> getAllParticipants() throws GetAllParticipantsException {
         return RelationalDatabase.getAllParticipants();
     }
@@ -143,8 +147,20 @@ public class Database {
         return RelationalDatabase.getGroupMembers(group1);
     }
 
-    public static void linkModuleToGroup(Survey survey, Group group) throws SurveyException {
-        RelationalDatabase.addModuleToGroup(survey.getId(), group.getId());
+    /**
+     * Link a module(survey) to a group using the IDs.
+     * @param surveyID
+     * @param groupID
+     * @throws P8Exception
+     * @throws SQLException
+     */
+    public static void linkModuleToGroup(int surveyID, int groupID) throws P8Exception {
+        RelationalDatabase.setModuleLink(surveyID, groupID);
+    }
+
+    public static List<Integer> getModuleLinks(Survey survey) throws SurveyException,
+                                                                     SQLException, ClassNotFoundException {
+        return RelationalDatabase.getModuleLinks(survey.getId());
     }
 
     public static void cleanMongoDB() {
@@ -169,7 +185,7 @@ public class Database {
      * @throws HubException Exception.
      */
     public static Hub addHub(Hub hub) throws HubException {
-        hub.setId(RelationalDatabase.addHub(hub));
+        hub.setId(RelationalDatabase.addHub());
         NoSqlDatabase.addHub(hub);
         return hub;
     }

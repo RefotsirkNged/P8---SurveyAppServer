@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -22,6 +23,31 @@ import sw806f18.server.model.Survey;
 
 @Path("researcher/groupmanager")
 public class ReseacherGroupManagerResource {
+
+    /**
+     * endpoint for giving all surveys.
+     * @param token
+     * @return
+     */
+    @GET
+    @Path("surveys")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllSurveys(@HeaderParam("token") String token) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            List<Survey> surveys = Database.getAllSurveys();
+            String  jsonGroup = "{ \"surveys\": [ ";
+            for (int i = 0; i < surveys.size(); i++) {
+                if (i == 0) {
+                    jsonGroup += surveys.get(i).getJsonObject();
+                } else {
+                    jsonGroup += ", " + surveys.get(i).getJsonObject();
+                }
+            }
+            jsonGroup += "]}";
+            return jsonGroup;
+        }
+        return "";
+    }
 
     /**
      * Get all groups endpoint.
@@ -152,19 +178,18 @@ public class ReseacherGroupManagerResource {
      * @return
      */
     @PUT
-    @Path("groups")
+    @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
                                          @HeaderParam("groupID") int groupID,
                                          @HeaderParam("token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
-                Survey s = new Survey();
-                s.setId(surveyID);
-                Group g = new Group("Dummygroup", groupID);
-                Database.linkModuleToGroup(s, g);
+                Database.linkModuleToGroup(surveyID, groupID);
             } catch (SurveyException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            } catch (P8Exception e) {
+                e.printStackTrace();
             }
 
             return Json.createObjectBuilder().add("success", 1).build();

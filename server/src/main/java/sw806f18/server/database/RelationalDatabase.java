@@ -301,6 +301,7 @@ public class RelationalDatabase {
             Statement stmt = con.createStatement();
             String query = "INSERT INTO invite VALUES ('" + invite.getCpr() + "','" + invite.getKey() + "')";
             stmt.execute(query);
+            con.close();
         } catch (SQLException | ClassNotFoundException e) {
             //Send stacktrace to log
             throw new CreateInviteException("Server error, contact system administrator", e);
@@ -329,6 +330,7 @@ public class RelationalDatabase {
             Statement stmt = conn.createStatement();
             String query = "DELETE FROM invite WHERE key = '" + key + "'";
             stmt.execute(query);
+            conn.close();
         } catch (SQLException e) {
             throw new CprKeyNotFoundException("Server error, contact system administrator", e);
         } catch (ClassNotFoundException e) {
@@ -594,32 +596,90 @@ public class RelationalDatabase {
      * @param moduleID ID of a module.
      * @param groupID  ID of a group.
      */
-    static void addModuleToGroup(int moduleID, int groupID) throws SurveyException {
+    static void setModuleLink(int moduleID, int groupID) throws P8Exception {
         Connection con = null;
         int id = 0;
 
         try {
             con = createConnection();
             Statement isAlreadyConnected = con.createStatement();
-            String isAlreadyConnectedQuery = "SELECT COUNT(*) FROM hasModule WHERE moduleid = " + moduleID;
-            ResultSet result = isAlreadyConnected.executeQuery(isAlreadyConnectedQuery);
-            result.next();
-            if ((result.getInt(1) == 0)) {
-                Statement statement = con.createStatement();
-                String query = "INSERT INTO hasModule (groupid, moduleid) "
-                        + "VALUES ( " + groupID + " , " + moduleID + " )";
-                statement.execute(query);
-            } else {
-                throw new LinkException("Link already exists");
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hasModule (groupid, moduleid) "
+                    + "VALUES ( " + groupID + " , " + moduleID + " )";
+            statement.execute(query);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+    }
+
+    static int addHub() throws HubException {
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hubs DEFAULT VALUES RETURNING id";
+            ResultSet rs = statement.executeQuery(query);
+            rs.next();
+            id = rs.getInt(1);
+            con.close();
+        } catch (SQLException e) {
+            throw new HubException("Server error. Contact system administrator");
+        } catch (ClassNotFoundException e) {
+            throw new HubException("Server error. Contact system administrator");
+        }
+        return id;
+    }
+
+    /**
+     * Get hub ID by user ID.
+     *
+     * @return Hub ID.
+     * @throws HubException Exception.
+     */
+    static int getHubIdByUser(int userId) throws HubException {
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT g.hub AS hubid FROM participants p, \"groups\" g "
+                    + "WHERE p.id=" + userId + " AND p.primarygroup=g.id";
+            ResultSet resultSet = statement.executeQuery(query);
+            resultSet.next();
+
+            int hubID = resultSet.getInt("hubid");
+            con.close();
+            return hubID;
+        } catch (SQLException e) {
+            throw new HubException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new HubException(e.getMessage());
+        }
+    }
+
+    static  List<Integer> getModuleLinks(int surveyID) throws SurveyException {
+        List<Integer> linkedGroups = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = createConnection();
+            Statement getLinkedGroups = con.createStatement();
+            String getLinkedGroupsQuery = "SELECT groupid FROM hasModule WHERE moduleid = " + surveyID;
+            ResultSet result = getLinkedGroups.executeQuery(getLinkedGroupsQuery);
+            while (result.next()) {
+                linkedGroups.add(result.getInt(1));
             }
             con.close();
         } catch (SQLException e) {
             throw new SurveyException(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
-        } catch (LinkException e) {
-            throw new SurveyException(e.getMessage());
         }
+        return linkedGroups;
     }
 
     /**
@@ -676,53 +736,6 @@ public class RelationalDatabase {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
         } catch (ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
-        }
-    }
-
-    static int addHub(Hub hub) throws HubException {
-        Connection con;
-        int id = 0;
-
-        try {
-            con = createConnection();
-            Statement statement = con.createStatement();
-            String query = "INSERT INTO hubs DEFAULT VALUES RETURNING id";
-            ResultSet rs = statement.executeQuery(query);
-            rs.next();
-            id = rs.getInt(1);
-            con.close();
-        } catch (SQLException e) {
-            throw new HubException("Server error. Contact system administrator");
-        } catch (ClassNotFoundException e) {
-            throw new HubException("Server error. Contact system administrator");
-        }
-        return id;
-    }
-
-    /**
-     * Get hub ID by user ID.
-     *
-     * @return Hub ID.
-     * @throws HubException Exception.
-     */
-    static int getHubIdByUser(int userId) throws HubException {
-        Connection con;
-
-        try {
-            con = createConnection();
-            Statement statement = con.createStatement();
-            String query = "SELECT g.hub AS hubid FROM participants p, \"groups\" g "
-                    + "WHERE p.id=" + userId + " AND p.primarygroup=g.id";
-            ResultSet resultSet = statement.executeQuery(query);
-            resultSet.next();
-
-            int hubID = resultSet.getInt("hubid");
-            con.close();
-            return hubID;
-        } catch (SQLException e) {
-            throw new HubException(e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new HubException(e.getMessage());
         }
     }
 }
