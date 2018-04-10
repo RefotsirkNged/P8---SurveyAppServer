@@ -182,6 +182,14 @@ public class DatabaseTest {
     }
 
     @Test
+    public void getAllSurveys() {
+        List<Survey> surveys = null;
+
+        surveys = Database.getAllSurveys();
+        assertTrue(surveys.size() == 2);
+    }
+
+    @Test
     public void removeGroupMember() {
         boolean hasError = false;
         try {

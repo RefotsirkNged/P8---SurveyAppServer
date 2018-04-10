@@ -132,4 +132,16 @@ public class NoSqlDatabase {
         return surveys;
     }
 
+    static List<Survey> getAllSurveys() {
+
+        openConnection();
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(surveyPojoCodecProvider));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
+        List<Survey> surveys = (List<Survey>) collection.find().into(new ArrayList<Survey>());
+        return surveys;
+    }
+
 }

@@ -54,7 +54,7 @@ public class TestHelpers {
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
     public static final String RESEARCHER_GROUPMANAGER_LINK_PATH = "researcher/groupmanager/link";
-    public static final String SURVEY_PATH = "survey";
+    public static final String SURVEY_PATH = "researcher/groupmanager/surveys";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_RESEARCHER_EMAIL = "fake1@email.com";

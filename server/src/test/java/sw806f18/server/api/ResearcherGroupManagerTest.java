@@ -195,9 +195,21 @@ public class ResearcherGroupManagerTest {
         assertTrue(TestHelpers.containsNoMail(list, p2));
     }
 
+    @Test
+    public void getAllSurveys() {
+        Response response = TestHelpers.getAll(target, TestHelpers.SURVEY_PATH,
+                token);
+        assertEquals(200, response.getStatus());
+
+        JsonObject jsonObject = TestHelpers.getPayload(response);
+        JsonArray jsonArray = jsonObject.getJsonArray("surveys");
+        JsonObject element = jsonArray.get(0).asJsonObject();
+        Survey s1 = new Survey(element.getString("title"), element.getString("description"));
+        assertTrue(TestHelpers.survey1.getTitle().equals(s1.getTitle()));
+    }
 
     @Test
-    public void linkSurveyToGroup() throws P8Exception, SQLException, ClassNotFoundException {
+    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
         Response response = TestHelpers.linkModuleToSurvey(target, TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
                 TestHelpers.survey1.getId(), TestHelpers.group1.getId(), token);
         assertEquals(200, response.getStatus());

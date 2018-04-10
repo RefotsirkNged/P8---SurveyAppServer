@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -22,6 +23,31 @@ import sw806f18.server.model.Survey;
 
 @Path("researcher/groupmanager")
 public class ReseacherGroupManagerResource {
+
+    /**
+     * endpoint for giving all surveys.
+     * @param token
+     * @return
+     */
+    @GET
+    @Path("surveys")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllSurveys(@HeaderParam("token") String token) {
+        if (!Authentication.instance.isTokenExpired(token)) {
+            List<Survey> surveys = Database.getAllSurveys();
+            String  jsonGroup = "{ \"surveys\": [ ";
+            for (int i = 0; i < surveys.size(); i++) {
+                if (i == 0) {
+                    jsonGroup += surveys.get(i).getJsonObject();
+                } else {
+                    jsonGroup += ", " + surveys.get(i).getJsonObject();
+                }
+            }
+            jsonGroup += "]}";
+            return jsonGroup;
+        }
+        return "";
+    }
 
     /**
      * Get all groups endpoint.

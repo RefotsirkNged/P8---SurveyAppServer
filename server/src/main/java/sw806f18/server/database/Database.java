@@ -121,6 +121,10 @@ public class Database {
         return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
+    public static List<Survey> getAllSurveys() {
+        return NoSqlDatabase.getAllSurveys();
+    }
+
     public static List<Participant> getAllParticipants() throws GetAllParticipantsException {
         return RelationalDatabase.getAllParticipants();
     }
