@@ -234,7 +234,9 @@ public class Survey {
         builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
 
         for (int i = 0; i < questions.size(); i++) {
+            builder.append("<div class='question'>");
             builder.append(questions.get(i).getHTML());
+            builder.append("</div>");
             builder.append("<br />");
             builder.append("<br />");
         }

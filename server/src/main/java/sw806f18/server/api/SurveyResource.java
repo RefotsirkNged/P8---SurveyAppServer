@@ -69,9 +69,17 @@ public class SurveyResource {
                 switch (q.getInput()) {
                     case DROPDOWN:
                     case TEXT:
-
+                        if (value.equals("0")) {
+                            q.setWarning("TEST FEJL");
+                            hasWarnings = true;
+                        }
                         break;
                     case NUMBER:
+                        if (value.equals("0")) {
+                            q.setWarning("TEST FEJL");
+                            hasWarnings = true;
+                            break;
+                        }
                         try {
 
                             if (!value.equals("")) {

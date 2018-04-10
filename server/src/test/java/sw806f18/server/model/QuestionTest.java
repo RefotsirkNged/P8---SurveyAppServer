@@ -39,11 +39,11 @@ public class QuestionTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "name")
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "textarea", "name")
                                               .equals(title.replace(' ', '_')));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "type").equals("text"));
+        Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "textarea", "type").equals("text"));
     }
 
     @Test
@@ -69,14 +69,14 @@ public class QuestionTest {
         NodeList options = htmlDoc.getElementsByTagName("option");
 
         for (int i = 0; i < options.getLength(); i++) {
-            Assert.assertTrue(values.get(i).equals(getHTMLDocAttribute(options.item(i),"value")));
+            Assert.assertTrue(values.get(i).equals(TestHelpers.getHTMLDocAttribute(options.item(i),"value")));
         }
 
         //assertTrue(tidy.getParseErrors() == 0);
         //assertTrue(tidy.getParseWarnings() == 0);
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "select", "name")
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "select", "name")
                                               .equals(title.replace(' ', '_')));
 
 
@@ -93,46 +93,10 @@ public class QuestionTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "name")
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "h4").equals(title));
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "p").equals(description));
+        Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "input", "name")
                 .equals(title.replace(' ', '_')));
-        Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
-    }
-
-
-    private String getHTMLTagData(Document doc, String tag) {
-        NodeList nodes = doc.getElementsByTagName(tag);
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
-            NodeList children = ele.getChildNodes();
-
-            for (int j = 0; j < children.getLength(); j++) {
-                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
-                    org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
-                    return tempEle.getData();
-                }
-
-            }
-        }
-
-        return "-1";
-    }
-
-    private String getHTMLTagAttribute(Document doc, String tag, String attribute) {
-        NodeList nodes = doc.getElementsByTagName(tag);
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
-            NodeList children = ele.getChildNodes();
-
-            return ele.getAttribute(attribute);
-        }
-        return "-1";
-    }
-
-    private String getHTMLDocAttribute(Node node, String attribute) {
-        return ((Element)node).getAttribute(attribute);
+        Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
     }
 }
