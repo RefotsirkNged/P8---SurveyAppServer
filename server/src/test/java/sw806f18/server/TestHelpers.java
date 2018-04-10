@@ -2,6 +2,10 @@ package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
@@ -467,5 +471,140 @@ public class TestHelpers {
             }
         }
         return false;
+    }
+
+    /**
+     * Get content of attribute from a tag.
+     * @param doc Html document.
+     * @param tag tag to find content of.
+     * @param attribute attribute to return.
+     * @return
+     */
+    public static String getHTMLTagAttribute(Document doc, String tag, String attribute) {
+        NodeList nodes = doc.getElementsByTagName(tag);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+            NodeList children = ele.getChildNodes();
+
+            return ele.getAttribute(attribute);
+        }
+        return "-1";
+    }
+
+    /**
+     * Gets the first HTML node with a tag.
+     * @param node Parent node.
+     * @param tag Tag to look for.
+     * @return Node corresponding to parameteres.
+     */
+    public static Node getHTMLNodeFromTag(Node node, String tag) {
+        NodeList nodes = node.getChildNodes();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+
+            if (ele.getTagName().equals(tag)) {
+                return ele;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets HTML node from tags and attributes.
+     * @param node Parent node.
+     * @param tag Tag to look for.
+     * @param attribute Attribute to look for.
+     * @param attributeValue Attribute value to look for.
+     * @return Node corresponding to parameteres.
+     */
+    public static Node getHTMLNodeFromTagAndAttribute(Node node, String tag, String attribute, String attributeValue) {
+        NodeList nodes = node.getChildNodes();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+
+            if (ele.getTagName().equals(tag) && ele.getAttribute(attribute).equals(attributeValue)) {
+                return ele;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get nodes from a tag where attribute is equels to a value.
+     * @param doc Html document.
+     * @param tag tag to find content of.
+     * @param attribute attribute to check for.
+     * @param attributeValue value to check for.
+     * @return
+     */
+    public static List<Node> getListOfHTMLNodesFromTag(
+            Document doc,
+            String tag,
+            String attribute,
+            String attributeValue) {
+
+        NodeList nodes = doc.getElementsByTagName(tag);
+        List<Node> results = new ArrayList<>();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            if (getHTMLDocAttribute(nodes.item(i), "class").equals(attributeValue)) {
+                results.add(nodes.item(i));
+            }
+        }
+
+        return results;
+    }
+
+    public static String getHTMLDocAttribute(Node node, String attribute) {
+        return ((Element)node).getAttribute(attribute);
+
+    }
+
+    /**
+     * Get content of HTML tag.
+     * @param doc Html document.
+     * @param tag Tag to return content from.
+     * @return Returns content of HTML tag.
+     */
+    public static String getHTMLTagData(Document doc, String tag) {
+        NodeList nodes = doc.getElementsByTagName(tag);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+            NodeList children = ele.getChildNodes();
+
+            for (int j = 0; j < children.getLength(); j++) {
+                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
+                    org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
+                    return tempEle.getData();
+                }
+
+            }
+        }
+
+        return "-1";
+    }
+
+    /**
+     * Get content of HTML tag from node.
+     * @param node Node from which to find data.
+     * @return value.
+     */
+    public static String getHTMLTagData(Node node) {
+        Element ele = (Element)node;
+        NodeList children = ele.getChildNodes();
+
+        for (int j = 0; j < children.getLength(); j++) {
+            if (children.item(j).getNodeType() == Node.TEXT_NODE) {
+                org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
+                return tempEle.getData();
+            }
+
+        }
+
+        return "-1";
     }
 }
