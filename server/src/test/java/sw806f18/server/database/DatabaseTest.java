@@ -16,16 +16,7 @@ import org.junit.Test;
 import sw806f18.server.Configurations;
 import sw806f18.server.TestHelpers;
 
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.exceptions.DeleteGroupException;
-import sw806f18.server.exceptions.GetAllParticipantsException;
-import sw806f18.server.exceptions.GetGroupMemberException;
-import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sw806f18.server.exceptions.*;
 
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
@@ -258,12 +249,15 @@ public class DatabaseTest {
 
     @Test
     public void linkModuleToGroup() throws Exception {
-        Database.addGroupMember(TestHelpers.group1, TestHelpers.participant2);
-        Database.linkModuleToGroup(TestHelpers.survey1, TestHelpers.group1);
+        Database.linkModuleToGroup(TestHelpers.survey2.getId(), TestHelpers.group2.getId());
+        List<Integer> linkedSurveys = Database.getModuleLinks(TestHelpers.survey2);
+        assertTrue(linkedSurveys.get(0).equals(TestHelpers.group2.getId()));
+    }
 
-        List<Survey> surveys = Database.getUsersSurveys(TestHelpers.participant2);
-
-        assertTrue(surveys.size() > 0 && surveys.get(0).getId() == TestHelpers.survey1.getId());
+    @Test
+    public void getModuleLinks() throws P8Exception, SQLException, ClassNotFoundException {
+        List<Integer> linkedSurveys = Database.getModuleLinks(TestHelpers.survey1);
+        assertTrue(linkedSurveys.get(0).equals(TestHelpers.group1.getId()));
     }
 
 }

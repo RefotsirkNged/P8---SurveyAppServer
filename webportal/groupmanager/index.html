@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Gruppe-administration</title>
     <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -33,15 +33,15 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Group</h5>
+                        <h5 class="modal-title">Tilføj gruppe</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" class="form-control" id="groupNameInput" placeholder="Name">
+                        <input type="text" class="form-control" id="groupNameInput" placeholder="Navn">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Gem</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
                     </div>
                 </div>
             </div>
@@ -51,14 +51,14 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Delete Group</h5>
+                        <h5 class="modal-title">Slet gruppe</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body" id="deleteModalText">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Yes</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Ja</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Nej</button>
                     </div>
                 </div>
             </div>
@@ -68,14 +68,14 @@
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Oooops!</h5>
+                        <h5 class="modal-title">Ups!</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        No group has been marked!
+                        Ingen gruppe markeret!
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@
             </div>
         </div>
         <div class="content-container">
-            <h3>Surveys</h3>
+            <h3>Spørgeskemaer</h3>
             <div class="table-container">
                 <table class="table table-striped">
                     <tbody id="groupSurveysWindow">
@@ -124,15 +124,15 @@
         </div>
     </div>
     <div>
-        <button type="button" class="btn btn-info btnBack" onclick="gotoHome()">Back</button>
-        <button type="button" class="btn btn-info btnAddSurveysToGroup" data-toggle="modal" data-target="#addSurveysToGroupModal">Add Surveys to group</button>
+        <button type="button" class="btn btn-info btnBack" onclick="gotoHome()">Tilbage</button>
+        <button type="button" class="btn btn-info btnAddSurveysToGroup" data-toggle="modal" data-target="#addSurveysToGroupModal">Knyt spørgeskemaer til gruppe</button>
     </div>
 </div>
 <div class="modal fade" id="addSurveysToGroupModal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add surveys to group</h5>
+                <h5 class="modal-title">Knyt spørgeskemaer til gruppe</h5>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -143,8 +143,8 @@
             </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Add selected</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Sammenknyt</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
             </div>
         </div>
     </div>
@@ -159,7 +159,7 @@
             $('#noMarkingModal').modal('toggle');
         }
         else{
-            $('#deleteModalText').html("Are you sure you want to delete " + marked.name + "?");
+            $('#deleteModalText').html("Er du sikker på at du vil slette " + marked.name + "?");
             $('#deleteGroupModal').modal('toggle');
         }
     }

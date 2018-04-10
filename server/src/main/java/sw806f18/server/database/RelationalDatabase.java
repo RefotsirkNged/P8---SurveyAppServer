@@ -571,31 +571,44 @@ public class RelationalDatabase {
      * @param moduleID ID of a module.
      * @param groupID ID of a group.
      */
-    static void setModuleSurveyLink(int moduleID, int groupID) throws P8Exception, SQLException {
+    static void setModuleLink(int moduleID, int groupID) throws P8Exception, SQLException {
         Connection con = null;
         int id = 0;
 
         try {
             con = createConnection();
             Statement isAlreadyConnected = con.createStatement();
-            String isAlreadyConnectedQuery = "SELECT COUNT(*) FROM hasModule WHERE moduleid = " + moduleID;
-            ResultSet result = isAlreadyConnected.executeQuery(isAlreadyConnectedQuery);
-            result.next();
-            if ((result.getInt(1) == 0)) {
-                Statement statement = con.createStatement();
-                String query = "INSERT INTO hasModule (groupid, moduleid) "
-                        + "VALUES ( " + groupID + " , " + moduleID + " )";
-                statement.execute(query);
-            } else {
-                throw new LinkException("Link already exists");
+            Statement statement = con.createStatement();
+            String query = "INSERT INTO hasModule (groupid, moduleid) "
+                    + "VALUES ( " + groupID + " , " + moduleID + " )";
+            statement.execute(query);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+    }
+
+    static  List<Integer> getModuleLinks(int surveyID) throws SQLException, ClassNotFoundException, SurveyException {
+        List<Integer> linkedGroups = new ArrayList<>();
+        Connection con = null;
+        int id = 0;
+
+        try {
+            con = createConnection();
+            Statement getLinkedGroups = con.createStatement();
+            String getLinkedGroupsQuery = "SELECT groupid FROM hasModule WHERE moduleid = " + surveyID;
+            ResultSet result = getLinkedGroups.executeQuery(getLinkedGroupsQuery);
+            while (result.next()) {
+                linkedGroups.add(result.getInt(1));
             }
             con.close();
         } catch (SQLException e) {
             throw new SurveyException(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
-        } catch (LinkException e) {
-            con.close();
         }
+        return linkedGroups;
     }
 }

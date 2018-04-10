@@ -152,21 +152,18 @@ public class ReseacherGroupManagerResource {
      * @return
      */
     @PUT
-    @Path("groups")
+    @Path("link")
     @Produces(MediaType.APPLICATION_JSON)
     public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
                                          @HeaderParam("groupID") int groupID,
                                          @HeaderParam("token") String token) {
         if (!Authentication.instance.isTokenExpired(token)) {
             try {
-                Survey s = new Survey();
-                s.setId(surveyID);
-                Group g = new Group("Dummygroup", groupID);
-                Database.linkModuleToGroup(s, g);
+                Database.linkModuleToGroup(surveyID, groupID);
             } catch (SurveyException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             } catch (SQLException e) {
-                e.printStackTrace();
+                return Json.createObjectBuilder().add("error", e.getMessage()).build();
             } catch (P8Exception e) {
                 e.printStackTrace();
             }

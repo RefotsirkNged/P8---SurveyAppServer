@@ -3,8 +3,6 @@ package sw806f18.server.database;
 import java.sql.SQLException;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.AddGroupMemberException;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
@@ -140,8 +138,24 @@ public class Database {
         return RelationalDatabase.getGroupMembers(group1);
     }
 
-    public static void linkModuleToGroup(Survey survey, Group group) throws P8Exception, SQLException {
-        RelationalDatabase.setModuleSurveyLink(survey.getId(), group.getId());
+    /**
+     * Link a module(survey) to a group using the IDs.
+     * @param surveyID
+     * @param groupID
+     * @throws P8Exception
+     * @throws SQLException
+     */
+    public static void linkModuleToGroup(int surveyID, int groupID) throws P8Exception, SQLException {
+        try {
+            RelationalDatabase.setModuleLink(surveyID, groupID);
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public static List<Integer> getModuleLinks(Survey survey) throws SurveyException,
+                                                                     SQLException, ClassNotFoundException {
+        return RelationalDatabase.getModuleLinks(survey.getId());
     }
 
     public static void cleanMongoDB() {

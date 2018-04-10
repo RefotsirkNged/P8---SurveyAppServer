@@ -30,6 +30,7 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.xml.crypto.Data;
 
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.AddGroupException;
@@ -52,6 +53,7 @@ public class TestHelpers {
     public static final String RESEARCHER_GROUPMANAGER_MEMBER_PATH = "researcher/groupmanager/member";
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
+    public static final String RESEARCHER_GROUPMANAGER_LINK_PATH = "researcher/groupmanager/link";
     public static final String SURVEY_PATH = "survey";
 
     public static final String PASSWORD = "power123";
@@ -74,7 +76,8 @@ public class TestHelpers {
     public static Group group2 = new Group("Group 2", 0);
     public static Group group3 = new Group("Group 3", 0);
     public static Group groupCreate = new Group("TestGroup", 0);
-    public static Survey survey1 = new Survey("Test Title", "This is a survey for testing porpesses");
+    public static Survey survey1 = new Survey("Test Title", "This is a survey for testing tortoises");
+    public static Survey survey2 = new Survey("Test Title", "This is a survey for testing porpoises");
 
     public static final Invite invite1 = new Invite("0011223344", "qwerty");
     public static final Invite inviteCreate = new Invite("4433221100", "asdfgh");
@@ -104,9 +107,10 @@ public class TestHelpers {
         group3 = Database.addGroup(group3);
 
         survey1.setId(Database.addSurvey(survey1));
+        survey2.setId(Database.addSurvey(survey2));
 
         Database.addGroupMember(group1, participant1);
-        Database.linkModuleToGroup(survey1, group1);
+        Database.linkModuleToGroup(survey1.getId(), group1.getId());
     }
 
     private TestHelpers() {
@@ -172,7 +176,7 @@ public class TestHelpers {
     }
 
     /**
-     * Get all participants.
+     * Get all of some thing.
      *
      * @param target Target.
      * @param path   Path.
@@ -196,6 +200,22 @@ public class TestHelpers {
                                              Participant participant, Group group, String token) {
         return target.path(path).request().header("groupID", group.getId())
             .header("userID", participant.getId()).header("token", token).delete();
+    }
+
+    /**
+     * Link module to survey request.
+     * @param target
+     * @param path
+     * @param surveyID
+     * @param groupID
+     * @param token
+     * @return
+     */
+    public static Response linkModuleToSurvey(WebTarget target, String path,
+                                              int surveyID, int groupID, String token) {
+        return target.path(path).request().header("surveyID", surveyID)
+                .header("groupID", groupID)
+                .header("token", token).put(Entity.text(""));
     }
 
     /**
