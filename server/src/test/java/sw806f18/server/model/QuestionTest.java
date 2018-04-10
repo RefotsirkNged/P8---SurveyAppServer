@@ -8,17 +8,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.TestRunner;
 
-
-/**
- * Created by augustkorvell on 14/03/2018.
- */
+@RunWith(TestRunner.class)
 public class QuestionTest {
     private Tidy tidy;
 
@@ -42,7 +41,7 @@ public class QuestionTest {
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "name")
-                                              .equals(title.replace(' ', '_')));
+            .equals(title.replace(' ', '_')));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "textarea", "type").equals("text"));
     }
 
@@ -57,10 +56,10 @@ public class QuestionTest {
         values.add("C");
 
         Question question = new DropdownQuestion(-1,
-                Question.Type.STRING,
-                title,
-                description,
-                values);
+            Question.Type.STRING,
+            title,
+            description,
+            values);
         String html = question.getHTML();
 
         InputStream stream = new ByteArrayInputStream(html.getBytes());
@@ -69,7 +68,7 @@ public class QuestionTest {
         NodeList options = htmlDoc.getElementsByTagName("option");
 
         for (int i = 0; i < options.getLength(); i++) {
-            Assert.assertTrue(values.get(i).equals(getHTMLDocAttribute(options.item(i),"value")));
+            Assert.assertTrue(values.get(i).equals(getHTMLDocAttribute(options.item(i), "value")));
         }
 
         //assertTrue(tidy.getParseErrors() == 0);
@@ -77,7 +76,7 @@ public class QuestionTest {
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "select", "name")
-                                              .equals(title.replace(' ', '_')));
+            .equals(title.replace(' ', '_')));
 
 
     }
@@ -96,7 +95,7 @@ public class QuestionTest {
         Assert.assertTrue(getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(getHTMLTagData(htmlDoc, "p").equals(description));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "name")
-                .equals(title.replace(' ', '_')));
+            .equals(title.replace(' ', '_')));
         Assert.assertTrue(getHTMLTagAttribute(htmlDoc, "input", "type").equals("number"));
     }
 
@@ -105,7 +104,7 @@ public class QuestionTest {
         NodeList nodes = doc.getElementsByTagName(tag);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             for (int j = 0; j < children.getLength(); j++) {
@@ -124,7 +123,7 @@ public class QuestionTest {
         NodeList nodes = doc.getElementsByTagName(tag);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
@@ -133,6 +132,6 @@ public class QuestionTest {
     }
 
     private String getHTMLDocAttribute(Node node, String attribute) {
-        return ((Element)node).getAttribute(attribute);
+        return ((Element) node).getAttribute(attribute);
     }
 }

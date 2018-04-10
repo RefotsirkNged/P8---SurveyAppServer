@@ -12,9 +12,8 @@ import org.glassfish.jersey.internal.guava.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sw806f18.server.Configurations;
-import sw806f18.server.Main;
-import sw806f18.server.TestHelpers;
+import org.junit.runner.RunWith;
+import sw806f18.server.*;
 import sw806f18.server.exceptions.HubException;
 import sw806f18.server.model.Hub;
 import sw806f18.server.model.Participant;
@@ -26,38 +25,13 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@RunWith(TestRunner.class)
 public class ParticipantHubResourceTest {
-    private HttpServer server;
-    private WebTarget target;
-
-    @Before
-    public void setUp() throws Exception {
-        Configurations.instance = new Configurations("test-config.json");
-        // start the server
-        server = Main.startServer();
-        // create the client
-        Client c = ClientBuilder.newClient();
-
-        // uncomment the following line if you want to enable
-        // support for JSON in the client (you also have to uncomment
-        // dependency on jersey-media-json module in pom.xml and Main.startServer())
-        // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
-
-        target = c.target(Main.BASE_URI);
-        TestHelpers.resetDatabase();
-        TestHelpers.populateDatabase();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        server.shutdown();
-    }
 
     @Test
     public void getModulesByUser() {
-        Response response = TestHelpers.getModulesByUser(target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
-                TestHelpers.token1);
+        Response response = TestHelpers.getModulesByUser(TestListener.target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
+            TestHelpers.token1);
         assertEquals(200, response.getStatus());
         JsonObject json = TestHelpers.getPayload(response);
 
@@ -75,7 +49,7 @@ public class ParticipantHubResourceTest {
 
         assertEquals(actual.size(), expected.size());
 
-        for(int i = 0; i < actual.size(); i++){
+        for (int i = 0; i < actual.size(); i++) {
             Survey s1 = actual.get(i);
             Survey s2 = expected.get(i);
             assertTrue(s1.getTitle().equals(s2.getTitle()));
@@ -90,7 +64,7 @@ public class ParticipantHubResourceTest {
     public void getHub() {
         boolean hasError = false;
 
-        String actual = TestHelpers.getHub(target, TestHelpers.PARTICIPANT_HUB_PATH, TestHelpers.token1);
+        String actual = TestHelpers.getHub(TestListener.target, TestHelpers.PARTICIPANT_HUB_PATH, TestHelpers.token1);
         String expected = null;
         try {
             expected = Hub.buildHub(TestHelpers.participant1.getId()).getHTML();

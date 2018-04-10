@@ -68,19 +68,19 @@ public class TestHelpers {
     public static final String INVALID_PASSWORD = "fake";
 
     public static Researcher researcher1 =
-            new Researcher("res1@earch.er", "88888888", "res", "earch");
+        new Researcher("res1@earch.er", "88888888", "res", "earch");
     public static String tokenResearcher1;
     public static Researcher researcherCreate =
-            new Researcher("test@testington.com", "50505050", "test", "test");
+        new Researcher("test@testington.com", "50505050", "test", "test");
 
     public static Participant participant1 =
-            new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1", 0);
+        new Participant(-1, "test1@testesen.dk", "0123456789", "partic", "ipant1", 0);
     public static String token1;
     public static Participant participant2 =
-            new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one", 0);
+        new Participant(-1, "test2@testesen.dk", "0123456780", "name", "one", 0);
     public static String token2;
     public static Participant participantCreate =
-            new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test", 0);
+        new Participant(-1, "test3@testesen.dk", "0123456798", "test", "test", 0);
 
     public static Group group1 = new Group("Group 1", 0);
     public static Group group2 = new Group("Group 2", 0);
@@ -100,14 +100,15 @@ public class TestHelpers {
 
     /**
      * Populates database with test data.
-     * @throws CreateUserException Exception.
-     * @throws CreateInviteException Exception.
-     * @throws AddGroupException Exception.
+     *
+     * @throws CreateUserException     Exception.
+     * @throws CreateInviteException   Exception.
+     * @throws AddGroupException       Exception.
      * @throws AddGroupMemberException Exception.
-     * @throws P8Exception Exception.
+     * @throws P8Exception             Exception.
      */
     public static void populateDatabase() throws
-            P8Exception, SQLException {
+        P8Exception, SQLException, IOException, ClassNotFoundException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
         tokenResearcher1 = Authentication.instance.getToken(researcher1.getId());
@@ -148,18 +149,18 @@ public class TestHelpers {
         token2 = Authentication.instance.getToken(participant2.getId());
 
         survey2 = new Survey("Spørgeskema under graviditetsforløb",
-                "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
-        survey2.addQuestion(new NumberQuestion(3,"Alkohol",
-                "Hvor mange genstande drikker du om ugen:"));
-        survey2.addQuestion(new TextQuestion(3,"Rygning",
-                "Hvor mange cigaretter ryger du om dagen:"));
+            "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
+        survey2.addQuestion(new NumberQuestion(3, "Alkohol",
+            "Hvor mange genstande drikker du om ugen:"));
+        survey2.addQuestion(new TextQuestion(3, "Rygning",
+            "Hvor mange cigaretter ryger du om dagen:"));
         List<String> bistrolStoolChart = new ArrayList<>();
         bistrolStoolChart.add("123");
 
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
-                "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-                bistrolStoolChart));
+            "Afføring",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+            bistrolStoolChart));
 
         survey1.setId(Database.addSurvey(survey1));
         survey2.setId(Database.addSurvey(survey2));
@@ -170,6 +171,8 @@ public class TestHelpers {
         Database.addGroupMember(group1, participant1);
         Database.linkModuleToGroup(survey1, group1);
         Database.linkModuleToGroup(survey2, group1);
+
+        TestHelpers.addDefaultHub();
     }
 
     private TestHelpers() {
@@ -490,6 +493,7 @@ public class TestHelpers {
 
     /**
      * Generates surveys for test database.
+     *
      * @return Test surveys.
      */
     public static List<Survey> testSurveys() {
@@ -500,20 +504,20 @@ public class TestHelpers {
             String description = "Description" + i;
             Survey survey = new Survey(title, description);
             survey.addQuestion(new TextQuestion(1,
-                                                "Text question" + i,
-                                                "Text question description" + i));
+                "Text question" + i,
+                "Text question description" + i));
 
             List<String> values = new ArrayList<>();
             values.add("A" + i);
             values.add("B" + i);
             values.add("C" + i);
 
-            survey.addQuestion(new DropdownQuestion(2,Question.Type.STRING,
-                                                    "Drop question" + i,
-                                                    "Drop question description" + i, values));
+            survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Drop question" + i,
+                "Drop question description" + i, values));
             survey.addQuestion(new NumberQuestion(3,
-                                                  "Number question" + 1,
-                                                  "Number question description" + 1));
+                "Number question" + 1,
+                "Number question description" + 1));
 
             results.add(survey);
         }
@@ -536,7 +540,8 @@ public class TestHelpers {
 
     /**
      * Check if a list of participants contains a specific without mail.
-     * @param list List.
+     *
+     * @param list        List.
      * @param participant Participant.
      * @return True is list contains. false otherwise.
      */
@@ -554,7 +559,7 @@ public class TestHelpers {
         NodeList nodes = doc.getElementsByTagName(tag);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             for (int j = 0; j < children.getLength(); j++) {
@@ -573,7 +578,7 @@ public class TestHelpers {
         NodeList nodes = doc.getElementsByTagName(tag);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
@@ -582,7 +587,6 @@ public class TestHelpers {
     }
 
     public static String getHTMLDocAttribute(Node node, String attribute) {
-        return ((Element)node).getAttribute(attribute);
-
+        return ((Element) node).getAttribute(attribute);
     }
 }
