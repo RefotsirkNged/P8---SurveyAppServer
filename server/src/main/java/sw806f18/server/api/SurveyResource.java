@@ -14,13 +14,7 @@ import javax.ws.rs.core.UriInfo;
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.SurveyException;
-import sw806f18.server.model.DropdownQuestion;
-import sw806f18.server.model.NumberQuestion;
-import sw806f18.server.model.Question;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.TextQuestion;
-
-
+import sw806f18.server.model.*;
 
 
 /**
@@ -55,7 +49,7 @@ public class SurveyResource {
     @Path("/{id}")
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public InputStream getSurvey(@PathParam("id") int id,
+    public InputStream postSurvey(@PathParam("id") int id,
                                  MultivaluedMap<String, String> formParams) {
         InputStream stream;
         Survey survey = Database.getSurvey(id);
@@ -100,6 +94,8 @@ public class SurveyResource {
         if (hasWarnings) {
             stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
         } else {
+            //TODO: Sæt rigtig userID ind.
+            Answer answer = new Answer(-1, survey);
             stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
         }
 

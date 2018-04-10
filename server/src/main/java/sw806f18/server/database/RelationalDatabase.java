@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
 import sw806f18.server.exceptions.AddGroupException;
@@ -21,15 +22,9 @@ import sw806f18.server.exceptions.GetAllParticipantsException;
 import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
-import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
 import sw806f18.server.exceptions.SurveyException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.User;
+import sw806f18.server.model.*;
 
 public class RelationalDatabase {
 
@@ -599,5 +594,9 @@ public class RelationalDatabase {
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
         }
+    }
+
+    static void addAnswer(Answer answer) {
+        throw new NotImplementedException();
     }
 }

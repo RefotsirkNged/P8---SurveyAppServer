@@ -15,12 +15,7 @@ import sw806f18.server.exceptions.GetGroupsException;
 import sw806f18.server.exceptions.LoginException;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.User;
+import sw806f18.server.model.*;
 
 /**
  * Created by augustkorvell on 22/03/2018.
@@ -144,5 +139,9 @@ public class Database {
 
     public static void cleanMongoDB() {
         NoSqlDatabase.cleanMongoDB();
+    }
+
+    public static void addAnswer(Answer answer) {
+
     }
 }
