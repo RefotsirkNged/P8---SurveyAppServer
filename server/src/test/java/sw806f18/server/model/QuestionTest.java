@@ -8,17 +8,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.TestRunner;
 
-
-/**
- * Created by augustkorvell on 14/03/2018.
- */
+@RunWith(TestRunner.class)
 public class QuestionTest {
     private Tidy tidy;
 
@@ -57,10 +56,10 @@ public class QuestionTest {
         values.add("C");
 
         Question question = new DropdownQuestion(-1,
-                Question.Type.STRING,
-                title,
-                description,
-                values);
+            Question.Type.STRING,
+            title,
+            description,
+            values);
         String html = question.getHTML();
 
         InputStream stream = new ByteArrayInputStream(html.getBytes());

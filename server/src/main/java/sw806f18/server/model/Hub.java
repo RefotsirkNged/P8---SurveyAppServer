@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by chrae on 05-04-2018.
  */
 public class Hub {
-    public enum Input{
+    public enum Input {
         CARD,
         HEADER,
         BODY
@@ -112,6 +112,7 @@ public class Hub {
                 break;
             case BODY:
                 addStyleProperty("body", property, value);
+                break;
             default:
                 break;
         }
@@ -148,21 +149,21 @@ public class Hub {
         builder.append("<meta charset='UTF-8' content='width=device-width, initial-scale=1.0'>");
 
         builder.append("<!-- Latest compiled and minified CSS -->\n"
-                + "<link rel=\"stylesheet\" "
-                + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
-                + "type=\"text/css\">\n"
-                + "\n"
-                + "<!-- jQuery library -->\n"
-                + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
-                + "type='text/javascript'></script>\n"
-                + "\n"
-                + "<!-- Popper JS -->\n"
-                + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
-                + "type='text/javascript'></script>\n"
-                + "\n"
-                + "<!-- Latest compiled JavaScript -->\n"
-                + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
-                + "type='text/javascript'></script>");
+            + "<link rel=\"stylesheet\" "
+            + "href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css\" "
+            + "type=\"text/css\">\n"
+            + "\n"
+            + "<!-- jQuery library -->\n"
+            + "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\" "
+            + "type='text/javascript'></script>\n"
+            + "\n"
+            + "<!-- Popper JS -->\n"
+            + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js\" "
+            + "type='text/javascript'></script>\n"
+            + "\n"
+            + "<!-- Latest compiled JavaScript -->\n"
+            + "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js\" "
+            + "type='text/javascript'></script>");
 
         builder.append("<style type='text/css'>");
 
@@ -189,8 +190,8 @@ public class Hub {
 
         builder.append("<script type='text/javascript'>");
         builder.append("function openModule(moduleID){"
-                + "window.location.href = \"../../survey/\" + moduleID;"
-                + "}");
+            + "window.location.href = \"../../survey/\" + moduleID;"
+            + "}");
         builder.append("</script>");
 
         builder.append("</body>");
@@ -202,11 +203,11 @@ public class Hub {
 
     private String buildCard(Survey module) {
         return "<div class=\"card\" onclick=\"openModule(" + module.getId() + ")\" style=\"margin-bottom:10px;\">\n"
-                + "  <div class=\"card-body\">\n"
-                + "    <h5 class=\"card-title\">" + module.getTitle() + "</h5>\n"
-                + "    <p class=\"card-text\">" + module.getDescription() + "</p>\n"
-                + "  </div>\n"
-                + "</div>";
+            + "  <div class=\"card-body\">\n"
+            + "    <h5 class=\"card-title\">" + module.getTitle() + "</h5>\n"
+            + "    <p class=\"card-text\">" + module.getDescription() + "</p>\n"
+            + "  </div>\n"
+            + "</div>";
     }
 
     @Override
@@ -220,14 +221,14 @@ public class Hub {
 
         Hub hub = (Hub) o;
 
-        if(modules.size() != hub.modules.size()) {
+        if (modules.size() != hub.modules.size()) {
             return false;
         }
 
-        for(int i = 0; i < modules.size(); i++){
+        for (int i = 0; i < modules.size(); i++) {
             Survey s1 = modules.get(i);
             Survey s2 = hub.modules.get(i);
-            if(!(s1.getTitle().equals(s2.getTitle()) && s1.getDescription().equals(s2.getDescription()))){
+            if (!(s1.getTitle().equals(s2.getTitle()) && s1.getDescription().equals(s2.getDescription()))) {
                 return false;
             }
         }

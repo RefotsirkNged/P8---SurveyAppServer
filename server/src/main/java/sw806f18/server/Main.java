@@ -12,7 +12,6 @@ import sw806f18.server.model.Hub;
 
 /**
  * Main class.
- *
  */
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
@@ -20,6 +19,7 @@ public class Main {
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     *
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
@@ -35,6 +35,7 @@ public class Main {
 
     /**
      * Main method.
+     *
      * @param args Arguments.
      * @throws IOException Exception.
      */
@@ -47,8 +48,6 @@ public class Main {
         Configurations.instance = new Configurations(args[0]);
 
         final HttpServer server = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();
         server.shutdown();
     }

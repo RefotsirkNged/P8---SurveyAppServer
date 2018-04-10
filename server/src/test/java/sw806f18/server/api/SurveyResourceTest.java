@@ -1,72 +1,33 @@
 package sw806f18.server.api;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.tidy.Tidy;
-import sw806f18.server.Configurations;
 import sw806f18.server.Constants;
-import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
-import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.TestListener;
+import sw806f18.server.TestRunner;
 import sw806f18.server.exceptions.NotImplementedException;
-import sw806f18.server.model.Participant;
 import sw806f18.server.model.Question;
 import sw806f18.server.model.Survey;
 
-import javax.json.JsonObject;
-import javax.validation.constraints.AssertTrue;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by augustkorvell on 05/04/2018.
- */
+@RunWith(TestRunner.class)
 public class SurveyResourceTest {
-
-    private HttpServer server;
-    private WebTarget target;
-
-    @Before
-    public void setUp() throws Exception {
-        Configurations.instance = new Configurations("test-config.json");
-        // start the server
-        server = Main.startServer();
-        // create the client
-        Client c = ClientBuilder.newClient();
-
-        // uncomment the following line if you want to enable
-        // support for JSON in the client (you also have to uncomment
-        // dependency on jersey-media-json module in pom.xml and Main.startServer())
-        // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
-
-        target = c.target(Main.BASE_URI);
-        TestHelpers.populateDatabase();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        TestHelpers.resetDatabase();
-        server.shutdown();
-    }
-
     @Test
     public void surveySubmittedWithError() throws ParserConfigurationException, NotImplementedException {
         Tidy tidy = new Tidy();
@@ -98,10 +59,9 @@ public class SurveyResourceTest {
         }
 
 
-
-        Response response = target.path("survey").path(Integer.toString(TestHelpers.survey2.getId()))
-                .request()
-                .post(Entity.form(form));
+        Response response = TestListener.target.path("survey").path(Integer.toString(TestHelpers.survey2.getId()))
+            .request()
+            .post(Entity.form(form));
 
         assertEquals(response.getStatus(), 200);
         String entity = response.readEntity(String.class);
@@ -175,10 +135,9 @@ public class SurveyResourceTest {
         }
 
 
-
-        Response response = target.path("survey").path(Integer.toString(TestHelpers.survey2.getId()))
-                .request()
-                .post(Entity.form(form));
+        Response response = TestListener.target.path("survey").path(Integer.toString(TestHelpers.survey2.getId()))
+            .request()
+            .post(Entity.form(form));
 
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(String.class), SurveyResource.getReturnHTML(Constants.hubUrl));

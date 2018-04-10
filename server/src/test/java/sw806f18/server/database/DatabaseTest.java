@@ -19,9 +19,11 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import sw806f18.server.Configurations;
 import sw806f18.server.TestHelpers;
 
+import sw806f18.server.TestRunner;
 import sw806f18.server.exceptions.*;
 
 import sw806f18.server.model.*;
@@ -32,25 +34,8 @@ import javax.validation.constraints.AssertTrue;
  * Created by augustkorvell on 13/03/2018.
  */
 
+@RunWith(TestRunner.class)
 public class DatabaseTest {
-    /**
-     * Before.
-     *
-     * @throws Exception Exception.
-     */
-    @Before
-    public void setUp() throws Exception {
-        Configurations.instance = new Configurations("test-config.json");
-        TestHelpers.resetDatabase();
-
-        TestHelpers.populateDatabase();
-    }
-
-    @After
-    public void cleanUp() throws Exception {
-        TestHelpers.resetDatabase();
-    }
-
     @Test
     public void createResearcher() {
         boolean hasError = false;
@@ -292,7 +277,7 @@ public class DatabaseTest {
         assertFalse(hasError);
         assertEquals(actual.size(), expected.size());
 
-        for(int i = 0; i < actual.size(); i++){
+        for (int i = 0; i < actual.size(); i++) {
             Survey s1 = actual.get(i);
             Survey s2 = expected.get(i);
             assertTrue(s1.getTitle().equals(s2.getTitle()));
@@ -318,7 +303,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void addHub(){
+    public void addHub() {
         boolean hasError = false;
 
         try {
