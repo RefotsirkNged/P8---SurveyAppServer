@@ -174,7 +174,7 @@ public class NoSqlDatabase {
                 fromProviders(surveyPojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
-        MongoCollection<Survey> collection = database.getCollection(moduleCollection, Survey.class);
+        MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
         List<Survey> surveys = (List<Survey>) collection.find().into(new ArrayList<Survey>());
         return surveys;
     }
