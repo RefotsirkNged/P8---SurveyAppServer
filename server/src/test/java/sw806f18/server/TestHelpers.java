@@ -1,4 +1,4 @@
-
+package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 
