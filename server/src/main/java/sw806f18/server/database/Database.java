@@ -167,6 +167,10 @@ public class Database {
         NoSqlDatabase.cleanMongoDB();
     }
 
+    public static void addAnswer(Answer answer) {
+
+    }
+
     /**
      * Get modules by user.
      *

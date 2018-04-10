@@ -11,9 +11,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
-import sw806f18.server.exceptions.*;
+import sw806f18.server.exceptions.AddGroupException;
+import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
+import sw806f18.server.exceptions.CreateInviteException;
+import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.exceptions.DeleteGroupException;
+import sw806f18.server.exceptions.GetAllParticipantsException;
+import sw806f18.server.exceptions.GetGroupMemberException;
+import sw806f18.server.exceptions.GetGroupsException;
+import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.exceptions.RemoveParticipantFromGroupException;
+import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.*;
 
 public class RelationalDatabase {
@@ -680,6 +692,10 @@ public class RelationalDatabase {
             throw new SurveyException(e.getMessage());
         }
         return linkedGroups;
+    }
+
+    static void addAnswer(Answer answer) {
+        throw new NotImplementedException();
     }
 
     /**
