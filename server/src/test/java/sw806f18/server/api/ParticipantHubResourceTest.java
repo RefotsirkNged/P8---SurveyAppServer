@@ -1,9 +1,5 @@
 package sw806f18.server.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -19,6 +15,8 @@ import org.junit.Test;
 import sw806f18.server.Configurations;
 import sw806f18.server.Main;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.exceptions.HubException;
+import sw806f18.server.model.Hub;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Survey;
 
@@ -26,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ParticipantHubTest {
+import static org.junit.Assert.*;
+
+public class ParticipantHubResourceTest {
     private HttpServer server;
     private WebTarget target;
 
@@ -73,11 +73,32 @@ public class ParticipantHubTest {
             actual.add(survey);
         }
 
-        assertTrue(actual.equals(expected));
+        assertEquals(actual.size(), expected.size());
+
+        for(int i = 0; i < actual.size(); i++){
+            Survey s1 = actual.get(i);
+            Survey s2 = expected.get(i);
+            assertTrue(s1.getTitle().equals(s2.getTitle()));
+            assertTrue(s1.getDescription().equals(s2.getDescription()));
+            assertEquals(s1.getId(), s2.getId());
+            assertEquals(s1.getFrequencyType(), s2.getFrequencyType());
+            assertEquals(s1.getFrequencyValue(), s2.getFrequencyValue());
+        }
     }
 
     @Test
     public void getHub() {
-        assertTrue(false);
+        boolean hasError = false;
+
+        String actual = TestHelpers.getHub(target, TestHelpers.PARTICIPANT_HUB_PATH, TestHelpers.token1);
+        String expected = null;
+        try {
+            expected = Hub.buildHub(TestHelpers.participant1.getId()).getHTML();
+        } catch (HubException e) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+
+        assertTrue(actual.equals(expected));
     }
 }

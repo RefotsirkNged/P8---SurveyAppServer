@@ -31,7 +31,7 @@ public class ReseacherGroupManagerResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllGroups(@HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Group> groups = Database.getAllGroups();
                 String jsonGroup = "{ \"groups\": [ ";
@@ -63,7 +63,7 @@ public class ReseacherGroupManagerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject addGroup(@HeaderParam("name") String name,
                                @HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             Group group;
             try {
                 group = Database.addGroup(new Group(name, 0));
@@ -85,7 +85,7 @@ public class ReseacherGroupManagerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject deleteGroup(@HeaderParam("id") int groupId,
                                   @HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.deleteGroup(groupId);
             } catch (DeleteGroupException e) {
@@ -108,7 +108,7 @@ public class ReseacherGroupManagerResource {
     public JsonObject addGroupMember(@HeaderParam("groupID") int groupId,
                                  @HeaderParam("userID") int userId,
                                  @HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.addGroupMember(new Group(groupId, "", 0),
                     new Participant(userId, "", "", "", 0));
@@ -132,7 +132,7 @@ public class ReseacherGroupManagerResource {
     public JsonObject removeGroupMember(@HeaderParam("groupID") int groupId,
                                  @HeaderParam("userID") int userId,
                                  @HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.removeParticipantFromGroup(new Group(groupId, "", 0),
                     new Participant(userId, "", "","", 0));
@@ -157,7 +157,7 @@ public class ReseacherGroupManagerResource {
     public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
                                          @HeaderParam("groupID") int groupID,
                                          @HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Survey s = new Survey();
                 s.setId(surveyID);

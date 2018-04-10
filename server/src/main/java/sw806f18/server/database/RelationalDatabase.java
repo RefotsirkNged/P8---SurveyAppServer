@@ -117,7 +117,7 @@ public class RelationalDatabase {
             con = createConnection();
             Statement statement = con.createStatement();
             String query = "INSERT INTO groups (name, hub) VALUES ('"
-                    + group.getName() + "', null) RETURNING id";
+                    + group.getName() + "', " + group.getHub() + ") RETURNING id";
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
@@ -162,19 +162,26 @@ public class RelationalDatabase {
     /**
      * Validates if the user is a researcher.
      *
-     * @param connection An open Database connection.
-     * @param id         Id of researcher.
+     * @param id Id of researcher.
      * @return Boolean value specifying if the id belongs to a researcher.
      * @throws SQLException Exception.
      */
-    private static boolean isResearcher(Connection connection, int id) throws SQLException {
-        Statement statement = connection.createStatement();
-        String query = "SELECT COUNT(*) FROM researcher WHERE id = " + id;
-        ResultSet resultSet = statement.executeQuery(query);
+    static boolean isResearcher(int id) {
+        Connection connection = null;
+        try {
+            connection = createConnection();
+            Statement statement = connection.createStatement();
+            String query = "SELECT COUNT(*) FROM researcher WHERE id = " + id;
+            ResultSet resultSet = statement.executeQuery(query);
 
-        if (resultSet.next()) {
-            return resultSet.getInt(1) == 1;
-        } else {
+            if (resultSet.next()) {
+                return resultSet.getInt(1) == 1;
+            } else {
+                return false;
+            }
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (SQLException e) {
             return false;
         }
     }
@@ -198,7 +205,7 @@ public class RelationalDatabase {
 
             userid = getUser(connection, email, password);
 
-            if (userid == -1 || !isResearcher(connection, userid)) {
+            if (userid == -1 || !isResearcher(userid)) {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
@@ -338,7 +345,7 @@ public class RelationalDatabase {
             connection = createConnection();
             userid = getUser(connection, email, password);
 
-            if (userid == -1 || !isParticipant(connection, userid)) {
+            if (userid == -1 || !isParticipant(userid)) {
                 throw new LoginException("Invalid email or password!");
             } else {
                 Statement statement = connection.createStatement();
@@ -369,13 +376,22 @@ public class RelationalDatabase {
         return participant;
     }
 
-    static boolean isParticipant(Connection conn, int id) throws SQLException {
-        Statement stmt = conn.createStatement();
-        String query = "SELECT COUNT(*) FROM participants WHERE id = " + id;
-        ResultSet res = stmt.executeQuery(query);
-        if (res.next()) {
-            return res.getInt(1) == 1;
-        } else {
+    static boolean isParticipant(int id) {
+        Connection connection = null;
+        try {
+            connection = createConnection();
+            Statement statement = connection.createStatement();
+            String query = "SELECT COUNT(*) FROM participants WHERE id = " + id;
+            ResultSet resultSet = statement.executeQuery(query);
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1) == 1;
+            } else {
+                return false;
+            }
+        } catch (ClassNotFoundException e) {
+            return false;
+        } catch (SQLException e) {
             return false;
         }
     }
@@ -401,10 +417,11 @@ public class RelationalDatabase {
             stmt1.close();
 
             Statement stmt2 = con.createStatement();
-            String q2 = "INSERT INTO participants (id, cpr, birthday)"
+            String q2 = "INSERT INTO participants (id, cpr, birthday, primarygroup)"
                     + "VALUES (" + id + ", '" + participant.getCpr() + "', '"
                     + LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
-                    ZoneId.systemDefault()) + "')";
+                    ZoneId.systemDefault()) + "', "
+                    + participant.getPrimaryGroup() + ")";
             stmt2.executeUpdate(q2);
             stmt2.close();
             closeConnection(con);

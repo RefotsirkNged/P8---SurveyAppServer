@@ -24,10 +24,7 @@ import sw806f18.server.TestHelpers;
 
 import sw806f18.server.exceptions.*;
 
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
+import sw806f18.server.model.*;
 
 import javax.validation.constraints.AssertTrue;
 
@@ -282,11 +279,43 @@ public class DatabaseTest {
         }
 
         assertFalse(hasError);
-        assertTrue(actual.equals(expected));
+        assertEquals(actual.size(), expected.size());
+
+        for(int i = 0; i < actual.size(); i++){
+            Survey s1 = actual.get(i);
+            Survey s2 = expected.get(i);
+            assertTrue(s1.getTitle().equals(s2.getTitle()));
+            assertTrue(s1.getDescription().equals(s2.getDescription()));
+            assertEquals(s1.getId(), s2.getId());
+            assertEquals(s1.getFrequencyType(), s2.getFrequencyType());
+            assertEquals(s1.getFrequencyValue(), s2.getFrequencyValue());
+        }
     }
 
     @Test
     public void getHubByUser() {
-        assertTrue(false);
+        boolean hasError = false;
+
+        Hub actual = null;
+        try {
+            actual = Database.getHubByUser(TestHelpers.participant1.getId());
+        } catch (HubException e) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+        assertTrue(TestHelpers.hub1.equals(actual));
+    }
+
+    @Test
+    public void addHub(){
+        boolean hasError = false;
+
+        try {
+            Database.addHub(TestHelpers.hub2);
+        } catch (HubException e) {
+            hasError = true;
+        }
+
+        assertFalse(hasError);
     }
 }

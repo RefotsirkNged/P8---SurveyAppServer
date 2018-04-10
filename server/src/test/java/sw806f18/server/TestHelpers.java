@@ -2,6 +2,10 @@ package sw806f18.server;
 
 import com.sun.mail.pop3.POP3Store;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
@@ -21,6 +25,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -64,6 +69,7 @@ public class TestHelpers {
 
     public static Researcher researcher1 =
             new Researcher("res1@earch.er", "88888888", "res", "earch");
+    public static String tokenResearcher1;
     public static Researcher researcherCreate =
             new Researcher("test@testington.com", "50505050", "test", "test");
 
@@ -88,6 +94,10 @@ public class TestHelpers {
     public static Survey survey2 = new Survey("Test survey 2", "");
     public static Survey survey3 = new Survey("Test survey 3", "");
 
+    public static Hub hub1 = new Hub();
+    public static Hub hub2 = new Hub();
+    public static Hub hub3 = new Hub();
+
     /**
      * Populates database with test data.
      * @throws CreateUserException Exception.
@@ -100,19 +110,42 @@ public class TestHelpers {
             P8Exception, SQLException {
         // Create researchers
         researcher1 = Database.createResearcher(researcher1, PASSWORD);
-
-        // Create test participants
-        participant1 = Database.createParticipant(participant1, PASSWORD);
-        token1 = Authentication.instance.getToken(participant1.getId());
-        participant2 = Database.createParticipant(participant2, PASSWORD);
-        token2 = Authentication.instance.getToken(participant2.getId());
+        tokenResearcher1 = Authentication.instance.getToken(researcher1.getId());
 
         // Create invites
         Database.createInvite(invite1);
 
+        hub1.setStyle(new HashMap<>());
+        hub2.setStyle(new HashMap<>());
+        hub3.setStyle(new HashMap<>());
+        hub1.addStyleProperty(Hub.Input.CARD, "background", "#FFF");
+        hub1.addStyleProperty(Hub.Input.CARD, "border", "1px solid #0a0a0a");
+        hub1.addStyleProperty(Hub.Input.BODY, "background-color", "#000");
+
+        hub2.addStyleProperty(Hub.Input.CARD, "background", "#FFF");
+        hub2.addStyleProperty(Hub.Input.CARD, "border", "1px solid #0a0a0a");
+        hub2.addStyleProperty(Hub.Input.BODY, "background-color", "#000");
+
+        hub3.addStyleProperty(Hub.Input.CARD, "background", "#FFF");
+
+        hub1 = Database.addHub(hub1);
+        group1.setHub(hub1.getId());
+        group2.setHub(hub1.getId());
+        group3.setHub(hub1.getId());
+        groupCreate.setHub(hub1.getId());
+
         group1 = Database.addGroup(group1);
         group2 = Database.addGroup(group2);
         group3 = Database.addGroup(group3);
+
+        // Create test participants
+        participant1.setPrimaryGroup(group1.getId());
+        participant2.setPrimaryGroup(group2.getId());
+
+        participant1 = Database.createParticipant(participant1, PASSWORD);
+        token1 = Authentication.instance.getToken(participant1.getId());
+        participant2 = Database.createParticipant(participant2, PASSWORD);
+        token2 = Authentication.instance.getToken(participant2.getId());
 
         survey2 = new Survey("Spørgeskema under graviditetsforløb",
                 "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
@@ -128,9 +161,11 @@ public class TestHelpers {
                 "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
                 bistrolStoolChart));
 
-        survey2.setId(Database.addSurvey(survey2));
         survey1.setId(Database.addSurvey(survey1));
         survey2.setId(Database.addSurvey(survey2));
+
+        hub2.setModules(new ArrayList<>());
+        hub2.addModule(survey1);
 
         Database.addGroupMember(group1, participant1);
         Database.linkModuleToGroup(survey1, group1);
@@ -209,6 +244,18 @@ public class TestHelpers {
      */
     public static Response getAll(WebTarget target, String path, String token) {
         return target.path(path).request().header("token", token).get();
+    }
+
+    /**
+     * Get hub.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static String getHub(WebTarget target, String path, String token) {
+        return target.path(path + "/" + token).request().get(String.class);
     }
 
     /**
@@ -413,6 +460,22 @@ public class TestHelpers {
     }
 
     /**
+     * Add default hub.
+     *
+     * @throws SQLException           Ex
+     * @throws ClassNotFoundException Ex
+     * @throws IOException            Ex
+     */
+    public static void addDefaultHub() throws SQLException, ClassNotFoundException, IOException {
+        Connection connection = createConnection();
+
+        String query = "INSERT INTO hubs(id) VALUES (0)";
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(query);
+        closeConnection(connection);
+    }
+
+    /**
      * Fetch testing groups.
      *
      * @return Test groups.
@@ -484,5 +547,42 @@ public class TestHelpers {
             }
         }
         return false;
+    }
+
+
+    public static String getHTMLTagData(Document doc, String tag) {
+        NodeList nodes = doc.getElementsByTagName(tag);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+            NodeList children = ele.getChildNodes();
+
+            for (int j = 0; j < children.getLength(); j++) {
+                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
+                    org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
+                    return tempEle.getData();
+                }
+
+            }
+        }
+
+        return "-1";
+    }
+
+    public static String getHTMLTagAttribute(Document doc, String tag, String attribute) {
+        NodeList nodes = doc.getElementsByTagName(tag);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element ele = (Element)nodes.item(i);
+            NodeList children = ele.getChildNodes();
+
+            return ele.getAttribute(attribute);
+        }
+        return "-1";
+    }
+
+    public static String getHTMLDocAttribute(Node node, String attribute) {
+        return ((Element)node).getAttribute(attribute);
+
     }
 }

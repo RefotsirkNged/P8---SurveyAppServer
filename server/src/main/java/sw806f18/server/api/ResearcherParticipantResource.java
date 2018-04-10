@@ -99,7 +99,7 @@ public class ResearcherParticipantResource {
     @Produces(MediaType.APPLICATION_JSON)
     public JsonObject getGroupMembers(@HeaderParam("token") String token,
                                       @HeaderParam("groupID") int groupId) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Participant> participants = Database.getGroupMembers(new Group(groupId, "", 0));
                 JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -126,7 +126,7 @@ public class ResearcherParticipantResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all")
     public JsonObject getAllParticipants(@HeaderParam("token") String token) {
-        if (!Authentication.instance.isTokenExpired(token)) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Participant> participants = Database.getAllParticipants();
                 JsonArrayBuilder builder = Json.createArrayBuilder();

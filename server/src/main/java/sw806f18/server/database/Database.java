@@ -43,6 +43,14 @@ public class Database {
         return RelationalDatabase.addGroup(group);
     }
 
+    public static boolean isResearcher(int userId) {
+        return RelationalDatabase.isResearcher(userId);
+    }
+
+    public static boolean isParticipant(int userId) {
+        return RelationalDatabase.isParticipant(userId);
+    }
+
     /**
      * Deletes group in database.
      *
@@ -99,6 +107,7 @@ public class Database {
 
     /**
      * Adds Survey to database.
+     *
      * @param s Survey to add.
      * @return new survey ID.
      * @throws SurveyException Exception.
@@ -156,11 +165,13 @@ public class Database {
      * Add a hub to the database.
      *
      * @param hub Hub.
+     * @return Hub.
      * @throws HubException Exception.
      */
-    public static void addHub(Hub hub) throws HubException {
+    public static Hub addHub(Hub hub) throws HubException {
         hub.setId(RelationalDatabase.addHub(hub));
         NoSqlDatabase.addHub(hub);
+        return hub;
     }
 
     /**

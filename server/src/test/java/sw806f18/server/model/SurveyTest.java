@@ -112,42 +112,6 @@ public class SurveyTest {
 
         Assert.assertTrue(tidy.getParseErrors() == 0);
         Assert.assertTrue(tidy.getParseWarnings() == 0);
-        Assert.assertTrue(getHTMLTagData(htmlDoc, "title").equals(title));
-    }
-
-    private String getHTMLTagData(Document doc, String tag) {
-        NodeList nodes = doc.getElementsByTagName(tag);
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
-            NodeList children = ele.getChildNodes();
-
-            for (int j = 0; j < children.getLength(); j++) {
-                if (children.item(j).getNodeType() == Node.TEXT_NODE) {
-                    org.w3c.tidy.DOMTextImpl tempEle = (org.w3c.tidy.DOMTextImpl) children.item(j);
-                    return tempEle.getData();
-                }
-
-            }
-        }
-
-        return "-1";
-    }
-
-    private String getHTMLTagAttribute(Document doc, String tag, String attribute) {
-        NodeList nodes = doc.getElementsByTagName(tag);
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
-            NodeList children = ele.getChildNodes();
-
-            return ele.getAttribute(attribute);
-        }
-        return "-1";
-    }
-
-    private String getHTMLDocAttribute(Node node, String attribute) {
-        return ((Element)node).getAttribute(attribute);
-
+        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "title").equals(title));
     }
 }

@@ -220,9 +220,18 @@ public class Hub {
 
         Hub hub = (Hub) o;
 
-        if (modules != null ? !modules.equals(hub.modules) : hub.modules != null) {
+        if(modules.size() != hub.modules.size()) {
             return false;
         }
+
+        for(int i = 0; i < modules.size(); i++){
+            Survey s1 = modules.get(i);
+            Survey s2 = hub.modules.get(i);
+            if(!(s1.getTitle().equals(s2.getTitle()) && s1.getDescription().equals(s2.getDescription()))){
+                return false;
+            }
+        }
+
         return style != null ? style.equals(hub.style) : hub.style == null;
     }
 

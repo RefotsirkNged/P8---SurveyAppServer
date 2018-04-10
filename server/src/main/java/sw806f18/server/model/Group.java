@@ -45,6 +45,14 @@ public class Group {
     }
 
     /**
+     * Set hub.
+     * @param hub Hub ID.
+     */
+    public void setHub(int hub) {
+        this.hub = hub;
+    }
+
+    /**
      * Get ID.
      * @return ID.
      */

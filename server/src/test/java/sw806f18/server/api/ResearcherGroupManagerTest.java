@@ -62,6 +62,7 @@ public class ResearcherGroupManagerTest {
         target = c.target(Main.BASE_URI);
         TestHelpers.resetDatabase();
         TestHelpers.populateDatabase();
+        TestHelpers.addDefaultHub();
     }
 
     @After
@@ -74,7 +75,7 @@ public class ResearcherGroupManagerTest {
     public void addGroup() {
         try {
             Response response = TestHelpers.addGroup(target,
-                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), token);
+                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.groupCreate.getName(), TestHelpers.tokenResearcher1);
             assertEquals(response.getStatus(), 200);
             JsonObject jsonObject = TestHelpers.getPayload(response);
             TestHelpers.groupCreate.setId(jsonObject.getInt("groupid"));
@@ -89,7 +90,7 @@ public class ResearcherGroupManagerTest {
     public void removeGroup() {
         try {
             TestHelpers.deleteGroup(target, TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
-                TestHelpers.group1.getId(), token);
+                TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
             List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(TestHelpers.group1));
         } catch (GetGroupsException e) {
@@ -102,7 +103,7 @@ public class ResearcherGroupManagerTest {
         List<Group> expected = TestHelpers.testGroups();
 
         Response response = TestHelpers.getAll(target,
-            TestHelpers.RESEARCHER_GROUPMANAGER_PATH, token);
+            TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.tokenResearcher1);
         assertEquals(response.getStatus(), 200);
         JsonObject jsonObject = TestHelpers.getPayload(response);
 
@@ -121,7 +122,7 @@ public class ResearcherGroupManagerTest {
         List<Participant> expected = null;
 
         Response response = TestHelpers.removeGroupMember(target, TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
-            TestHelpers.participant1, TestHelpers.group1, token);
+            TestHelpers.participant1, TestHelpers.group1, TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
         try {
             expected = Database.getGroupMembers(TestHelpers.group1);
@@ -137,7 +138,7 @@ public class ResearcherGroupManagerTest {
     @Test
     public void addGroupMember() {
         Response response = TestHelpers.addGroupMember(target, TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
-            TestHelpers.participant2, TestHelpers.group1, token);
+            TestHelpers.participant2, TestHelpers.group1, TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
         boolean hasError = false;
@@ -157,7 +158,7 @@ public class ResearcherGroupManagerTest {
     @Test
     public void getMembersByGroup() {
         Response response = TestHelpers.getGroupMembers(target, TestHelpers.RESEARCHER_PARTICIPANT_PATH,
-            TestHelpers.group1, token);
+            TestHelpers.group1, TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
         JsonObject jsonObject = TestHelpers.getPayload(response);
@@ -175,7 +176,7 @@ public class ResearcherGroupManagerTest {
     @Test
     public void getAllParticipants() {
         Response response = TestHelpers.getAll(target, TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
-            token);
+                TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
         JsonObject jsonObject = TestHelpers.getPayload(response);
