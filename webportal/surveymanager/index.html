@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tilføj/Fjern Spørgeskema</title>
+    <link rel="stylesheet" type="text/css" href="../style/surveystylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="main-container row">
+    <div class="meta-container col-lg-2">
+        <p>Navn på spørgeskemaet</p>
+        <input type="text" id="nametext" name="nametext" class="form-control"/>
+        <br />
+        <p>Beskrivelse</p>
+        <textarea type="text" id="descriptiontext" name="descriptiontext" class="form-control"></textarea>
+    </div>
+    <div class="survey-container col-lg-10 row">
+        <div class="table-container col-lg-11">
+            <table class="table table-striped" id="questiontable" name="questiontable">
+                <tr>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Age</th>
+                </tr>
+                <tr>
+                    <td>Jill</td>
+                    <td>Smith</td>
+                    <td>50</td>
+                </tr>
+                <tr>
+                    <td>Eve</td>
+                    <td>Jackson</td>
+                    <td>94</td>
+                </tr>
+            </table>
+        </div>
+        <div class="table-button-container col-lg-1">
+            <button type="button" id="addquestionbutton" name="addquestionbutton" class="btn btn-success">+</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>
+

@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.gson.Gson;
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.SurveyException;
@@ -235,4 +236,16 @@ public class SurveyResource {
             e.printStackTrace();
         }
     }
+
+    @GET
+    @Path("/{id}/object")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void getSurveyObject(@PathParam("id") int id) {
+        Survey survey = Database.getSurvey(id);
+        Gson gson = new Gson();
+        String test = gson.toJson(survey);
+        int i;
+
+    }
 }
+
