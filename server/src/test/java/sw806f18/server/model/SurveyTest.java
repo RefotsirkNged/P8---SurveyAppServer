@@ -15,8 +15,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.Assert.assertTrue;
+
 @RunWith(TestRunner.class)
 public class SurveyTest {
+    @Test
+    public void removeQuestion() throws Exception {
+        Question q = TestHelpers.survey2.getQuestions().get(0);
+        TestHelpers.survey2.removeQuestion(q);
+
+        assertTrue(!TestHelpers.survey2.getQuestions().contains(q));
+    }
+
     private Survey survey;
     private String title = "This is a survey";
     private String description = "Here we describe the survey";
@@ -44,7 +54,7 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion);
 
-        Assert.assertTrue(survey.getQuestions().get(survey.getQuestions().size() - 1).equals(tempQuestion));
+        assertTrue(survey.getQuestions().get(survey.getQuestions().size() - 1).equals(tempQuestion));
     }
 
     @Test
@@ -52,15 +62,15 @@ public class SurveyTest {
         Question tempQuestion = new TextQuestion(5, title, description);
         survey.addQuestion(tempQuestion, 1);
 
-        Assert.assertTrue(survey.getQuestions().get(1).equals(tempQuestion));
+        assertTrue(survey.getQuestions().get(1).equals(tempQuestion));
     }
 
     @Test
     public void swapQuestion() throws Exception {
         survey.moveQuestion(0, 1);
 
-        Assert.assertTrue(survey.getQuestions().get(0).id == 2);
-        Assert.assertTrue(survey.getQuestions().get(1).id == 1);
+        assertTrue(survey.getQuestions().get(0).id == 2);
+        assertTrue(survey.getQuestions().get(1).id == 1);
     }
 
     @Test
@@ -72,8 +82,8 @@ public class SurveyTest {
         InputStream stream = new ByteArrayInputStream(html.getBytes());
         Document htmlDoc = tidy.parseDOM(stream, System.out);
 
-        Assert.assertTrue(tidy.getParseErrors() == 0);
-        Assert.assertTrue(tidy.getParseWarnings() == 0);
-        Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "title").equals(title));
+        assertTrue(tidy.getParseWarnings() == 0);
+        assertTrue(tidy.getParseErrors() == 0);
+        assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "title").equals(title));
     }
 }

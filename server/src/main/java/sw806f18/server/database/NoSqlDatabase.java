@@ -176,7 +176,30 @@ public class NoSqlDatabase {
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
         List<Survey> surveys = (List<Survey>) collection.find().into(new ArrayList<Survey>());
+
+        closeConnection();
         return surveys;
     }
 
+    static void removeQuestionFromSurvey(int surveyId, int questionId) {
+        openConnection();
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(surveyPojoCodecProvider));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
+
+        Survey survey = Database.getSurvey(surveyId);
+        Question question = null;
+
+        for (Question q : survey.getQuestions()) {
+            if (q.getId() == questionId) {
+                question = q;
+            }
+        }
+
+        survey.removeQuestion(question);
+
+        collection.replaceOne(eq("_id", surveyId), survey);
+    }
 }

@@ -9,9 +9,10 @@
     <script src="../js/CookieHelper.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="surveymanager.js"></script>
 </head>
 
-<body>
+<body onload="getQuestions()">
 <div class="main-container row">
     <div class="meta-container col-lg-2">
         <p>Navn på spørgeskemaet</p>
@@ -22,31 +23,65 @@
     </div>
     <div class="survey-container col-lg-10 row">
         <div class="table-container col-lg-11">
-            <table class="table table-striped" id="questiontable" name="questiontable">
-                <tr>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Age</th>
-                </tr>
-                <tr>
-                    <td>Jill</td>
-                    <td>Smith</td>
-                    <td>50</td>
-                </tr>
-                <tr>
-                    <td>Eve</td>
-                    <td>Jackson</td>
-                    <td>94</td>
-                </tr>
+            <table class="table" id="questiontable" name="questiontable">
+
             </table>
         </div>
         <div class="table-button-container col-lg-1">
-            <button type="button" id="addquestionbutton" name="addquestionbutton" class="btn btn-success">+</button>
+            <button type="button" id="addquestionbutton" name="addquestionbutton" class="btn btn-success" data-toggle="modal" data-target="#addGroupModal">+</button>
         </div>
     </div>
 </div>
 
-
+<div class="modal fade" id="addGroupModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tilføj nyt spørgsmål</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="questionNameInput" placeholder="Navn"><br />
+                <textarea type="text" class="form-control" rows="3" id="questionDescriptionInput" placeholder="Beskrivelse"></textarea><br />
+                <select class="form-control" id="questionInputTypeInput" onchange="pickInputTypeDiv();">
+                    <option selected="selected"></option>
+                    <option>Tekst</option>
+                    <option>Tal</option>
+                    <option>Rullegardin</option>
+                </select>
+                <br />
+                <div class="text-container" id="textDiv" style="display:none;">
+                </div>
+                <div class="number-container" id="numberDiv" style="display:none;">
+                </div>
+                <div class="dropdown-container" id="dropdownDiv" style="display:none;">
+                    <div class="row">
+                        <div class="col-lg-10">
+                            <input type="text" id="dropdownValueText" class="form-control" placeholder="Værdi">
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="btn btn-success">+</button>
+                            <button type="button" class="btn btn-danger">-</button>
+                        </div>
+                    </div>
+                    <br />
+                    <table id="dropdownValuesTable" class="table table-striped table-hover">
+                        <tr onclick="dropdownValueClicked(this)">
+                            <td>Hello</td>
+                        </tr>
+                        <tr onclick="dropdownValueClicked(this)">
+                            <td>Yes</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Gem</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 </body>

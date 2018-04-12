@@ -6,12 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
+import javax.xml.crypto.Data;
 
-import com.google.gson.Gson;
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.SurveyException;
@@ -240,12 +237,26 @@ public class SurveyResource {
     @GET
     @Path("/{id}/object")
     @Produces(MediaType.APPLICATION_JSON)
-    public void getSurveyObject(@PathParam("id") int id) {
+    public Survey getSurveyObject(@PathParam("id") int id) {
         Survey survey = Database.getSurvey(id);
-        Gson gson = new Gson();
-        String test = gson.toJson(survey);
-        int i;
 
+        return survey;
+    }
+
+    @DELETE
+    @Path("/{surveyId}/question/{questionId}")
+    public Response deleteQuestionFromSurvey(@PathParam("surveyId") int surveyId, @PathParam("questionId") int questionId) {
+        try {
+            Database.removeQuestionFromSurvey(surveyId, questionId);
+
+            Response response = Response.ok().build();
+            return response;
+        } catch (SurveyException e) {
+            e.printStackTrace();
+
+            Response response = Response.serverError().build();
+            return response;
+        }
     }
 }
 

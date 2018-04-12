@@ -141,6 +141,14 @@ public class Survey {
     }
 
     /**
+     * Removes a question from the survey.
+     * @param question Question to remove.
+     */
+    public void removeQuestion(Question question) {
+        questions.remove(question);
+    }
+
+    /**
      * Add style property to input type.
      *
      * @param inputType input type to add properties to.
