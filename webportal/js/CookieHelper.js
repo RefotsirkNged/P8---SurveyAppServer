@@ -40,8 +40,8 @@ function login() {
             request.setRequestHeader("email", email);
             request.setRequestHeader("password", password);
         },
-        //data: {email: email, password: password},
         success: function (response) {
+            console.log(response);
             if(response.hasOwnProperty("error")){
                 modal.style.display = "block";
                 document.getElementById("loginfailedmessage").innerText = response.error;
@@ -54,6 +54,7 @@ function login() {
         },
         error: function (response) {
             modal.style.display = "block";
+            console.log(response);
 
             document.getElementById("loginfailedmessage").innerText = "Something happened";
         }

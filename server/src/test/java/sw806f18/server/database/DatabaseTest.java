@@ -4,31 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import sw806f18.server.Configurations;
 import sw806f18.server.TestHelpers;
 
 import sw806f18.server.TestRunner;
 import sw806f18.server.exceptions.*;
 
 import sw806f18.server.model.*;
-
-import javax.validation.constraints.AssertTrue;
 
 /**
  * Created by augustkorvell on 13/03/2018.
@@ -173,8 +161,14 @@ public class DatabaseTest {
     @Test
     public void getAllSurveys() {
         List<Survey> surveys = null;
+        boolean hasError = false;
 
-        surveys = Database.getAllSurveys();
+        try {
+            surveys = Database.getAllModules();
+        } catch (SurveyException e) {
+            hasError = true;
+        }
+        assertFalse(hasError);
         assertTrue(surveys.size() == 3);
     }
 
@@ -312,6 +306,42 @@ public class DatabaseTest {
             hasError = true;
         }
 
+        assertFalse(hasError);
+    }
+
+    @Test
+    public void getGroupLinks() {
+        boolean hasError = false;
+        List<Survey> modules = new ArrayList<>();
+
+        try {
+            modules = Database.getGroupLinks(TestHelpers.group1.getId());
+        } catch (SurveyException e) {
+            hasError = true;
+        }
+        assertFalse(hasError);
+        List<Survey> expected = new ArrayList<>();
+        expected.add(TestHelpers.survey1);
+        expected.add(TestHelpers.survey2);
+
+        for (int i = 0; i < modules.size(); i++) {
+            assertEquals(modules.get(i).getId(), expected.get(i).getId());
+            assertTrue(modules.get(i).getTitle().equals(expected.get(i).getTitle()));
+            assertTrue(modules.get(i).getDescription().equals(expected.get(i).getDescription()));
+        }
+    }
+
+    @Test
+    public void removeGroupLink() {
+        boolean hasError = false;
+        try {
+            Database.removeGroupLink(TestHelpers.group1.getId(), TestHelpers.survey2.getId());
+            List<Survey> modules = Database.getGroupLinks(TestHelpers.group1.getId());
+            assertEquals(1, modules.size());
+            assertEquals(modules.get(0).getId(), TestHelpers.survey1.getId());
+        } catch (SurveyException e) {
+            hasError = true;
+        }
         assertFalse(hasError);
     }
 }

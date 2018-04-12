@@ -1,11 +1,10 @@
 package sw806f18.server.api;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.print.attribute.standard.Media;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -34,8 +33,13 @@ public class ReseacherGroupManagerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllSurveys(@HeaderParam("token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
-            List<Survey> surveys = Database.getAllSurveys();
-            String  jsonGroup = "{ \"surveys\": [ ";
+            List<Survey> surveys;
+            try {
+                surveys = Database.getAllModules();
+            } catch(SurveyException e) {
+                return "{ \"error\": \"No modules found.\" }";
+            }
+            String  jsonGroup = "{ \"modules\": [ ";
             for (int i = 0; i < surveys.size(); i++) {
                 if (i == 0) {
                     jsonGroup += surveys.get(i).getJsonObject();
@@ -165,33 +169,6 @@ public class ReseacherGroupManagerResource {
             } catch (RemoveParticipantFromGroupException e) {
                 return Json.createObjectBuilder().add("error", e.getMessage()).build();
             }
-            return Json.createObjectBuilder().add("success", 1).build();
-        }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
-    }
-
-    /**
-     * Linking a group to a survey.
-     * @param surveyID
-     * @param groupID
-     * @param token
-     * @return
-     */
-    @PUT
-    @Path("link")
-    @Produces(MediaType.APPLICATION_JSON)
-    public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
-                                         @HeaderParam("groupID") int groupID,
-                                         @HeaderParam("token") String token) {
-        if (Database.isResearcher(Authentication.instance.getId(token))) {
-            try {
-                Database.linkModuleToGroup(surveyID, groupID);
-            } catch (SurveyException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
-            } catch (P8Exception e) {
-                e.printStackTrace();
-            }
-
             return Json.createObjectBuilder().add("success", 1).build();
         }
         return Json.createObjectBuilder().add("error", "Invalid token").build();

@@ -275,6 +275,7 @@ public class Survey {
      */
     public String getJsonObject() {
         return "{\"title\": \"" + title + "\","
-                + " \"description\": \"" + description + "\"}";
+                + " \"description\": \"" + description + "\","
+                + " \"id\": " + id + "}";
     }
 }

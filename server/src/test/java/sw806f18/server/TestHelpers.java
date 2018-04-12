@@ -64,6 +64,7 @@ public class TestHelpers {
     public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
     public static final String PARTICIPANT_HUB_PATH = "participant/hub";
     public static final String PARTICIPANT_HUB_MODULES_PATH = "participant/hub/modules";
+    public static final String GROUP_PATH = "group";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_EMAIL = "fake1@email.com";
@@ -240,6 +241,20 @@ public class TestHelpers {
     }
 
     /**
+     * Get group members.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @param moduleId  Module.
+     * @param token  Token.
+     * @return Response.
+     */
+    public static Response removeGroupLink(WebTarget target, String path, int moduleId, String token) {
+        return target.path(path).request().header("module", moduleId)
+                .header("token", token).post(Entity.text(""));
+    }
+
+    /**
      * Get all of some thing.
      *
      * @param target Target.
@@ -283,14 +298,12 @@ public class TestHelpers {
      * @param target
      * @param path
      * @param surveyID
-     * @param groupID
      * @param token
      * @return
      */
     public static Response linkModuleToSurvey(WebTarget target, String path,
-                                              int surveyID, int groupID, String token) {
-        return target.path(path).request().header("surveyID", surveyID)
-                .header("groupID", groupID)
+                                              int surveyID, String token) {
+        return target.path(path).request().header("module", surveyID)
                 .header("token", token).put(Entity.text(""));
     }
 
@@ -329,7 +342,7 @@ public class TestHelpers {
      * @param token  Token.
      * @return Response.
      */
-    public static Response getModulesByUser(WebTarget target, String path, String token) {
+    public static Response getWithToken(WebTarget target, String path, String token) {
         return target.path(path).request().header("token", token).get();
     }
 

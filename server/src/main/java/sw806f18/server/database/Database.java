@@ -126,8 +126,8 @@ public class Database {
         return NoSqlDatabase.getSurveys(RelationalDatabase.getUsersSurveyIDs(user));
     }
 
-    public static List<Survey> getAllSurveys() {
-        return NoSqlDatabase.getAllSurveys();
+    public static List<Survey> getAllModules() throws SurveyException {
+        return RelationalDatabase.getAllModules();
     }
 
     public static List<Participant> getAllParticipants() throws GetAllParticipantsException {
@@ -204,5 +204,13 @@ public class Database {
     public static Hub getHubByUser(int userID) throws HubException {
         int hubID = RelationalDatabase.getHubIdByUser(userID);
         return NoSqlDatabase.getHub(hubID);
+    }
+
+    public static List<Survey> getGroupLinks(int groupId) throws SurveyException {
+        return RelationalDatabase.getGroupLinks(groupId);
+    }
+
+    public static void removeGroupLink(int groupId, int moduleId) throws SurveyException {
+        RelationalDatabase.removeGroupLink(groupId, moduleId);
     }
 }

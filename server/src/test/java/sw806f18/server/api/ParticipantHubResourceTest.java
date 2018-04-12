@@ -2,26 +2,16 @@ package sw806f18.server.api;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.internal.guava.Lists;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sw806f18.server.*;
 import sw806f18.server.exceptions.HubException;
 import sw806f18.server.model.Hub;
-import sw806f18.server.model.Participant;
 import sw806f18.server.model.Survey;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +20,7 @@ public class ParticipantHubResourceTest {
 
     @Test
     public void getModulesByUser() {
-        Response response = TestHelpers.getModulesByUser(TestListener.target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
+        Response response = TestHelpers.getWithToken(TestListener.target, TestHelpers.PARTICIPANT_HUB_MODULES_PATH,
             TestHelpers.token1);
         assertEquals(200, response.getStatus());
         JsonObject json = TestHelpers.getPayload(response);

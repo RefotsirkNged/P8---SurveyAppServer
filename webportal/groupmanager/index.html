@@ -22,8 +22,8 @@
                 </table>
             </div>
             <div class="btnWrapper">
-                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroupModal">+</button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="deleteGroupToggle()">-</button>
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addGroupModal" style="width:30px;">+</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteGroupToggle()" style="width:30px;">-</button>
             </div>
         </div>
 
@@ -238,7 +238,7 @@
                 response.members.forEach(function (value) {
                    g.innerHTML +=  "<tr>\n" +
                        "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
-                       " <button id='remparbtn" + value.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeMemberFromGroup(" + value.id + "," + marked.id +")\" style='float: right;'>-</button>\n" +
+                       " <button id='remparbtn" + value.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeMemberFromGroup(" + value.id + "," + marked.id +")\" style='float: right;width:25px;'>-</button>\n" +
                        "</td>\n" +
                        "</tr>";
 
@@ -273,7 +273,7 @@
                 response.participants.forEach(function (value) {
                     userTBody.innerHTML += "<tr>\n" +
                         "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
-                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addMemberToGroup(" + value.id + ")\" style='float: right;'>+</button>\n" +
+                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addMemberToGroup(" + value.id + ")\" style='float: right;width:25px;'>+</button>\n" +
                         "</td>\n" +
                         "</tr>"
                 });
@@ -281,26 +281,22 @@
         });
     }
 
+    var allModules = [];
     function updateSurveysTable(){
-        $('#allSurveysWindow').innerHTML = "";
+        $('#groupSurveysWindow').innerHTML = "";
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/groupmanager',
+            url: 'http://localhost:8081/api/researcher/groupmanager/surveys',
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
             },
-            //data: {email: email, password: password},
             success: function (response) {
-                var groups = response.groups;
-                groups.forEach(function(e){
-                    $('#groupTableBody').append('<tr id="row' + e.id + '"><td>' + e.name + '</td></tr>');
-                    $('#row' + e.id).click(function() {
-                        resetRows();
-                        deselect();
-                        $(this).css('background-color','#9a9a9a');
-                        marked = {id:e.id, name: e.name};
-                        getGroupMembers(response.groupid);
-                    });
+                allModules = [];
+                var modules = response.modules;
+                modules.forEach(function(e){
+                    $('#groupSurveysWindow').append('<tr id="module' + e.id + '"><td>' + e.title +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>edit</button></td></tr>");
+                    allModules.push(e);
                 });
             }
         });
@@ -314,7 +310,6 @@
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
             },
-            //data: {email: email, password: password},
             success: function (response) {
                 var groups = response.groups;
                 groups.forEach(function(e){
@@ -325,10 +320,76 @@
                         $(this).css('background-color','#9a9a9a');
                         marked = {id:e.id, name: e.name};
                         getGroupMembers(response.groupid);
+                        getGroupLinks();
                     });
                 });
             }
         });
+    }
+
+    var markedModules = [];
+    function getGroupLinks() {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/surveys',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                markedModules = [];
+                var modules = response.modules;
+                modules.forEach(function(e){
+                    document.getElementById('module' + e.id).innerHTML =
+                        "<td>" + e.title + "\n" +
+                        " <button id='rmgrplnk" + e.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeGroupLink(" + e.id + ")\" style='float: right;width:25px;'>-</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>edit</button>\n" +
+                        "</td>";
+                    markedModules.push(e);
+                });
+
+                var moduleDiff = arr_diff(allModules, markedModules);
+                moduleDiff.forEach(function(e) {
+                    document.getElementById('module' + e.id).innerHTML =
+                        "<td>" + e.title + "\n" +
+                        " <button id='addgrplnk" + e.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addGroupLink(" + e.id + ")\" style='float: right;width:25px;'>+</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>edit</button>\n" +
+                        "</td>";
+                });
+            }
+        });
+    }
+
+    function removeGroupLink(surveyId) {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/link/delete',
+            type: 'POST',
+            beforeSend: function (request) {
+                request.setRequestHeader("module", surveyId);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                getGroupLinks();
+            }
+        });
+    }
+
+    function addGroupLink(surveyId) {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/link/add',
+            type: 'PUT',
+            beforeSend: function (request) {
+                request.setRequestHeader("module", surveyId);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                getGroupLinks();
+            }
+        });
+    }
+
+    function editModule(moduleId) {
+        sessionStorage.setItem("surveyId", moduleId);
+        window.location.replace("../surveymanager/index.html");
     }
 </script>
 

@@ -104,6 +104,35 @@ public class RelationalDatabase {
     }
 
     /**
+     * Get list of all modules from database.
+     *
+     * @return List of all surveys.
+     * @throws GetGroupsException Exception.
+     */
+    static List<Survey> getAllModules() throws SurveyException {
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String query = "SELECT name,description,id FROM modules";
+            ResultSet resultSet = statement.executeQuery(query);
+            List<Survey> modules = new ArrayList<>();
+
+            while (resultSet.next()) {
+                modules.add(new Survey(resultSet.getInt("id"),
+                        resultSet.getString("name"), resultSet.getString("description")));
+            }
+            con.close();
+            return modules;
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+    }
+
+    /**
      * Adds group to database.
      *
      * @param group group.
@@ -741,6 +770,44 @@ public class RelationalDatabase {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
         } catch (ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
+        }
+    }
+
+    static List<Survey> getGroupLinks(int groupId) throws SurveyException {
+        List<Survey> modules = new ArrayList<>();
+        Connection con = null;
+        try {
+            con = createConnection();
+            Statement stmt = con.createStatement();
+            String query = "SELECT m.id AS id, m.name AS title, m.description AS description "
+                    + "FROM hasModule h, modules m WHERE h.groupid = " + groupId + " AND m.id = h.moduleid";
+            ResultSet result = stmt.executeQuery(query);
+            while (result.next()) {
+                modules.add(new Survey(result.getInt("id"),
+                        result.getString("title"),
+                        result.getString("description")));
+            }
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+        return modules;
+    }
+
+    static void removeGroupLink(int groupId, int moduleId) throws SurveyException {
+        Connection con = null;
+        try {
+            con = createConnection();
+            Statement stmt = con.createStatement();
+            String query = "DELETE FROM hasmodule WHERE groupid=" + groupId + " AND moduleid=" + moduleId;
+            stmt.executeUpdate(query);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
         }
     }
 }
