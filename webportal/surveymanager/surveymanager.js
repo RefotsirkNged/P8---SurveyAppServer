@@ -56,7 +56,6 @@ function pickInputTypeDiv() {
     else if (dropdown.selectedIndex == 3) {
                 document.getElementById("dropdownDiv").style.display = "block";
     }
-
 }
 
 function dropdownValueClicked(row) {
