@@ -53,7 +53,7 @@ public class GroupResource {
     }
 
     /**
-     * Delete link
+     * Delete link.
      *
      * @param token    Token.
      * @param id       ID.
