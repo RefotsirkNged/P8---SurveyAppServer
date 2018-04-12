@@ -68,7 +68,12 @@ public class TestListener extends RunListener {
             // The database is already dropped!
         }
         createDatabase();
-        server.shutdown();
+
+        try {
+            server.shutdown();
+        } catch (Exception e) {
+            System.out.println("Server could not shut down. " + e.getMessage());
+        }
 
         server = Main.startServer();
         Client c = ClientBuilder.newClient();

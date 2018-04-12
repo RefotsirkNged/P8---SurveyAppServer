@@ -279,6 +279,17 @@ public class TestHelpers {
     }
 
     /**
+     * Get HTML from resource.
+     *
+     * @param target Target.
+     * @param path   Path.
+     * @return Response.
+     */
+    public static String getHTML(WebTarget target, String path) {
+        return target.path(path).request().get(String.class);
+    }
+
+    /**
      * Remove group member.
      *
      * @param target      Target.

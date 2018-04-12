@@ -14,14 +14,18 @@ import sw806f18.server.model.Hub;
 import sw806f18.server.model.Participant;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 @Path("participant/login")
 public class ParticipantLoginResource {
     /**
      * POST method for performing a login as a participant.
+     *
      * @param email
      * @param password
      * @return
@@ -42,16 +46,19 @@ public class ParticipantLoginResource {
 
     /**
      * Get login page HTML.
+     *
      * @return HTML for hub.
      */
     @GET
     @Produces(MediaType.TEXT_HTML)
     public InputStream getLoginPage() {
-        StringBuilder sb = new StringBuilder();
-        String token = login("test1@testesen.dk", "power123").getString("token");
+        String html = "";
+        try {
+            html = new String(Files.readAllBytes(Paths.get("tmp/participantlogin.html")), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            html = "Error!";
+        }
 
-
-
-        return new ByteArrayInputStream(sb.toString().getBytes(StandardCharsets.UTF_8));
+        return new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
     }
 }
