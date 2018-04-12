@@ -95,7 +95,7 @@ public class SurveyResource {
             stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
         } else {
             //TODO: Sæt rigtig userID ind.
-            Answer answer = new Answer(-1, survey);
+            Answer answer = new Answer();
             stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
         }
 

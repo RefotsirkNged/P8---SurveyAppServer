@@ -167,8 +167,9 @@ public class Database {
         NoSqlDatabase.cleanMongoDB();
     }
 
-    public static void addAnswer(Answer answer) {
-
+    public static void addAnswer(Answer answer) throws AnswerException {
+        NoSqlDatabase.addAnswer(answer);
+        RelationalDatabase.addAnswer(answer);
     }
 
     /**
@@ -204,5 +205,9 @@ public class Database {
     public static Hub getHubByUser(int userID) throws HubException {
         int hubID = RelationalDatabase.getHubIdByUser(userID);
         return NoSqlDatabase.getHub(hubID);
+    }
+
+    public static Answer getNewestAnswer(int userId) {
+        return NoSqlDatabase.getNewestAnswer(userId);
     }
 }

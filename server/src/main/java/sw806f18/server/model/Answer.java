@@ -2,15 +2,17 @@ package sw806f18.server.model;
 
 import org.glassfish.grizzly.http.util.TimeStamp;
 
+import java.util.Date;
+
 /**
  * Created by augustkorvell on 10/04/2018.
  */
 public class Answer {
-    private TimeStamp timeStamp;
+    private Date timeStamp;
     private int userID;
     private Survey survey;
 
-    public TimeStamp getTimeStamp() {
+    public Date getTimeStamp() {
         return timeStamp;
     }
 
@@ -22,7 +24,7 @@ public class Answer {
         return survey;
     }
 
-    public void setTimeStamp(TimeStamp timeStamp) {
+    public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -42,12 +44,25 @@ public class Answer {
 
     /**
      * Standard constructor.
+     *
      * @param userID Id of the user who has made the answer.
      * @param survey The survey conatining the answered values.
      */
     public Answer(int userID, Survey survey) {
         this.userID = userID;
         this.survey = survey;
-        this.timeStamp = new TimeStamp();
+        this.timeStamp = new Date();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Answer other = (Answer) obj;
+        return getTimeStamp().equals(other.getTimeStamp())
+            && getUserID() == other.getUserID()
+            && getSurvey().equals(other.getSurvey());
     }
 }

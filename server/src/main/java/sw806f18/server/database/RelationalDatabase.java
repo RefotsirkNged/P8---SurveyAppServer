@@ -1,14 +1,11 @@
 package sw806f18.server.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -683,8 +680,22 @@ public class RelationalDatabase {
         return linkedGroups;
     }
 
-    static void addAnswer(Answer answer) {
-        throw new NotImplementedException();
+    static void addAnswer(Answer answer) throws AnswerException {
+        String query = "INSERT INTO hasanswered (participantid, moduleid, timestamp) VALUES (?,?,?)";
+
+        try {
+            Connection connection = createConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, answer.getUserID());
+            preparedStatement.setInt(2, answer.getSurvey().getId());
+            preparedStatement.setTimestamp(3, new Timestamp(answer.getTimeStamp().getTime()));
+            preparedStatement.execute();
+
+            connection.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new AnswerException("Server error. Contact system administrator.", e);
+        }
     }
 
     /**
