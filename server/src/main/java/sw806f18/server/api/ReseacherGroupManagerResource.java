@@ -36,7 +36,7 @@ public class ReseacherGroupManagerResource {
             List<Survey> surveys;
             try {
                 surveys = Database.getAllModules();
-            } catch(SurveyException e) {
+            } catch (SurveyException e) {
                 return "{ \"error\": \"No modules found.\" }";
             }
             String  jsonGroup = "{ \"modules\": [ ";

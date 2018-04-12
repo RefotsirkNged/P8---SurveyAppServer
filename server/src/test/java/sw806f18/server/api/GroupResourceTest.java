@@ -32,7 +32,7 @@ public class GroupResourceTest {
         JsonObject object = TestHelpers.getPayload(response);
         JsonArray array = object.getJsonArray("modules");
         List<Survey> modules = new ArrayList<>();
-        for(int i = 0; i < array.size(); i++){
+        for (int i = 0; i < array.size(); i++) {
             JsonObject element = array.get(i).asJsonObject();
             modules.add(new Survey(element.getInt("id"), element.getString("title"), element.getString("description")));
         }
