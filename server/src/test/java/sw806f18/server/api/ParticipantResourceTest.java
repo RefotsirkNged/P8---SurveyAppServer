@@ -51,8 +51,7 @@ public class ParticipantResourceTest {
             .request().header("key", key)
             .header("email", TestHelpers.participantCreate.getEmail())
             .header("password", TestHelpers.PASSWORD).post(Entity.text(""));
-        assertEquals(response1.getStatus(), 200);
-        //  assertTrue(fullParticipant.equals(partialParticipant));
+        assertEquals(204, response1.getStatus());
         boolean success = true;
         try {
             Database.clearInviteFromKey(key);

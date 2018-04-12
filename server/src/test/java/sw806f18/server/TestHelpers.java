@@ -409,7 +409,7 @@ public class TestHelpers {
 
         emailFolder.close(true);
 
-        return key;
+        return key.replace("\r\n", "");
     }
 
     private static String getTextFromMessage(Message message) throws IOException,
