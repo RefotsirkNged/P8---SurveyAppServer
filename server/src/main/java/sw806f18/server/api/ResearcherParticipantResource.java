@@ -48,14 +48,14 @@ public class ResearcherParticipantResource {
     public void inviteParticipant(@HeaderParam("token") String token,
                                   @HeaderParam("cpr") int cpr,
                                   @HeaderParam("email") String email) throws CreateInviteException {
-        Invite invite = new Invite(Integer.toString(cpr), token);
+        String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
+        Invite invite = new Invite(Integer.toString(cpr), key);
         try {
             Database.createInvite(invite);
         } catch (CreateInviteException e) {
             e.printStackTrace();
         }
 
-        String to = "sw806f18@gmail.com";
         String from = "sw806f18@gmail.com";
         String username = "sw806f18@gmail.com";
         String password = "p0wer123";
@@ -76,9 +76,9 @@ public class ResearcherParticipantResource {
         try {
             Message message = new MimeMessage(emailSession);
             message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            message.setSubject("invite");
-            message.setText("123");
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("Join MERSY");
+            message.setText(key);
             Transport.send(message);
 
         } catch (AddressException e) {

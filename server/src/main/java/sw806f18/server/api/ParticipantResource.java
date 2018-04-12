@@ -1,6 +1,7 @@
 package sw806f18.server.api;
 
 import sw806f18.server.database.Database;
+import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.model.Participant;
 
@@ -35,10 +36,13 @@ public class ParticipantResource {
             e.printStackTrace();
         }
 
-        Participant participant = new Participant(-1, email, cpr, firstname, lastname, 0);
+        Participant participant = new Participant(-1, email, cpr, firstname, lastname, 5139);
         try {
             Database.createParticipant(participant, password);
+            Database.clearInviteFromKey(key);
         } catch (CreateUserException e) {
+            e.printStackTrace();
+        } catch (CprKeyNotFoundException e) {
             e.printStackTrace();
         }
     }

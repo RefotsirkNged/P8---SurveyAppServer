@@ -5,7 +5,7 @@ import java.util.Date;
 public class Participant extends User {
     private String cpr;
     private Date birthday;
-    private int primaryGroup = 0;
+    private int primaryGroup = 5139;
 
     /**
      * Constructor.
@@ -25,12 +25,40 @@ public class Participant extends User {
     /**
      * Constructor.
      * @param id Id.
+     * @param email Email.
+     * @param cpr CPR.
+     * @param firstName First name.
+     * @param lastName Last name.
+     */
+    public Participant(int id, String email, String cpr, String firstName, String lastName) {
+        super(id, email, firstName, lastName);
+        this.cpr = cpr;
+        this.birthday = new Date();
+    }
+
+    /**
+     * Constructor.
+     * @param id Id.
      * @param cpr CPR.
      * @param firstName First name.
      * @param lastName Last name.
      * @param primaryGroup Primary hub group.
      */
     public Participant(int id, String cpr, String firstName, String lastName, int primaryGroup) {
+        super(id, firstName, lastName);
+        this.cpr = cpr;
+        this.birthday = new Date();
+        this.primaryGroup = primaryGroup;
+    }
+
+    /**
+     * Constructor.
+     * @param id Id.
+     * @param cpr CPR.
+     * @param firstName First name.
+     * @param lastName Last name.
+     */
+    public Participant(int id, String cpr, String firstName, String lastName) {
         super(id, firstName, lastName);
         this.cpr = cpr;
         this.birthday = new Date();

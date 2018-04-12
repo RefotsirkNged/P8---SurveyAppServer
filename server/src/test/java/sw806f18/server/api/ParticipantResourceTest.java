@@ -42,7 +42,7 @@ public class ParticipantResourceTest {
         TestListener.target.path("researcher").path("participant").request()
             .header("token", token)
             .header("cpr", TestHelpers.participantCreate.getCpr())
-            .header("email", TestHelpers.participantCreate.getEmail())
+            .header("email", "sw806f18@gmail.com")
             .post(Entity.text(""));
         Thread.sleep(5000); // Wait for mail
         String key = TestHelpers.getKeyFromParticipantEmail();

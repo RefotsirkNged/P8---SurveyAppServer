@@ -398,7 +398,7 @@ public class TestHelpers {
         String key = null;
 
         for (Message message : messages) {
-            if (message.getSubject().equals("invite")) {
+            if (message.getSubject().equals("Join MERSY")) {
                 key = getTextFromMessage(message);
             }
         }
