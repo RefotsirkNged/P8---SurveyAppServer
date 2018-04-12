@@ -179,7 +179,7 @@ public class ResearcherGroupManagerTest {
         assertEquals(200, response.getStatus());
 
         JsonObject jsonObject = TestHelpers.getPayload(response);
-        JsonArray jsonArray = jsonObject.getJsonArray("surveys");
+        JsonArray jsonArray = jsonObject.getJsonArray("modules");
         JsonObject element = jsonArray.get(0).asJsonObject();
         Survey s1 = new Survey(element.getString("title"), element.getString("description"));
         assertTrue(TestHelpers.survey1.getTitle().equals(s1.getTitle()));
