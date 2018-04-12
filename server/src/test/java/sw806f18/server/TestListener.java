@@ -52,7 +52,8 @@ public class TestListener extends RunListener {
         Logger grizzlyLogger = Logger.getLogger("org.glassfish.grizzly");
         grizzlyLogger.setLevel(Level.SEVERE);
 
-        if (Configurations.instance.getPostgresDatabase().equals("devdb") || Configurations.instance.getPostgresDatabase().equals("postgres")) {
+        if (Configurations.instance.getPostgresDatabase().equals("devdb")
+                || Configurations.instance.getPostgresDatabase().equals("postgres")) {
             throw new SQLException("Please use another database name for testing!!!");
         }
 
@@ -68,13 +69,10 @@ public class TestListener extends RunListener {
         }
         createDatabase();
 
-//        TestHelpers.resetDatabase();
-//        TestHelpers.populateDatabase();
-
         try {
             server.shutdown();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         server = Main.startServer();
@@ -92,11 +90,11 @@ public class TestListener extends RunListener {
 
     private void dropRelationelDatabase() throws SQLException {
         Connection connection = getConnection();
-        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) " +
-            "FROM pg_stat_activity " +
-            "WHERE pg_stat_activity.datname = '" + Configurations.instance.getPostgresDatabase() + "' " +
-            "  AND pid <> pg_backend_pid();" +
-            "DROP DATABASE " + Configurations.instance.getPostgresDatabase();
+        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+            + "FROM pg_stat_activity "
+            + "WHERE pg_stat_activity.datname = '" + Configurations.instance.getPostgresDatabase() + "' "
+            + "  AND pid <> pg_backend_pid();"
+            + "DROP DATABASE " + Configurations.instance.getPostgresDatabase();
         connection.createStatement().execute(statement);
         connection.close();
     }
@@ -109,11 +107,11 @@ public class TestListener extends RunListener {
 
     private void createDatabase() throws SQLException {
         Connection connection = getConnection();
-        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) " +
-            "FROM pg_stat_activity " +
-            "WHERE pg_stat_activity.datname = 'devdb' " +
-            "  AND pid <> pg_backend_pid();" +
-            "CREATE DATABASE " + Configurations.instance.getPostgresDatabase() + " TEMPLATE devdb";
+        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+            + "FROM pg_stat_activity "
+            + "WHERE pg_stat_activity.datname = 'devdb' "
+            + "  AND pid <> pg_backend_pid();"
+            + "CREATE DATABASE " + Configurations.instance.getPostgresDatabase() + " TEMPLATE devdb";
         connection.createStatement().execute(statement);
 
         connection.close();

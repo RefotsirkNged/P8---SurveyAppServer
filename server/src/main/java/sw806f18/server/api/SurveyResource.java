@@ -234,6 +234,11 @@ public class SurveyResource {
         }
     }
 
+    /**
+     * Get Survey from ID as JSON response.
+     * @param id ID of survey to get.
+     * @return Return Survey with ID.
+     */
     @GET
     @Path("/{id}/object")
     @Produces(MediaType.APPLICATION_JSON)
@@ -243,9 +248,16 @@ public class SurveyResource {
         return survey;
     }
 
+    /**
+     * Remove question from survey.
+     * @param surveyId Survey to remove from.
+     * @param questionId Question to remove.
+     * @return Response.
+     */
     @DELETE
     @Path("/{surveyId}/question/{questionId}")
-    public Response deleteQuestionFromSurvey(@PathParam("surveyId") int surveyId, @PathParam("questionId") int questionId) {
+    public Response deleteQuestionFromSurvey(@PathParam("surveyId") int surveyId,
+                                             @PathParam("questionId") int questionId) {
         try {
             Database.removeQuestionFromSurvey(surveyId, questionId);
 

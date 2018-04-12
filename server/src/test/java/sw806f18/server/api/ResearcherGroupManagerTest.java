@@ -187,7 +187,8 @@ public class ResearcherGroupManagerTest {
 
     @Test
     public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
-        Response response = TestHelpers.linkModuleToSurvey(TestListener.target, TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
+        Response response = TestHelpers.linkModuleToSurvey(TestListener.target,
+                TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
                 TestHelpers.survey1.getId(), TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
