@@ -6,10 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
+import javax.xml.crypto.Data;
 
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
@@ -235,4 +233,42 @@ public class SurveyResource {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Get Survey from ID as JSON response.
+     * @param id ID of survey to get.
+     * @return Return Survey with ID.
+     */
+    @GET
+    @Path("/{id}/object")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Survey getSurveyObject(@PathParam("id") int id) {
+        Survey survey = Database.getSurvey(id);
+
+        return survey;
+    }
+
+    /**
+     * Remove question from survey.
+     * @param surveyId Survey to remove from.
+     * @param questionId Question to remove.
+     * @return Response.
+     */
+    @DELETE
+    @Path("/{surveyId}/question/{questionId}")
+    public Response deleteQuestionFromSurvey(@PathParam("surveyId") int surveyId,
+                                             @PathParam("questionId") int questionId) {
+        try {
+            Database.removeQuestionFromSurvey(surveyId, questionId);
+
+            Response response = Response.ok().build();
+            return response;
+        } catch (SurveyException e) {
+            e.printStackTrace();
+
+            Response response = Response.serverError().build();
+            return response;
+        }
+    }
 }
+

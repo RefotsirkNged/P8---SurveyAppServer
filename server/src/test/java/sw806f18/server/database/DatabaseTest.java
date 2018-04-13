@@ -29,6 +29,16 @@ import static org.junit.Assert.*;
 @RunWith(TestRunner.class)
 public class DatabaseTest {
     @Test
+    public void removeQuestionFromSurvey() throws Exception {
+        int surveyId = TestHelpers.survey2.getId();
+        Question oldQuestion = TestHelpers.survey2.getQuestions().get(0);
+
+        Database.removeQuestionFromSurvey(surveyId, oldQuestion.getId());
+
+        assertTrue(!Database.getSurvey(surveyId).getQuestions().contains(oldQuestion));
+    }
+
+    @Test
     public void createResearcher() {
         Researcher researcher = null;
 

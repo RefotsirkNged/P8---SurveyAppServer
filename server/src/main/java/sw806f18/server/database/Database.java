@@ -218,4 +218,14 @@ public class Database {
     public static Answer getNewestAnswer(int userId) {
         return NoSqlDatabase.getNewestAnswer(userId);
     }
+
+    /**
+     * Removes a question from a survey.
+     * @param surveyId The ID of the survey from which the question should be removed.
+     * @param questionId The ID of the question to be removed.
+     */
+    public static void removeQuestionFromSurvey(int surveyId, int questionId) throws SurveyException {
+        RelationalDatabase.removeQuestionFromSurvey(questionId);
+        NoSqlDatabase.removeQuestionFromSurvey(surveyId, questionId);
+    }
 }

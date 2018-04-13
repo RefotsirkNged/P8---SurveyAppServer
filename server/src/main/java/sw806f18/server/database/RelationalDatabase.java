@@ -587,6 +587,38 @@ public class RelationalDatabase {
         } catch (ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
         }
+
+        for (Question q : s.getQuestions()) {
+            q.setId(addQuestionToSurvey(q, id));
+        }
+
+        return id;
+    }
+
+    private static int addQuestionToSurvey(Question question, int surveyID) throws SurveyException {
+        Connection con;
+        int id = 0;
+
+        try {
+            con = createConnection();
+
+            String query = "INSERT INTO questions (name, description, moduleId) VALUES (?, ?, ?) RETURNING id";
+
+
+            PreparedStatement statement = con.prepareStatement(query);
+            statement.setString(1, question.getTitle());
+            statement.setString(2, question.getDescription());
+            statement.setInt(3, surveyID);
+
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            id = rs.getInt(1);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
         return id;
     }
 
@@ -781,6 +813,22 @@ public class RelationalDatabase {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
         } catch (ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
+        }
+    }
+
+    static void removeQuestionFromSurvey(int questionId) throws SurveyException {
+        Connection con;
+
+        try {
+            con = createConnection();
+            Statement statement = con.createStatement();
+            String q1 = "DELETE FROM questions WHERE id=" + questionId;
+            statement.executeUpdate(q1);
+            con.close();
+        } catch (SQLException e) {
+            throw new SurveyException(e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
         }
     }
 

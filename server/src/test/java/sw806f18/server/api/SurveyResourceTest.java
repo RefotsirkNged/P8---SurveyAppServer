@@ -29,6 +29,19 @@ import static org.junit.Assert.assertTrue;
 @RunWith(TestRunner.class)
 public class SurveyResourceTest {
     @Test
+    public void deleteQuestionFromSurvey() throws Exception {
+        Response response = TestListener.target
+                .path("survey")
+                .path(Integer.toString(TestHelpers.survey2.getId()))
+                .path("question")
+                .path(Integer.toString(TestHelpers.survey2.getQuestions().get(0).getId()))
+                .request()
+                .delete();
+
+        assertEquals(response.getStatus(), 200);
+    }
+
+    @Test
     public void surveySubmittedWithError() throws ParserConfigurationException, NotImplementedException {
         Tidy tidy = new Tidy();
         MultivaluedMap<String,String> form = new MultivaluedHashMap<>();
