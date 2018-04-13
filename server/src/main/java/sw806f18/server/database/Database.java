@@ -207,6 +207,14 @@ public class Database {
         return NoSqlDatabase.getHub(hubID);
     }
 
+    public static List<Survey> getGroupLinks(int groupId) throws SurveyException {
+        return RelationalDatabase.getGroupLinks(groupId);
+    }
+
+    public static void removeGroupLink(int groupId, int moduleId) throws SurveyException {
+        RelationalDatabase.removeGroupLink(groupId, moduleId);
+    }
+
     public static Answer getNewestAnswer(int userId) {
         return NoSqlDatabase.getNewestAnswer(userId);
     }
