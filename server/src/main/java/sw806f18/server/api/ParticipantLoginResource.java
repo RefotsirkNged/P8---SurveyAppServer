@@ -60,5 +60,5 @@ public class ParticipantLoginResource {
         }
 
         return new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
-    } 
+    }
 }

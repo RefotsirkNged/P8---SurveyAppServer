@@ -1,10 +1,14 @@
 package sw806f18.server.database;
 
+import static com.mongodb.client.model.Filters.all;
 import static com.mongodb.client.model.Filters.eq;
 
+import static com.mongodb.client.model.Filters.gt;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -14,8 +18,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.*;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.bson.conversions.Bson;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.model.*;
@@ -29,8 +35,9 @@ import java.util.ArrayList;
 public class NoSqlDatabase {
     private static MongoClient client;
     private static MongoDatabase database;
-    private static PojoCodecProvider surveyPojoCodecProvider;
+    private static PojoCodecProvider modulePojoCodecProvider;
     private static PojoCodecProvider hubPojoCodecProvider;
+    private static PojoCodecProvider answerPojoCodecProvider;
 
     private static final String MODULE_COLLECTION = "module";
     private static final String ANSWER_COLLECTION = "answers";
@@ -53,10 +60,14 @@ public class NoSqlDatabase {
         ClassModel<NumberQuestion> numberQuestionModel =
                 ClassModel.builder(NumberQuestion.class).enableDiscriminator(true).build();
 
-        surveyPojoCodecProvider = PojoCodecProvider.builder().register(
+        ClassModel<Answer> answerModel = ClassModel.builder(Answer.class).build();
+
+        modulePojoCodecProvider = PojoCodecProvider.builder().register(
                 surveyModel, questionModel, dropdownQuestionModel, textQuestionModel, numberQuestionModel).build();
         hubPojoCodecProvider = PojoCodecProvider.builder().register(hubModel).build();
-
+        answerPojoCodecProvider = PojoCodecProvider.builder().register(
+            surveyModel, questionModel, dropdownQuestionModel,
+            textQuestionModel, numberQuestionModel, answerModel).build();
     }
 
 
@@ -83,7 +94,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(surveyPojoCodecProvider));
+                fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
@@ -129,7 +140,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(surveyPojoCodecProvider));
+                fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 
@@ -148,7 +159,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(surveyPojoCodecProvider));
+                fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 
@@ -164,19 +175,43 @@ public class NoSqlDatabase {
     }
 
     static void addAnswer(Answer answer) {
-        throw new NotImplementedException();
+        openConnection();
+        CodecRegistry pojoCodeRegestry = fromRegistries(
+            MongoClient.getDefaultCodecRegistry(),
+            fromProviders(answerPojoCodecProvider));
+        database = database.withCodecRegistry(pojoCodeRegestry);
+        MongoCollection<Answer> collection = database.getCollection(ANSWER_COLLECTION, Answer.class);
+
+        collection.insertOne(answer);
+        closeConnection();
+
     }
 
     static List<Survey> getAllSurveys() {
 
         openConnection();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(surveyPojoCodecProvider));
+                fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
         List<Survey> surveys = (List<Survey>) collection.find().into(new ArrayList<Survey>());
+        closeConnection();
         return surveys;
     }
 
+    static Answer getNewestAnswer(int userId) {
+        openConnection();
+        CodecRegistry pojoCodeRegestry = fromRegistries(
+            MongoClient.getDefaultCodecRegistry(),
+            fromProviders(answerPojoCodecProvider));
+        database = database.withCodecRegistry(pojoCodeRegestry);
+        MongoCollection<Answer> collection = database.getCollection(ANSWER_COLLECTION, Answer.class);
+
+        collection.find().into(new ArrayList<>());
+
+        Answer answer = collection.find().sort(new BasicDBObject("timeStamp", -1)).limit(1).first();
+        closeConnection();
+        return answer;
+    }
 }

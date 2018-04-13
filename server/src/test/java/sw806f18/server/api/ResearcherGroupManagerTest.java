@@ -146,7 +146,7 @@ public class ResearcherGroupManagerTest {
     public void getAllParticipants() {
         Response response = TestHelpers.getAll(TestListener.target,
             TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
-                TestHelpers.tokenResearcher1);
+            TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
         JsonObject jsonObject = TestHelpers.getPayload(response);
@@ -175,7 +175,7 @@ public class ResearcherGroupManagerTest {
     @Test
     public void getAllSurveys() {
         Response response = TestHelpers.getAll(TestListener.target, TestHelpers.SURVEY_PATH,
-                TestHelpers.tokenResearcher1);
+            TestHelpers.tokenResearcher1);
         assertEquals(200, response.getStatus());
 
         JsonObject jsonObject = TestHelpers.getPayload(response);
@@ -183,5 +183,17 @@ public class ResearcherGroupManagerTest {
         JsonObject element = jsonArray.get(0).asJsonObject();
         Survey s1 = new Survey(element.getString("title"), element.getString("description"));
         assertTrue(TestHelpers.survey1.getTitle().equals(s1.getTitle()));
+    }
+
+    @Test
+    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
+        Response response = TestHelpers.linkModuleToSurvey(
+            TestListener.target,
+            TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
+            TestHelpers.survey1.getId(), TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
+        assertEquals(200, response.getStatus());
+
+        List<Integer> linkedGroups = Database.getModuleLinks(TestHelpers.survey1);
+        assertTrue(linkedGroups.contains(TestHelpers.group1.getId()));
     }
 }

@@ -53,7 +53,7 @@ public class TestListener extends RunListener {
         grizzlyLogger.setLevel(Level.SEVERE);
 
         if (Configurations.instance.getPostgresDatabase().equals("devdb")
-                || Configurations.instance.getPostgresDatabase().equals("postgres")) {
+            || Configurations.instance.getPostgresDatabase().equals("postgres")) {
             throw new SQLException("Please use another database name for testing!!!");
         }
 
@@ -65,6 +65,8 @@ public class TestListener extends RunListener {
             dropRelationelDatabase();
             dropNonrelationalDatabase();
         } catch (PSQLException e) {
+            e.printStackTrace();
+            return;
             // The database is already dropped!
         }
         createDatabase();
