@@ -1,25 +1,29 @@
 package sw806f18.server.api;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.web.bind.annotation.*;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.GetModulesByUserException;
 import sw806f18.server.exceptions.HubException;
-import sw806f18.server.model.*;
+import sw806f18.server.model.Hub;
+import sw806f18.server.model.Survey;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("participant/hub")
+@RestController
+@RequestMapping(path = "participant/hub")
 public class ParticipantHubResource {
     /**
      * GET method for getting modules by user ID.
@@ -27,10 +31,8 @@ public class ParticipantHubResource {
      * @param token
      * @return Modules
      */
-    @GET
-    @Path("/modules")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject getModules(@HeaderParam("token") String token) {
+    @RequestMapping(path = "/modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getModules(@CookieValue(value = "token") String token) {
         DecodedJWT decodedJWT = Authentication.instance.decodeToken(token);
         int userId = decodedJWT.getClaim("userid").asInt();
         List<Survey> modules = new ArrayList<>();
@@ -38,17 +40,25 @@ public class ParticipantHubResource {
         try {
             modules = Database.getModulesByUser(userId);
         } catch (GetModulesByUserException e) {
-            return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            return ResponseEntity.badRequest().body(new Error(e.getMessage()));
         }
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode arrayNode = mapper.createArrayNode();
 
         for (Survey m : modules) {
-            arrayBuilder.add(Json.createObjectBuilder().add("id", m.getId())
-                    .add("title", m.getTitle()).add("description", m.getDescription()).build());
+            ObjectNode node = mapper.createObjectNode();
+            node.put("id", m.getId());
+            node.put("title", m.getTitle());
+            node.put("description", m.getDescription());
+
+            arrayNode.add(node);
         }
-        return builder.add("modules", arrayBuilder.build()).build();
+
+        ObjectNode modulesNode = mapper.createObjectNode();
+        modulesNode.put("modules", arrayNode);
+
+        return ResponseEntity.ok(modulesNode.toString());
     }
 
     /**
@@ -57,22 +67,25 @@ public class ParticipantHubResource {
      * @param token Token.
      * @return HTML for hub.
      */
-    @GET
-    @Path("/{token}")
-    @Produces(MediaType.TEXT_HTML)
-    public InputStream getHub(@PathParam("token") String token) {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity getHub(@CookieValue(value = "token") String token) {
         DecodedJWT decodedJWT = Authentication.instance.decodeToken(token);
         int userId = decodedJWT.getClaim("userid").asInt();
         Hub hub;
 
         try {
             hub = Hub.buildHub(userId);
-            return new ByteArrayInputStream(hub.getHTML().getBytes(StandardCharsets.UTF_8));
+            InputStreamResource inputStreamResource =
+                new InputStreamResource(
+                    new ByteArrayInputStream(hub.getHTML().getBytes(StandardCharsets.UTF_8)));
+            return ResponseEntity.ok(inputStreamResource);
+
         } catch (HubException e) {
             String error = "System error. Contact sytem administrator.";
-            return new ByteArrayInputStream(error.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            return null;
+            InputStreamResource inputStreamResource =
+                new InputStreamResource(
+                    new ByteArrayInputStream(error.getBytes(StandardCharsets.UTF_8)));
+            return ResponseEntity.ok(inputStreamResource);
         }
     }
 }

@@ -34,12 +34,14 @@ import static org.junit.Assert.*;
 
 @RunWith(TestRunner.class)
 public class DatabaseTest {
+    // TODO: Assert actions!!!
+
     @Test
     public void createResearcher() {
         Researcher researcher = null;
 
         try {
-            researcher = Database.createResearcher(TestHelpers.researcherCreate, "power123");
+            researcher = Database.createResearcher(TestHelpers.researcherCreate, TestHelpers.PASSWORD);
         } catch (CreateUserException e) {
             fail();
         }
@@ -52,7 +54,7 @@ public class DatabaseTest {
         Researcher researcher = null;
 
         try {
-            researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), "power123");
+            researcher = Database.getResearcher(TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
         } catch (LoginException e) {
             fail();
         }
@@ -140,6 +142,7 @@ public class DatabaseTest {
         try {
             participants = Database.getAllParticipants();
         } catch (GetAllParticipantsException e) {
+            e.printStackTrace();
             fail();
         }
         List<Participant> expected = TestHelpers.participants();

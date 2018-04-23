@@ -47,6 +47,7 @@ public class NoSqlDatabase {
         MongoClientURI uri = new MongoClientURI("mongodb://" + Configurations.instance.getMongoUser() + ":"
                 + Configurations.instance.getMongoPassword() + "@" + Configurations.instance.getMongoIp()
                 + ":" + Configurations.instance.getMongoPort() + "/?authSource=admin");
+
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
 

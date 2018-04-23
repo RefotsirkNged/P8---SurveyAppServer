@@ -1,18 +1,23 @@
 package sw806f18.server.api;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.LoginException;
+import sw806f18.server.model.JsonBuilder;
 
-@Path("researcher/login")
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+@RestController
+@RequestMapping(path = "researcher/login")
 public class ResearcherLoginResource {
     /**
      * Allows an admin to log into the system.
@@ -20,19 +25,21 @@ public class ResearcherLoginResource {
      * @param password The password of the researcher.
      * @return A JSON string with either a login "token" or an "error" message.
      */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject login(@HeaderParam("email") String email,
-                            @HeaderParam("password") String password) {
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity login(@RequestHeader(value = "email") String email,
+                                @RequestHeader(value = "password") String password,
+                                HttpServletResponse response) {
         try {
             int userid = Database.getResearcher(email, password).getId();
             String token = Authentication.instance.getToken(userid);
-
-            return Json.createObjectBuilder().add("token", token).build();
-        } catch (LoginException e) {
+            return ResponseEntity.ok(JsonBuilder.buildMessage("token", token));
+        } catch (Exception e) {
             e.printStackTrace();
-            return Json.createObjectBuilder().add("error", e.getMessage()).build();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode errorNode = mapper.createObjectNode();
+            errorNode.put("error", "Invalid email or password!");
+
+            return ResponseEntity.ok(errorNode.toString());
         }
     }
-
 }

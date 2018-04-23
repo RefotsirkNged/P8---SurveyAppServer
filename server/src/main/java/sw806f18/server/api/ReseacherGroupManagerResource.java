@@ -1,37 +1,34 @@
 package sw806f18.server.api;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.print.attribute.standard.Media;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.JsonBuilder;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Survey;
 
-@Path("researcher/groupmanager")
+@RestController
+@RequestMapping(path = "researcher/groupmanager")
 public class ReseacherGroupManagerResource {
 
     /**
      * endpoint for giving all surveys.
+     *
      * @param token
      * @return
      */
-    @GET
-    @Path("surveys")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllSurveys(@HeaderParam("token") String token) {
+    @RequestMapping(path = "/surveys", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllSurveys(@CookieValue(value = "token") String token) {
+        // TODO: FIX ME!!!
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             List<Survey> surveys = Database.getAllSurveys();
-            String  jsonGroup = "{ \"surveys\": [ ";
+            String jsonGroup = "{ \"surveys\": [ ";
             for (int i = 0; i < surveys.size(); i++) {
                 if (i == 0) {
                     jsonGroup += surveys.get(i).getJsonObject();
@@ -47,12 +44,13 @@ public class ReseacherGroupManagerResource {
 
     /**
      * Get all groups endpoint.
+     *
      * @param token Login token.
      * @return Response.
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllGroups(@HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllGroups(@CookieValue(value = "token") String token) {
+        // TODO: FIX ME!!!
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Group> groups = Database.getAllGroups();
@@ -77,119 +75,119 @@ public class ReseacherGroupManagerResource {
 
     /**
      * Add group endpoint.
-     * @param name Name.
+     *
+     * @param name  Name.
      * @param token Login Token.
      * @return Response.
      */
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject addGroup(@HeaderParam("name") String name,
-                               @HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addGroup(@RequestHeader(value = "name") String name,
+                                   @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             Group group;
             try {
                 group = Database.addGroup(new Group(name, 0));
             } catch (AddGroupException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
             }
-            return Json.createObjectBuilder().add("groupid", group.getId()).build();
+
+            return ResponseEntity.ok(JsonBuilder.buildMessage("groupid", group.getId()));
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.ok(JsonBuilder.buildError("Invalid token"));
     }
 
     /**
      * Delete group endpoint.
+     *
      * @param groupId Group ID.
-     * @param token Login Token.
+     * @param token   Login Token.
      * @return Response.
      */
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject deleteGroup(@HeaderParam("id") int groupId,
-                                  @HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteGroup(@RequestHeader(value = "id") int groupId, // TODO: URI param instead?
+                                      @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.deleteGroup(groupId);
             } catch (DeleteGroupException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             }
-            return Json.createObjectBuilder().add("success", 1).build();
+
+            return ResponseEntity.ok().build();
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
      * Add group member endpoint.
-     * @param groupId Group ID.
-     * @param userId User ID.
-     * @param token Token.
+     *
+     * @param groupId       Group ID.
+     * @param participantId User ID.
+     * @param token         Token.
      */
-    @PUT
-    @Path("member")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject addGroupMember(@HeaderParam("groupID") int groupId,
-                                 @HeaderParam("userID") int userId,
-                                 @HeaderParam("token") String token) {
+    @RequestMapping(path = "/member", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addGroupMember(@RequestHeader(value = "groupID") int groupId, // TODO: Commandline param
+                                         @RequestHeader(value = "userID") int participantId,
+                                         @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.addGroupMember(new Group(groupId, "", 0),
-                    new Participant(userId, "", "", "", 0));
+                    new Participant(participantId, "", "", "", 0));
             } catch (AddGroupMemberException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             }
-            return Json.createObjectBuilder().add("success", 1).build();
+            return ResponseEntity.ok().build();
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
      * Add group member endpoint.
+     *
      * @param groupId Group ID.
-     * @param userId User ID.
-     * @param token Token.
+     * @param userId  User ID.
+     * @param token   Token.
      */
-    @DELETE
-    @Path("member")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject removeGroupMember(@HeaderParam("groupID") int groupId,
-                                 @HeaderParam("userID") int userId,
-                                 @HeaderParam("token") String token) {
+    @RequestMapping(path = "/member", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity removeGroupMember(@RequestHeader(value = "groupID") int groupId,
+                                            @RequestHeader(value = "userID") int userId,
+                                            @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.removeParticipantFromGroup(new Group(groupId, "", 0),
-                    new Participant(userId, "", "","", 0));
+                    new Participant(userId, "", "", "", 0));
             } catch (RemoveParticipantFromGroupException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             }
-            return Json.createObjectBuilder().add("success", 1).build();
+            return ResponseEntity.ok().build();
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
      * Linking a group to a survey.
+     *
      * @param surveyID
      * @param groupID
      * @param token
      * @return
      */
-    @PUT
-    @Path("link")
-    @Produces(MediaType.APPLICATION_JSON)
-    public  JsonObject linkSurveyToGroup(@HeaderParam("surveyID") int surveyID,
-                                         @HeaderParam("groupID") int groupID,
-                                         @HeaderParam("token") String token) {
+    @RequestMapping(path = "/link", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity linkSurveyToGroup(@RequestHeader("surveyID") int surveyID,
+                                            @RequestHeader("groupID") int groupID,
+                                            @CookieValue("token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.linkModuleToGroup(surveyID, groupID);
-            } catch (SurveyException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
             } catch (P8Exception e) {
                 e.printStackTrace();
+
+                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
             }
 
-            return Json.createObjectBuilder().add("success", 1).build();
+            return ResponseEntity.ok().build();
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+
+        return ResponseEntity.ok(JsonBuilder.buildError("Invalid token"));
     }
 }

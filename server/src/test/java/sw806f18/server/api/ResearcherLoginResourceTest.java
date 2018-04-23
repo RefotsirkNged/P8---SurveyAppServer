@@ -1,71 +1,96 @@
 package sw806f18.server.api;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sw806f18.server.Authentication;
 import sw806f18.server.TestHelpers;
-import sw806f18.server.TestListener;
 import sw806f18.server.TestRunner;
 
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(TestRunner.class)
 public class ResearcherLoginResourceTest {
 
     @Test
     public void legalUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.RESEARCHER_LOGIN_PATH,
-            TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String token = jsonObject.getString("token");
-        assertTrue(Authentication.instance.decodeToken(token) != null);
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
+            assertEquals(response.getResponseCode(), 200);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void illegalUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.RESEARCHER_LOGIN_PATH,
-            TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
-        assertEquals(response.getStatus(), 200);            // TODO: What status to return?
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String error = jsonObject.getString("error");
-        assertTrue(error.equals("Invalid email or password!"));
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
+            assertEquals(response.getResponseCode(), 200);
+            JsonNode payload = TestHelpers.getJsonPayload(response);
+            String error = payload.get("error").textValue();
+            assertEquals("Invalid email or password!", error);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void wrongPasswordUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.RESEARCHER_LOGIN_PATH,
-            TestHelpers.researcher1.getEmail(), TestHelpers.INVALID_PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String error = jsonObject.getString("error");
-        assertTrue(error.equals("Invalid email or password!"));
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.researcher1.getEmail(), TestHelpers.INVALID_PASSWORD);
+            assertEquals(response.getResponseCode(), 200);
+            JsonNode payload = TestHelpers.getJsonPayload(response);
+            String error = payload.get("error").textValue();
+            assertEquals("Invalid email or password!", error);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
 
     @Test
     public void validUserToken() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.RESEARCHER_LOGIN_PATH,
-            TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String token = jsonObject.getString("token");
-
-        boolean isValid = true;
-        DecodedJWT decodedJwt = null;
-
+        HttpURLConnection response = null;
         try {
-            decodedJwt = Authentication.instance.decodeToken(token);
-        } catch (JWTVerificationException e) {
-            isValid = false;
-        }
+            response = TestHelpers.login(TestHelpers.RESEARCHER_LOGIN_PATH,
+                TestHelpers.researcher1.getEmail(), TestHelpers.PASSWORD);
+            assertEquals(response.getResponseCode(), 200);
 
-        assertTrue(isValid);
+            Map<String, List<String>> headerFields = response.getHeaderFields();
+            List<String> strings = headerFields.get("Set-Cookie");
+
+            Pattern compile = Pattern.compile("(?<=token=).*?(?=;)");
+            Matcher matcher = compile.matcher(strings.get(0));
+            String token = null;
+
+            if (matcher.find()) {
+                token = matcher.group();
+            }
+
+            assertTrue(Authentication.instance.decodeToken(token)
+                .getClaim("userid").asInt() == TestHelpers.researcher1.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }

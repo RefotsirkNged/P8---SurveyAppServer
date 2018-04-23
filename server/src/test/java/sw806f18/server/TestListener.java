@@ -1,20 +1,15 @@
 package sw806f18.server;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoDatabase;
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.junit.runner.Description;
-import org.junit.runner.Result;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.RunListener;
 import org.postgresql.util.PSQLException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,12 +18,8 @@ import java.util.logging.Logger;
 
 
 public class TestListener extends RunListener {
-    public static HttpServer server;
-    public static WebTarget target;
-
     private static boolean firstRun = true;
-
-    private Connection tempConnection = null;
+    private ConfigurableApplicationContext context;
 
     @Override
     public void testStarted(Description description) throws Exception {
@@ -49,9 +40,8 @@ public class TestListener extends RunListener {
         Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
         mongoLogger.setLevel(Level.SEVERE);
 
-        Logger grizzlyLogger = Logger.getLogger("org.glassfish.grizzly");
-        grizzlyLogger.setLevel(Level.SEVERE);
-
+        // TODO: Uncomment me before merge
+        /*
         if (Configurations.instance.getPostgresDatabase().equals("devdb")
             || Configurations.instance.getPostgresDatabase().equals("postgres")) {
             throw new SQLException("Please use another database name for testing!!!");
@@ -69,18 +59,17 @@ public class TestListener extends RunListener {
             return;
             // The database is already dropped!
         }
+
         createDatabase();
+        */
 
         try {
-            server.shutdown();
+            context.close();
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
 
-        server = Main.startServer();
-        Client c = ClientBuilder.newClient();
-        target = c.target(Main.BASE_URI);
+        context = SpringApplication.run(Main.class);
     }
 
     private Connection getConnection() throws SQLException {

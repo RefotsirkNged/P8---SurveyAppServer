@@ -1,7 +1,8 @@
 package sw806f18.server;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.mail.pop3.POP3Store;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -10,47 +11,19 @@ import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import javax.mail.*;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.xml.crypto.Data;
-
-import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.AddGroupException;
-import sw806f18.server.exceptions.AddGroupMemberException;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.exceptions.CreateUserException;
-import sw806f18.server.model.DropdownQuestion;
-import sw806f18.server.model.Group;
-import sw806f18.server.model.Invite;
-import sw806f18.server.model.NumberQuestion;
-import sw806f18.server.model.Participant;
-import sw806f18.server.model.Question;
-import sw806f18.server.model.Researcher;
-import sw806f18.server.model.Survey;
-import sw806f18.server.model.TextQuestion;
+import java.util.*;
 
 public class TestHelpers {
     public static final String RESEARCHER_LOGIN_PATH = "researcher/login";
@@ -182,168 +155,180 @@ public class TestHelpers {
     }
 
     /**
-     * Get payload.
+     * Get payload in JSON format.
      *
-     * @param response Response.
+     * @param connection An open connection to the server
      * @return Payload.
      */
-    public static JsonObject getPayload(Response response) {
-        String content = response.readEntity(String.class);
-        JsonReader jsonReader = Json.createReader(new StringReader(content));
-        JsonObject jsonObject = jsonReader.readObject();
-        jsonReader.close();
-        return jsonObject;
+    public static JsonNode getJsonPayload(HttpURLConnection connection) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readTree(getStringPayload(connection));
+    }
+
+    /**
+     * Get payload in String format.
+     * @param connection An open connection to the server.
+     * @return Payload.
+     * @throws IOException
+     */
+    public static String getStringPayload(HttpURLConnection connection) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line;
+        StringBuilder result = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            result.append(line);
+        }
+        bufferedReader.close();
+
+        return result.toString();
     }
 
     /**
      * Login function.
      *
-     * @param target   Web target.
      * @param path     Endpoint.
      * @param email    Email.
      * @param password Password.
-     * @return Response.
+     * @return An open connection to the server.
      */
-    public static Response login(WebTarget target, String path, String email, String password) {
-        return target.path(path).request().header("email", email)
-            .header("password", password).post(Entity.text(""));
+    public static HttpURLConnection login(String path, String email, String password) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("email", email);
+        map.put("password", password);
+        return getHttpConnection(path, "POST", null, map, null, null);
     }
 
     /**
      * Add group member.
      *
-     * @param target      Target.
      * @param path        Path.
      * @param participant Participant.
      * @param group       Group.
      * @param token       Token.
      * @return Response.
      */
-    public static Response addGroupMember(WebTarget target, String path,
-                                          Participant participant, Group group, String token) {
-        return target.path(path).request().header("groupID", group.getId())
-            .header("userID", participant.getId()).header("token", token).put(Entity.text(""));
+    public static HttpURLConnection addGroupMember(
+        String path,
+        Participant participant,
+        Group group,
+        String token
+    ) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("groupID", Integer.toString(group.getId()));
+        map.put("userID", Integer.toString(participant.getId()));
+        return getHttpConnection(path, "PUT", token, map, null, null);
     }
 
     /**
      * Get group members.
      *
-     * @param target Target.
-     * @param path   Path.
-     * @param group  Group.
-     * @param token  Token.
+     * @param path  Path.
+     * @param group Group.
+     * @param token Token.
      * @return Response.
      */
-    public static Response getGroupMembers(WebTarget target, String path, Group group, String token) {
-        return target.path(path).request().header("groupID", group.getId())
-            .header("token", token).get();
+    public static HttpURLConnection getGroupMembers(String path, Group group, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("groupID", Integer.toString(group.getId()));
+        return getHttpConnection(path, "GET", token, map, null, null);
     }
 
     /**
      * Get all of some thing.
      *
-     * @param target Target.
-     * @param path   Path.
-     * @param token  Token.
+     * @param path  Path.
+     * @param token Token.
      * @return Response.
      */
-    public static Response getAll(WebTarget target, String path, String token) {
-        return target.path(path).request().header("token", token).get();
+    public static HttpURLConnection getAll(String path, String token) throws IOException {
+        return getHttpConnection(path, "GET", token, null, null, null);
     }
 
     /**
      * Get hub.
      *
-     * @param target Target.
-     * @param path   Path.
-     * @param token  Token.
+     * @param path  Path.
+     * @param token Token.
      * @return Response.
      */
-    public static String getHub(WebTarget target, String path, String token) {
-        return target.path(path + "/" + token).request().get(String.class);
+    public static HttpURLConnection getHub(String path, String token) throws IOException {
+        return getHttpConnection(path, "GET", token, null, null, null);
     }
 
     /**
      * Remove group member.
      *
-     * @param target      Target.
      * @param path        Path.
      * @param participant Participant.
      * @param group       Group.
      * @param token       Token.
      */
-    public static Response removeGroupMember(WebTarget target, String path,
-                                             Participant participant, Group group, String token) {
-        return target.path(path).request().header("groupID", group.getId())
-            .header("userID", participant.getId()).header("token", token).delete();
+    public static HttpURLConnection removeGroupMember(
+        String path,
+        Participant participant,
+        Group group,
+        String token
+    ) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("groupID", Integer.toString(group.getId()));
+        map.put("userID", Integer.toString(participant.getId()));
+        return getHttpConnection(path, "DELETE", token, map, null, null);
     }
 
     /**
      * Link module to survey request.
-     * @param target
+     *
      * @param path
      * @param surveyID
      * @param groupID
      * @param token
      * @return
      */
-    public static Response linkModuleToSurvey(WebTarget target, String path,
-                                              int surveyID, int groupID, String token) {
-        return target.path(path).request().header("surveyID", surveyID)
-                .header("groupID", groupID)
-                .header("token", token).put(Entity.text(""));
+    public static HttpURLConnection linkModuleToSurvey(String path,
+                                                       int surveyID, int groupID, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("groupID", Integer.toString(groupID));
+        map.put("surveyID", Integer.toString(surveyID));
+        return getHttpConnection(path, "PUT", token, map, null, null);
     }
 
     /**
      * Add group to database.
      *
-     * @param target Web target.
-     * @param path   Endpoint.
-     * @param name   Group name
-     * @param token  Token.
+     * @param path  Endpoint.
+     * @param name  Group name
+     * @param token Token.
      * @return
      */
-    public static Response addGroup(WebTarget target, String path, String name, String token) {
-        return target.path(path).request().header("name", name)
-            .header("token", token).put(Entity.text(""));
+    public static HttpURLConnection addGroup(String path, String name, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        return getHttpConnection(path, "PUT", token, map, null, null);
     }
 
     /**
      * Delete group in the database.
      *
-     * @param target Web target.
-     * @param path   Endpoint.
-     * @param id     Group id.
-     * @param token  Token.
+     * @param path  Endpoint.
+     * @param id    Group id.
+     * @param token Token.
      * @return Response.
      */
-    public static Response deleteGroup(WebTarget target, String path, int id, String token) {
-        return target.path(path).request().header("id", id).header("token", token).delete();
+    public static HttpURLConnection deleteGroup(String path, int id, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("id", Integer.toString(id));
+        return getHttpConnection(path, "DELETE", token, map, null, null);
     }
 
     /**
      * Delete group in the database.
      *
-     * @param target Web target.
-     * @param path   Endpoint.
-     * @param token  Token.
+     * @param path  Endpoint.
+     * @param token Token.
      * @return Response.
      */
-    public static Response getModulesByUser(WebTarget target, String path, String token) {
-        return target.path(path).request().header("token", token).get();
-    }
-
-    /**
-     * Get the test researcher's login token.
-     *
-     * @param target Web target.
-     * @return Login token.
-     */
-    public static String getResearcherLoginToken(WebTarget target) {
-        Response response = login(target, "researcher/login",
-            researcher1.getEmail(), PASSWORD);
-        JsonObject jsonObject = getPayload(response);
-        return jsonObject.getString("token");
+    public static HttpURLConnection getModulesByUser(String path, String token) throws IOException {
+        return getHttpConnection(path, "GET", token, null, null, null);
     }
 
     /**
@@ -574,8 +559,9 @@ public class TestHelpers {
 
     /**
      * Get content of attribute from a tag.
-     * @param doc Html document.
-     * @param tag tag to find content of.
+     *
+     * @param doc       Html document.
+     * @param tag       tag to find content of.
      * @param attribute attribute to return.
      * @return
      */
@@ -583,7 +569,7 @@ public class TestHelpers {
         NodeList nodes = doc.getElementsByTagName(tag);
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
             NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
@@ -593,15 +579,16 @@ public class TestHelpers {
 
     /**
      * Gets the first HTML node with a tag.
+     *
      * @param node Parent node.
-     * @param tag Tag to look for.
+     * @param tag  Tag to look for.
      * @return Node corresponding to parameteres.
      */
     public static Node getHTMLNodeFromTag(Node node, String tag) {
         NodeList nodes = node.getChildNodes();
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
 
             if (ele.getTagName().equals(tag)) {
                 return ele;
@@ -612,9 +599,10 @@ public class TestHelpers {
 
     /**
      * Gets HTML node from tags and attributes.
-     * @param node Parent node.
-     * @param tag Tag to look for.
-     * @param attribute Attribute to look for.
+     *
+     * @param node           Parent node.
+     * @param tag            Tag to look for.
+     * @param attribute      Attribute to look for.
      * @param attributeValue Attribute value to look for.
      * @return Node corresponding to parameteres.
      */
@@ -622,7 +610,7 @@ public class TestHelpers {
         NodeList nodes = node.getChildNodes();
 
         for (int i = 0; i < nodes.getLength(); i++) {
-            Element ele = (Element)nodes.item(i);
+            Element ele = (Element) nodes.item(i);
 
             if (ele.getTagName().equals(tag) && ele.getAttribute(attribute).equals(attributeValue)) {
                 return ele;
@@ -633,17 +621,18 @@ public class TestHelpers {
 
     /**
      * Get nodes from a tag where attribute is equels to a value.
-     * @param doc Html document.
-     * @param tag tag to find content of.
-     * @param attribute attribute to check for.
+     *
+     * @param doc            Html document.
+     * @param tag            tag to find content of.
+     * @param attribute      attribute to check for.
      * @param attributeValue value to check for.
      * @return
      */
     public static List<Node> getListOfHTMLNodesFromTag(
-            Document doc,
-            String tag,
-            String attribute,
-            String attributeValue) {
+        Document doc,
+        String tag,
+        String attribute,
+        String attributeValue) {
 
         NodeList nodes = doc.getElementsByTagName(tag);
         List<Node> results = new ArrayList<>();
@@ -657,13 +646,21 @@ public class TestHelpers {
         return results;
     }
 
+    /**
+     * Get an attribute from a HTML document.
+     *
+     * @param node
+     * @param attribute
+     * @return
+     */
     public static String getHTMLDocAttribute(Node node, String attribute) {
-        return ((Element)node).getAttribute(attribute);
+        return ((Element) node).getAttribute(attribute);
 
     }
 
     /**
      * Get content of HTML tag.
+     *
      * @param doc Html document.
      * @param tag Tag to return content from.
      * @return Returns content of HTML tag.
@@ -689,11 +686,12 @@ public class TestHelpers {
 
     /**
      * Get content of HTML tag from node.
+     *
      * @param node Node from which to find data.
      * @return value.
      */
     public static String getHTMLTagData(Node node) {
-        Element ele = (Element)node;
+        Element ele = (Element) node;
         NodeList children = ele.getChildNodes();
 
         for (int j = 0; j < children.getLength(); j++) {
@@ -705,5 +703,50 @@ public class TestHelpers {
         }
 
         return "-1";
+    }
+
+    /**
+     * Create a connection to the specified server.
+     *
+     * @param url         The relative URI of the resource
+     * @param method      http method (POST/PUT/GET/DELETE)
+     * @param token       The user auth token to send with the request.
+     *                    Can be null if authentication isn't required.
+     * @param headers     Headers that should be added to the request. Can be null.
+     * @param contentType The content type of the request.
+     * @param body        Any body content that can be added to the request. Can be null.
+     * @return An open conenction to the server.
+     * @throws IOException
+     */
+    public static HttpURLConnection getHttpConnection(
+        String url,
+        String method,
+        String token,
+        Map<String, String> headers,
+        String contentType, String body
+    ) throws IOException {
+        URL eurl = new URL("http://localhost:8081/api/" + url);
+        HttpURLConnection connection = (HttpURLConnection) eurl.openConnection();
+        connection.setRequestMethod(method);
+
+        if (token != null) {
+            connection.setRequestProperty("Cookie", "token=" + token + ";");
+        }
+
+        if (headers != null) {
+            connection.setDoOutput(true);
+            headers.forEach(connection::setRequestProperty);
+        }
+
+        if (body != null) {
+            connection.setDoOutput(true);
+            connection.getOutputStream().write(body.getBytes());
+        }
+
+        if (contentType != null) {
+            connection.setRequestProperty("Content-Type", contentType);
+        }
+
+        return connection;
     }
 }
