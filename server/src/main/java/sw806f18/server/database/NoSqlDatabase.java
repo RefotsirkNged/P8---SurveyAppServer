@@ -90,7 +90,11 @@ public class NoSqlDatabase {
 
     }
 
-    static void addSurvey(Survey s) {
+    /**
+     * Add survey to the NoSQL Database.
+     * @param s Survey
+     */
+    public static void addSurvey(Survey s) {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
@@ -222,7 +226,7 @@ public class NoSqlDatabase {
 
         collection.replaceOne(eq("_id", surveyId), survey);
     }
-    
+
     static Answer getNewestAnswer(int userId) {
         openConnection();
         CodecRegistry pojoCodeRegestry = fromRegistries(

@@ -11,6 +11,7 @@ import javax.xml.crypto.Data;
 
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
+import sw806f18.server.database.NoSqlDatabase;
 import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.*;
 
@@ -22,8 +23,10 @@ import sw806f18.server.model.*;
 public class SurveyResource {
 
     //TODO Need to use token
+
     /**
      * Get a survey as html by id.
+     *
      * @param id
      * @return stream
      */
@@ -38,8 +41,10 @@ public class SurveyResource {
     }
 
     //TODO Need to use token.
+
     /**
      * Get a survey as html by id.
+     *
      * @param id
      * @return stream
      */
@@ -48,7 +53,7 @@ public class SurveyResource {
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public InputStream postSurvey(@PathParam("id") int id,
-                                 MultivaluedMap<String, String> formParams) {
+                                  MultivaluedMap<String, String> formParams) {
         InputStream stream;
         Survey survey = Database.getSurvey(id);
         boolean hasWarnings = false;
@@ -101,8 +106,10 @@ public class SurveyResource {
     }
 
     //TODO: Move this maybe
+
     /**
      * Redirect to URL.
+     *
      * @param url url to redirect to.
      * @return HTML that will redirect.
      */
@@ -130,10 +137,11 @@ public class SurveyResource {
 
         builder.append("</html>");
 
-        return  builder.toString();
+        return builder.toString();
     }
 
     //TODO Delete when finish
+
     /**
      * Post test survey.
      */
@@ -145,7 +153,7 @@ public class SurveyResource {
                 "Dette spørgeskema indeholder spørgsmål vedrørende din livsstil og dit helbred.");
         survey1.addStyleProperty("body", "background-color", "lightblue");
 
-        survey1.addQuestion(new NumberQuestion(3,"Alkohol",
+        survey1.addQuestion(new NumberQuestion(3, "Alkohol",
                 "Hvor mange genstande drikker du om ugen?"));
 
         List<String> bristolStoolChart = new ArrayList<>();
@@ -162,7 +170,7 @@ public class SurveyResource {
                 "Afføring",
                 "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
                 bristolStoolChart));
-        survey1.addQuestion(new TextQuestion(1,"Sygdomsepisoder",
+        survey1.addQuestion(new TextQuestion(1, "Sygdomsepisoder",
                 "Hvilke sygdomsepisoder har du haft inden for det sidste år?"));
 
         List<String> rygningList = new ArrayList<>();
@@ -185,7 +193,6 @@ public class SurveyResource {
                 "Er der sket noget i din tid der hjemme?"));
 
 
-
         Survey survey2 = new Survey("Barn 6 - 10 år",
                 "Dette spørgeskema vedrører dit barn.");
         survey2.addStyleProperty("body", "background-image", "url('https://media.istockphoto.com/photos/textured-blue-painted-background-picture-id534129318?k=6&m=534129318&s=612x612&w=0&h=5N2BeInhaXkV_G09cVoIaO2RWoNwGABqVbhw0U_0Jto=')");
@@ -206,36 +213,38 @@ public class SurveyResource {
                 "Barnets alder",
                 "Hvad er barnets alder?",
                 ageChart));
-        survey2.addQuestion(new NumberQuestion(3,"Barnets højde",
+        survey2.addQuestion(new NumberQuestion(3, "Barnets højde",
                 "Skriv barnets højde i centimeter:"));
-        survey2.addQuestion(new NumberQuestion(3,"Barnets vægt",
+        survey2.addQuestion(new NumberQuestion(3, "Barnets vægt",
                 "Skriv barents vægt i gram:"));
 
 
         Survey survey3 = new Survey("Efter fødsel til mor", "Yderlige information om dig efter fødslen");
-        survey3.addStyleProperty("body", "background-color","#FAD7A0");
+        survey3.addStyleProperty("body", "background-color", "#FAD7A0");
         survey3.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Afføring",
                 "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
                 bristolStoolChart));
-        survey3.addQuestion(new NumberQuestion(3,"Alkohol",
+        survey3.addQuestion(new NumberQuestion(3, "Alkohol",
                 "Hvor mange genstande drikker du om ugen?"));
         survey3.addQuestion(new TextQuestion("Kost:",
                 "Hvad består din daglige kost af?"
                         + "\n\"Eks: Får du mange fibre? Spiser du sundt?\""));
         survey3.addQuestion(new TextQuestion("Medicin", "Får du medicin?:"));
         survey3.addQuestion(new NumberQuestion("BMI", "Hvad er din BMI?:"));
-        try {
-            Database.addSurvey(survey1);
-            Database.addSurvey(survey2);
-            Database.addSurvey(survey3);
-        } catch (SurveyException e) {
-            e.printStackTrace();
-        }
+
+        survey1.setId(570);
+        survey2.setId(571);
+        survey3.setId(572);
+
+        NoSqlDatabase.addSurvey(survey1);
+        NoSqlDatabase.addSurvey(survey2);
+        NoSqlDatabase.addSurvey(survey3);
     }
 
     /**
      * Get Survey from ID as JSON response.
+     *
      * @param id ID of survey to get.
      * @return Return Survey with ID.
      */
@@ -250,7 +259,8 @@ public class SurveyResource {
 
     /**
      * Remove question from survey.
-     * @param surveyId Survey to remove from.
+     *
+     * @param surveyId   Survey to remove from.
      * @param questionId Question to remove.
      * @return Response.
      */
