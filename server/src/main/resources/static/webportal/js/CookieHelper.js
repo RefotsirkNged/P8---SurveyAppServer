@@ -19,13 +19,13 @@ function setCookie(cname, cvalue, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires="+ d.toUTCString();
-  document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/;";
+  document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/;SameSite=lax;";
   //console.log(cname + "=" + cvalue + ";" + expires + ";path=/;");
 }
 
 function isLoggedIn()
 {
-  var usertoken = sessionStorage.getItem('token');
+  var usertoken = getCookie('token');
   return usertoken !== null && usertoken !== "" && usertoken !== "null";
 }
 
@@ -47,9 +47,10 @@ function login() {
                 document.getElementById("loginfailedmessage").innerText = response.error;
             }
             else {
-                sessionStorage.setItem('token', response.token);
-                setCookie("token", response.token, 1);
-                window.location.replace("../index.html");
+                setCookie("token", response.token);
+                // sessionStorage.setItem('token', response.token);
+                // setCookie("token", response.token, 1);
+                window.location.replace("webportal");
             }
         },
         error: function (response) {

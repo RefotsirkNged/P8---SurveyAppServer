@@ -1,16 +1,19 @@
 package sw806f18.server.api;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CreateUserException;
 import sw806f18.server.model.Participant;
 
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import java.sql.SQLException;
 
-@Path("participant")
+@RestController
+@RequestMapping(path = "participant")
 public class ParticipantResource {
 
     /**
@@ -21,29 +24,31 @@ public class ParticipantResource {
      * @param firstname
      * @param lastname
      */
-    @POST
-    public void createParticipant(@HeaderParam("key") String key,
-                                  @HeaderParam("email") String email,
-                                  @HeaderParam("password") String password,
-                                  @HeaderParam("firstname") String firstname,
-                                  @HeaderParam("lastname") String lastname) {
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity createParticipant(@RequestHeader("key") String key,
+                                            @RequestHeader("email") String email,
+                                            @RequestHeader("password") String password,
+                                            @RequestHeader("firstname") String firstname,
+                                            @RequestHeader("lastname") String lastname) {
         String cpr = "";
         try {
             cpr = Database.getCPRFromKey(key);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
         Participant participant = new Participant(-1, email, cpr, firstname, lastname, 5139);
         try {
             Database.createParticipant(participant, password);
             Database.clearInviteFromKey(key);
+            return ResponseEntity.ok().build();
         } catch (CreateUserException e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (CprKeyNotFoundException e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

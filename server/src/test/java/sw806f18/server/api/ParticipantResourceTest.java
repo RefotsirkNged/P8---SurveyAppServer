@@ -2,21 +2,9 @@ package sw806f18.server.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sw806f18.server.TestHelpers;
-import sw806f18.server.TestListener;
 import sw806f18.server.TestRunner;
-import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.CprKeyNotFoundException;
-import sw806f18.server.exceptions.LoginException;
 
-import javax.json.JsonObject;
-import javax.mail.MessagingException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @RunWith(TestRunner.class)
 public class ParticipantResourceTest {
@@ -24,10 +12,6 @@ public class ParticipantResourceTest {
     /**
      * Test for userstory 3's implementation.
      *
-     * @throws IOException
-     * @throws MessagingException
-     * @throws InterruptedException
-     * @throws LoginException
      */
     @Test
     public void createParticipant() throws IOException, MessagingException, InterruptedException, LoginException {

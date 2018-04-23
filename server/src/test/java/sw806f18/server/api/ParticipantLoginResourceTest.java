@@ -1,51 +1,61 @@
 package sw806f18.server.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sw806f18.server.*;
+import sw806f18.server.TestHelpers;
+import sw806f18.server.TestRunner;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.HttpURLConnection;
+
+import static org.junit.Assert.*;
 
 @RunWith(TestRunner.class)
 public class ParticipantLoginResourceTest {
     @Test
-    public void legalUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.PARTICIPANT_LOGIN_PATH,
-            TestHelpers.participant1.getEmail(), TestHelpers.PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String token = jsonObject.getString("token");
-        assertTrue(Authentication.instance.decodeToken(token) != null);
+    public void legalUserLogin() throws InterruptedException {
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.PARTICIPANT_LOGIN_PATH,
+                TestHelpers.participant1.getEmail(), TestHelpers.PASSWORD);
+            response.connect();
+            assertEquals(response.getResponseCode(), 200);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void illegalUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.PARTICIPANT_LOGIN_PATH,
-            TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
-        assertEquals(response.getStatus(), 200);            // TODO: What status to return?
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String error = jsonObject.getString("error");
-        assertTrue(error.equals("Invalid email or password!"));
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.PARTICIPANT_LOGIN_PATH,
+                TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
+            assertEquals(response.getResponseCode(), 200);            // TODO: What status to return?
+            JsonNode payload = TestHelpers.getJsonPayload(response);
+            String error = payload.get("error").asText();
+            assertEquals(error, "Invalid email or password!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void wrongPasswordUserLogin() {
-        Response response = TestHelpers.login(TestListener.target, TestHelpers.PARTICIPANT_LOGIN_PATH,
-            TestHelpers.participant1.getEmail(), TestHelpers.INVALID_PASSWORD);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        String error = jsonObject.getString("error");
-        assertTrue(error.equals("Invalid email or password!"));
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.login(TestHelpers.PARTICIPANT_LOGIN_PATH,
+                TestHelpers.participant1.getEmail(), TestHelpers.INVALID_PASSWORD);
+            assertEquals(response.getResponseCode(), 200);
+            JsonNode payload = TestHelpers.getJsonPayload(response);
+            String error = payload.get("error").textValue();
+            assertTrue(error.equals("Invalid email or password!"));
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     @Test

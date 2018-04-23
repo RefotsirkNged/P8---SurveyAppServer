@@ -1,119 +1,126 @@
 package sw806f18.server.api;
 
-import java.util.Properties;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.List;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.AddGroupMemberException;
+import sw806f18.server.exceptions.CreateInviteException;
 import sw806f18.server.exceptions.GetAllParticipantsException;
 import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.model.Group;
+import sw806f18.server.model.Invite;
+import sw806f18.server.model.JsonBuilder;
 import sw806f18.server.model.Participant;
 
-import sw806f18.server.database.Database;
-import sw806f18.server.exceptions.CreateInviteException;
-import sw806f18.server.model.Invite;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.List;
+import java.util.Properties;
 
-@Path("researcher/participant")
+@RestController
+@RequestMapping(path = "researcher/participant")
 public class ResearcherParticipantResource {
 
     /**
      * Endpoint for inviting participants.
+     *
      * @param token
      * @param cpr
      * @param email
      * @throws CreateInviteException
      */
-    @POST
-    public void inviteParticipant(@HeaderParam("token") String token,
-                                  @HeaderParam("cpr") int cpr,
-                                  @HeaderParam("email") String email) throws CreateInviteException {
-        String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
-        Invite invite = new Invite(Integer.toString(cpr), key);
-        try {
-            Database.createInvite(invite);
-        } catch (CreateInviteException e) {
-            e.printStackTrace();
-        }
-
-        String from = "sw806f18@gmail.com";
-        String username = "sw806f18@gmail.com";
-        String password = "p0wer123";
-        String host = "smtp.gmail.com";
-
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587");
-
-        Session emailSession = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity inviteParticipant(@CookieValue("token") String token,
+                                            @RequestHeader("cpr") int cpr,
+                                            @RequestHeader("email") String email) throws CreateInviteException {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Invite invite = new Invite(Integer.toString(cpr), token);
+            try {
+                Database.createInvite(invite);
+            } catch (CreateInviteException e) {
+                e.printStackTrace();
+                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
             }
-        });
-        try {
-            Message message = new MimeMessage(emailSession);
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-            message.setSubject("Join MERSY");
-            message.setText(key);
-            Transport.send(message);
 
-        } catch (AddressException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
+            // TODO: Maybe not have credentials in source files
+            String to = "sw806f18@gmail.com";
+            String from = "sw806f18@gmail.com";
+            String username = "sw806f18@gmail.com";
+            String password = "p0wer123";
+            String host = "smtp.gmail.com";
+
+            Properties properties = new Properties();
+            properties.put("mail.smtp.auth", "true");
+            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.smtp.host", host);
+            properties.put("mail.smtp.port", "587");
+
+            Session emailSession = Session.getInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
+            try {
+                Message message = new MimeMessage(emailSession);
+                message.setFrom(new InternetAddress(from));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+                message.setSubject("invite");
+                message.setText("123");
+                Transport.send(message);
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
+            }
+
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.ok(JsonBuilder.buildError("Invalid token"));
         }
     }
 
     /**
      * Get group members.
      *
-     * @param token Token.
+     * @param token   Token.
      * @param groupId Group ID.
      * @return Group members.
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject getGroupMembers(@HeaderParam("token") String token,
-                                      @HeaderParam("groupID") int groupId) {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getGroupMembers(@CookieValue("token") String token,
+                                          @RequestHeader("groupID") int groupId) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Participant> participants = Database.getGroupMembers(new Group(groupId, "", 0));
-                JsonArrayBuilder builder = Json.createArrayBuilder();
+
+                ObjectMapper mapper = new ObjectMapper();
+
+                ArrayNode arrayNode = mapper.createArrayNode();
+
                 for (Participant p : participants) {
-                    builder.add(Json.createObjectBuilder().add("id", p.getId())
-                        .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
-                        .add("lastname", p.getLastName()).add("primarygroup", p.getPrimaryGroup()).build());
+                    ObjectNode node = mapper.createObjectNode();
+                    node.put("id", p.getId());
+                    node.put("cpr", p.getCpr());
+                    node.put("firstname", p.getFirstName());
+                    node.put("lastname", p.getLastName());
+                    node.put("primarygroup", p.getPrimaryGroup());
+                    arrayNode.add(node);
                 }
-                return Json.createObjectBuilder().add("members", builder.build()).build();
+
+                JsonNode members = mapper.createObjectNode().set("members", arrayNode);
+                return ResponseEntity.ok(members);
             } catch (GetGroupMemberException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             }
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
@@ -122,24 +129,33 @@ public class ResearcherParticipantResource {
      * @param token Token.
      * @return All participants.
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("all")
-    public JsonObject getAllParticipants(@HeaderParam("token") String token) {
+    @RequestMapping(path = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAllParticipants(@CookieValue("token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Participant> participants = Database.getAllParticipants();
-                JsonArrayBuilder builder = Json.createArrayBuilder();
+                ObjectMapper mapper = new ObjectMapper();
+                ArrayNode arrayNode = mapper.createArrayNode();
+
                 for (Participant p : participants) {
-                    builder.add(Json.createObjectBuilder().add("id", p.getId())
-                        .add("cpr", p.getCpr()).add("firstname", p.getFirstName())
-                        .add("lastname", p.getLastName()).add("primarygroup", p.getPrimaryGroup()).build());
+                    ObjectNode objectNode = mapper.createObjectNode();
+                    objectNode.put("id", p.getId());
+                    objectNode.put("cpr", p.getCpr());
+                    objectNode.put("firstname", p.getFirstName());
+                    objectNode.put("lastname", p.getLastName());
+                    objectNode.put("primarygroup", p.getPrimaryGroup());
+
+                    arrayNode.add(objectNode);
                 }
-                return Json.createObjectBuilder().add("participants", builder.build()).build();
+
+                ObjectNode participantsNode = mapper.createObjectNode();
+                participantsNode.put("participants", arrayNode);
+
+                return ResponseEntity.ok(participantsNode.toString());
             } catch (GetAllParticipantsException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
             }
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.ok(JsonBuilder.buildError("Invalid token"));
     }
 }

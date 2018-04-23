@@ -1,22 +1,20 @@
 package sw806f18.server.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sw806f18.server.TestHelpers;
-import sw806f18.server.TestListener;
 import sw806f18.server.TestRunner;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.exceptions.P8Exception;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Survey;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -28,31 +26,34 @@ public class ResearcherGroupManagerTest {
     @Test
     public void addGroup() {
         try {
-            Response response = TestHelpers.addGroup(TestListener.target,
+            HttpURLConnection response = TestHelpers.addGroup(
                 TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
                 TestHelpers.groupCreate.getName(),
                 TestHelpers.tokenResearcher1);
-            assertEquals(response.getStatus(), 200);
-            JsonObject jsonObject = TestHelpers.getPayload(response);
-            TestHelpers.groupCreate.setId(jsonObject.getInt("groupid"));
+            assertEquals(response.getResponseCode(), 200);
+            JsonNode payload = TestHelpers.getJsonPayload(response);
+
+            TestHelpers.groupCreate.setId(payload.get("groupid").asInt());
             List<Group> groups = Database.getAllGroups();
             assertTrue(groups.contains(TestHelpers.groupCreate));
-        } catch (GetGroupsException e) {
+        } catch (GetGroupsException | IOException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
     @Test
     public void removeGroup() {
         try {
-            TestHelpers.deleteGroup(TestListener.target,
+            TestHelpers.deleteGroup(
                 TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
                 TestHelpers.group1.getId(),
                 TestHelpers.tokenResearcher1);
             List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(TestHelpers.group1));
-        } catch (GetGroupsException e) {
+        } catch (GetGroupsException | IOException e) {
             e.printStackTrace();
+            fail();
         }
     }
 
@@ -60,128 +61,171 @@ public class ResearcherGroupManagerTest {
     public void getAllGroups() {
         List<Group> expected = TestHelpers.testGroups();
 
-        Response response = TestHelpers.getAll(TestListener.target,
-            TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.tokenResearcher1);
-        assertEquals(response.getStatus(), 200);
-        JsonObject jsonObject = TestHelpers.getPayload(response);
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.getAll(
+                TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.tokenResearcher1);
+            assertEquals(response.getResponseCode(), 200);
+            JsonNode jsonObject = TestHelpers.getJsonPayload(response);
 
-        JsonArray jsonArray = jsonObject.getJsonArray("groups");
-
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JsonObject element = jsonArray.get(i).asJsonObject();
-            assertTrue(element.getString("name").equals(expected.get(i).getName()));
-            assertTrue(element.getInt("id") == expected.get(i).getId());
+            JsonNode arr = jsonObject.get("groups");
+            for (int i = 0; i < arr.size(); i++) {
+                JsonNode element = arr.get(i);
+                assertEquals(element.get("name").asText(), expected.get(i).getName());
+                assertEquals(element.get("id").asInt(), expected.get(i).getId());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
         }
     }
 
     @Test
     public void removeGroupMember() {
-        boolean hasError = false;
         List<Participant> expected = null;
 
-        Response response = TestHelpers.removeGroupMember(TestListener.target,
-            TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
-            TestHelpers.participant1, TestHelpers.group1,
-            TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        HttpURLConnection response = null;
         try {
-            expected = Database.getGroupMembers(TestHelpers.group1);
-        } catch (GetGroupMemberException e) {
-            hasError = true;
-        }
+            response = TestHelpers.removeGroupMember(
+                TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
+                TestHelpers.participant1, TestHelpers.group1,
+                TestHelpers.tokenResearcher1);
 
-        assertFalse(hasError);
-        assertNotNull(expected);
-        assertEquals(expected.size(), 0);
+            assertEquals(200, response.getResponseCode());
+
+            expected = Database.getGroupMembers(TestHelpers.group1);
+
+            assertNotNull(expected);
+            assertEquals(expected.size(), 0);
+        } catch (IOException | GetGroupMemberException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void addGroupMember() {
-        Response response = TestHelpers.addGroupMember(TestListener.target,
-            TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
-            TestHelpers.participant2,
-            TestHelpers.group1,
-            TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
-
-        boolean hasError = false;
-        List<Participant> expected = null;
-
         try {
-            expected = Database.getGroupMembers(TestHelpers.group1);
-        } catch (GetGroupMemberException e) {
-            hasError = true;
-        }
+            HttpURLConnection response = TestHelpers.addGroupMember(
+                TestHelpers.RESEARCHER_GROUPMANAGER_MEMBER_PATH,
+                TestHelpers.participant2,
+                TestHelpers.group1,
+                TestHelpers.tokenResearcher1);
+            assertEquals(200, response.getResponseCode());
 
-        assertFalse(hasError);
-        assertNotNull(expected);
-        assertTrue(expected.contains(TestHelpers.participant2));
+            List<Participant> expected = null;
+
+            expected = Database.getGroupMembers(TestHelpers.group1);
+            assertNotNull(expected);
+            assertTrue(expected.contains(TestHelpers.participant2));
+        } catch (GetGroupMemberException | IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void getMembersByGroup() {
-        Response response = TestHelpers.getGroupMembers(TestListener.target,
-            TestHelpers.RESEARCHER_PARTICIPANT_PATH,
-            TestHelpers.group1,
-            TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.getGroupMembers(
+                TestHelpers.RESEARCHER_PARTICIPANT_PATH,
+                TestHelpers.group1,
+                TestHelpers.tokenResearcher1);
+            assertEquals(200, response.getResponseCode());
 
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        JsonArray jsonArray = jsonObject.getJsonArray("members");
-        assertEquals(1, jsonArray.size());
+            JsonNode jsonObject = TestHelpers.getJsonPayload(response);
+            JsonNode members = jsonObject.get("members");
+            assertEquals(1, members.size());
 
-        JsonObject element = jsonArray.get(0).asJsonObject();
+            JsonNode node = members.get(0);
 
-        Participant received = new Participant(
-            element.getInt("id"),
-            element.getString("cpr"),
-            element.getString("firstname"),
-            element.getString("lastname"),
-            element.getInt("primarygroup"));
+            Participant received = new Participant(
+                node.get("id").asInt(),
+                node.get("cpr").asText(),
+                node.get("firstname").asText(),
+                node.get("lastname").asText(),
+                node.get("primarygroup").asInt()
+            );
 
-        assertTrue(TestHelpers.participant1.equalsNoMail(received));
+            assertTrue(TestHelpers.participant1.equalsNoMail(received));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void getAllParticipants() {
-        Response response = TestHelpers.getAll(TestListener.target,
-            TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
-            TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.getAll(
+                TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
+                TestHelpers.tokenResearcher1);
 
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        JsonArray jsonArray = jsonObject.getJsonArray("participants");
-        assertEquals(2, jsonArray.size());
+            assertEquals(200, response.getResponseCode());
 
-        JsonObject element = jsonArray.get(0).asJsonObject();
-        Participant p1 = new Participant(
-            element.getInt("id"),
-            element.getString("cpr"),
-            element.getString("firstname"),
-            element.getString("lastname"),
-            element.getInt("primarygroup"));
-        element = jsonArray.get(1).asJsonObject();
-        Participant p2 = new Participant(element.getInt("id"),
-            element.getString("cpr"),
-            element.getString("firstname"),
-            element.getString("lastname"),
-            element.getInt("primarygroup"));
+            JsonNode jsonObject = TestHelpers.getJsonPayload(response);
+            JsonNode jsonArray = jsonObject.get("participants");
+            assertEquals(2, jsonArray.size());
 
-        List<Participant> list = TestHelpers.participants();
-        assertTrue(TestHelpers.containsNoMail(list, p1));
-        assertTrue(TestHelpers.containsNoMail(list, p2));
+            JsonNode element = jsonArray.get(0);
+            Participant p1 = new Participant(
+                element.get("id").asInt(),
+                element.get("cpr").asText(),
+                element.get("firstname").asText(),
+                element.get("lastname").asText(),
+                element.get("primarygroup").asInt());
+
+            element = jsonArray.get(1);
+            Participant p2 = new Participant(element.get("id").asInt(),
+                element.get("cpr").asText(),
+                element.get("firstname").asText(),
+                element.get("lastname").asText(),
+                element.get("primarygroup").asInt());
+
+            List<Participant> list = TestHelpers.participants();
+            assertTrue(TestHelpers.containsNoMail(list, p1));
+            assertTrue(TestHelpers.containsNoMail(list, p2));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     @Test
     public void getAllSurveys() {
-        Response response = TestHelpers.getAll(TestListener.target, TestHelpers.SURVEY_PATH,
-            TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.getAll(TestHelpers.SURVEY_PATH,
+                TestHelpers.tokenResearcher1);
+            assertEquals(200, response.getResponseCode());
 
-        JsonObject jsonObject = TestHelpers.getPayload(response);
-        JsonArray jsonArray = jsonObject.getJsonArray("modules");
-        JsonObject element = jsonArray.get(0).asJsonObject();
-        Survey s1 = new Survey(element.getString("title"), element.getString("description"));
-        assertTrue(TestHelpers.survey1.getTitle().equals(s1.getTitle()));
+            JsonNode jsonObject = TestHelpers.getJsonPayload(response);
+            JsonNode jsonArray = jsonObject.get("surveys");
+            JsonNode element = jsonArray.get(0);
+            Survey s1 = new Survey(element.get("title").asText(), element.get("description").asText());
+            assertEquals(TestHelpers.survey1.getTitle(), s1.getTitle());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    @Test
+    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
+        HttpURLConnection response = null;
+        try {
+            response = TestHelpers.linkModuleToSurvey(
+                TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
+                TestHelpers.survey1.getId(), TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
+            assertEquals(200, response.getResponseCode());
+
+            List<Integer> linkedGroups = Database.getModuleLinks(TestHelpers.survey1);
+            assertTrue(linkedGroups.contains(TestHelpers.group1.getId()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }

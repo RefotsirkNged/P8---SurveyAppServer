@@ -1,12 +1,12 @@
 package sw806f18.server;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 /**
  * Created by chrae on 09-03-2018.
@@ -33,23 +33,23 @@ public class Configurations {
     public Configurations(String path) {
         try {
             InputStream fis = new FileInputStream(path);
-            JsonReader reader = Json.createReader(fis);
-            JsonObject conf = reader.readObject();
-            reader.close();
 
-            JsonObject psql = conf.getJsonObject("postgreSQL");
-            psqlIp = psql.getString("ip");
-            psqlUsername = psql.getString("user");
-            psqlPassword = psql.getString("password");
-            psqlPort = psql.getInt("port");
-            psqlDatabase = psql.getString("database");
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode jsonNodes = mapper.readValue(fis, ObjectNode.class);
 
-            JsonObject mongo = conf.getJsonObject("mongoDB");
-            mongoIp = mongo.getString("ip");
-            mongoUser = mongo.getString("user");
-            mongoPassword = mongo.getString("password");
-            mongoPort = mongo.getInt("port");
-            mongoDatabase = mongo.getString("database");
+            JsonNode psql = jsonNodes.get("postgreSQL");
+            psqlIp = psql.findValue("ip").asText();
+            psqlUsername = psql.findValue("user").asText();
+            psqlPassword = psql.findValue("password").asText();
+            psqlPort = psql.findValue("port").asInt();
+            psqlDatabase = psql.findValue("database").asText();
+
+            JsonNode mongo = jsonNodes.get("mongoDB");
+            mongoIp = mongo.findValue("ip").asText();
+            mongoUser = mongo.findValue("user").asText();
+            mongoPassword = mongo.findValue("password").asText();
+            mongoPort = mongo.findValue("port").asInt();
+            mongoDatabase = mongo.findValue("database").asText();
         } catch (IOException e) {
             e.printStackTrace();
         }
