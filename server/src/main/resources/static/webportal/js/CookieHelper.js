@@ -50,7 +50,7 @@ function login() {
                 setCookie("token", response.token);
                 // sessionStorage.setItem('token', response.token);
                 // setCookie("token", response.token, 1);
-                window.location.replace("webportal");
+                window.location.replace("../index.html");
             }
         },
         error: function (response) {
@@ -63,8 +63,8 @@ function login() {
 }
 
 function logout(){
-    sessionStorage.removeItem('token');
-    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    //sessionStorage.removeItem('token');
+    setCookie("token", "");
     window.location.replace("../index.html");
 }
 
