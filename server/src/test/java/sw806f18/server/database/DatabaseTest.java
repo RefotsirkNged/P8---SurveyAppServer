@@ -334,4 +334,21 @@ public class DatabaseTest {
         }
         assertFalse(hasError);
     }
+
+    @Test
+    public void addAnswerToDatabase() {
+        Answer answer = new Answer(TestHelpers.participant1.getId(), TestHelpers.surveyAnswer1);
+
+        try {
+            answer.getSurvey().setId(Database.addSurvey(answer.getSurvey()));
+            Database.addAnswer(answer);
+        } catch (AnswerException | SurveyException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+
+        Answer answer1 = Database.getNewestAnswer(TestHelpers.participant1.getId());
+        assertEquals(answer, answer1);
+    }
 }

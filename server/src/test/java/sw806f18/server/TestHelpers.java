@@ -71,6 +71,7 @@ public class TestHelpers {
 
     public static Survey survey2 = new Survey("Test survey 2", "");
     public static Survey survey3 = new Survey("Test survey 3", "");
+    public static Survey surveyAnswer1 = new Survey("Test Answers survey", "This is a test of some answer");
 
     public static Hub hub1 = new Hub();
     public static Hub hub2 = new Hub();
@@ -132,13 +133,44 @@ public class TestHelpers {
             "Hvor mange genstande drikker du om ugen:"));
         survey2.addQuestion(new TextQuestion(3, "Rygning",
             "Hvor mange cigaretter ryger du om dagen:"));
+
         List<String> bistrolStoolChart = new ArrayList<>();
         bistrolStoolChart.add("123");
 
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
-            "Afføring",
-            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-            bistrolStoolChart));
+                "Afføring",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+                bistrolStoolChart));
+
+        surveyAnswer1.addQuestion(new NumberQuestion(3, "Alkohol",
+                "Hvor mange genstande drikker du om ugen:"));
+        surveyAnswer1.addQuestion(new TextQuestion(3, "Rygning",
+                "Hvor mange cigaretter ryger du om dagen:"));
+
+        surveyAnswer1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
+                "Afføring",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+                bistrolStoolChart));
+
+        String answer1 = "1";
+        String answer2 = "123a";
+        String answer3 = "123";
+
+        for (Question q : surveyAnswer1.getQuestions()) {
+            switch (q.getInput()) {
+                case TEXT:
+                    q.setValue(answer1);
+                    break;
+                case NUMBER:
+                    q.setValue(answer2);
+                    break;
+                case DROPDOWN:
+                    q.setValue(answer3);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         survey1.setId(Database.addSurvey(survey1));
         survey2.setId(Database.addSurvey(survey2));

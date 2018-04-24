@@ -9,10 +9,12 @@ import sw806f18.server.Authentication;
 import sw806f18.server.Constants;
 import sw806f18.server.database.Database;
 import sw806f18.server.database.NoSqlDatabase;
+import sw806f18.server.exceptions.AnswerException;
 import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.*;
 
 import javax.websocket.server.PathParam;
+import javax.xml.crypto.Data;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -57,7 +59,9 @@ public class SurveyResource {
     @RequestMapping(path = "/{id}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity postSurvey(@PathVariable("id") int id, @RequestBody String params)
+    public ResponseEntity postSurvey(@PathVariable("id") int id,
+                                     @CookieValue("token") String token,
+                                     @RequestBody String params)
             throws UnsupportedEncodingException {
         InputStream stream;
         Survey survey = Database.getSurvey(id);
@@ -115,9 +119,20 @@ public class SurveyResource {
         if (hasWarnings) {
             stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
         } else {
-            //TODO: Sæt rigtig userID ind.
-            Answer answer = new Answer();
-            stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
+            int userID = Authentication.instance.getId(token);
+
+            Answer answer = new Answer(userID, survey);
+
+
+            try {
+                Database.addAnswer(answer);
+                stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
+            } catch (AnswerException e) {
+                e.printStackTrace();
+                //TODO: Give a error message
+                stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
+            }
+
         }
 
         InputStreamResource inputStreamResource = new InputStreamResource(stream);
