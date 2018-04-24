@@ -26,15 +26,12 @@ import static org.junit.Assert.*;
 public class SurveyResourceTest {
     @Test
     public void deleteQuestionFromSurvey() throws Exception {
-        Response response = TestListener.target
-                .path("survey")
-                .path(Integer.toString(TestHelpers.survey2.getId()))
-                .path("question")
-                .path(Integer.toString(TestHelpers.survey2.getQuestions().get(0).getId()))
-                .request()
-                .delete();
+        HttpURLConnection response = TestHelpers.deleteWithToken(TestHelpers.SURVEY_PATH + "/"
+                        + TestHelpers.survey2.getId()
+                        + "/question/" + TestHelpers.survey2.getQuestions().get(0).getId(),
+                TestHelpers.tokenResearcher1);
 
-        assertEquals(response.getStatus(), 200);
+        assertEquals(response.getResponseCode(), 200);
     }
 
     @Test
@@ -69,13 +66,15 @@ public class SurveyResourceTest {
             }
 
             HttpURLConnection connection = TestHelpers.getHttpConnection(
-                "/survey",
-                "POST",
-                TestHelpers.token1,
-                null,
-                "application/x-www-form-urlencoded",
-                null
+                    "survey/" + TestHelpers.survey2.getId(),
+                    "POST",
+                    TestHelpers.token1,
+                    null,
+                    "application/x-www-form-urlencoded",
+                    null
             );
+
+            connection.setDoOutput(true);
 
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
 
@@ -89,15 +88,15 @@ public class SurveyResourceTest {
                 }
                 content += key + "=" + URLEncoder.encode(form.get(key), "UTF-8");
             }
-            System.out.println(content);
-            out.writeBytes(content);
+
+            String preparedContent = Base64.getMimeEncoder().encodeToString(content.getBytes("UTF-8"));
+            out.writeBytes(preparedContent);
             out.flush();
             out.close();
 
             assertEquals(connection.getResponseCode(), 200);
-            JsonNode payload = TestHelpers.getJsonPayload(connection);
 
-            String entity = connection.getContent().toString();
+            String entity = TestHelpers.getStringPayload(connection);
             assertTrue(!entity.equals(SurveyResource.getReturnHTML(Constants.hubUrl)));
 
             InputStream stream = new ByteArrayInputStream(entity.getBytes());
@@ -109,29 +108,30 @@ public class SurveyResourceTest {
                     switch (q.getInput()) {
                         case TEXT:
                             if (TestHelpers.getHTMLNodeFromTag(node, "textarea") != null
-                                && q.getValue().equals(
-                                TestHelpers.getHTMLTagData(TestHelpers.getHTMLNodeFromTag(node, "textarea")))) {
+                                    && q.getValue().equals(
+                                    TestHelpers.getHTMLTagData(TestHelpers.getHTMLNodeFromTag(node, "textarea"))
+                                            .replace("+", " "))) {
                                 valueFound = true;
                             }
                             break;
                         case NUMBER:
                             if (TestHelpers.getHTMLNodeFromTag(node, "input") != null
-                                && q.getValue().equals(
-                                ((Element) TestHelpers.getHTMLNodeFromTag(node, "input"))
-                                    .getAttribute("value"))) {
+                                    && q.getValue().equals(
+                                    ((Element) TestHelpers.getHTMLNodeFromTag(node, "input"))
+                                            .getAttribute("value"))) {
                                 valueFound = true;
                             }
                             break;
                         case DROPDOWN:
                             if (TestHelpers.getHTMLNodeFromTag(node, "select") != null
-                                && q.getValue().equals(
-                                TestHelpers.getHTMLDocAttribute(
-                                    TestHelpers.getHTMLNodeFromTagAndAttribute(
-                                        TestHelpers.getHTMLNodeFromTag(node, "select"),
-                                        "option",
-                                        "selected",
-                                        "selected"),
-                                    "value"))) {
+                                    && q.getValue().equals(
+                                    TestHelpers.getHTMLDocAttribute(
+                                            TestHelpers.getHTMLNodeFromTagAndAttribute(
+                                                    TestHelpers.getHTMLNodeFromTag(node, "select"),
+                                                    "option",
+                                                    "selected",
+                                                    "selected"),
+                                            "value"))) {
                                 valueFound = true;
                             }
                             break;
@@ -174,12 +174,12 @@ public class SurveyResourceTest {
 
         try {
             HttpURLConnection connection = TestHelpers.getHttpConnection(
-                "survey/" + TestHelpers.survey2.getId(),
-                "POST",
-                TestHelpers.token1,
-                null,
-                "application/x-www-form-urlencoded",
-                null
+                    "survey/" + TestHelpers.survey2.getId(),
+                    "POST",
+                    TestHelpers.token1,
+                    null,
+                    "application/x-www-form-urlencoded",
+                    null
             );
             connection.setDoOutput(true);
 
@@ -194,7 +194,6 @@ public class SurveyResourceTest {
                 }
                 content += key + "=" + URLEncoder.encode(form.get(key), "UTF-8");
             }
-            System.out.println(content);
 
             String preparedContent = Base64.getMimeEncoder().encodeToString(content.getBytes("UTF-8"));
 
@@ -204,7 +203,7 @@ public class SurveyResourceTest {
 
             assertEquals(connection.getResponseCode(), 200);
             assertEquals(TestHelpers.getStringPayload(connection).replace("\n", ""),
-                SurveyResource.getReturnHTML(Constants.hubUrl).replace("\n", ""));
+                    SurveyResource.getReturnHTML(Constants.hubUrl).replace("\n", ""));
         } catch (IOException e) {
             e.printStackTrace();
             fail();

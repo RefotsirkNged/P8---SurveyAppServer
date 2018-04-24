@@ -78,7 +78,7 @@ public class ResearcherLoginResourceTest {
             Map<String, List<String>> headerFields = response.getHeaderFields();
             List<String> strings = headerFields.get("Set-Cookie");
 
-            Pattern compile = Pattern.compile("(?<=token=).*?(?=;)");
+            Pattern compile = Pattern.compile("(?<=token=).*");
             Matcher matcher = compile.matcher(strings.get(0));
             String token = null;
 

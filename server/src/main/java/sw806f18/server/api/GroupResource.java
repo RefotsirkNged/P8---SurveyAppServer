@@ -1,6 +1,9 @@
 package sw806f18.server.api;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import sw806f18.server.Authentication;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.HubException;
@@ -9,13 +12,11 @@ import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.Hub;
 import sw806f18.server.model.Survey;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
-@Path("group/{id}")
+@RestController
+@RequestMapping(path = "group/{id}")
 public class GroupResource {
     /**
      * Get Surveys.
@@ -23,18 +24,16 @@ public class GroupResource {
      * @param token Token.
      * @return Surveys Metadata
      */
-    @GET
-    @Path("/surveys")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getSurveys(@PathParam("id") int id,
-                             @HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, path = "/surveys")
+    public ResponseEntity getSurveys(@PathVariable(value = "id") int id,
+                                     @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             List<Survey> modules;
 
             try {
                 modules = Database.getGroupLinks(id);
             } catch (SurveyException e) {
-                return "";
+                return ResponseEntity.ok().build();
             }
 
             String jsonGroup = "{ \"modules\": [ ";
@@ -46,10 +45,10 @@ public class GroupResource {
                 }
             }
             jsonGroup += "]}";
-            return jsonGroup;
+            return ResponseEntity.ok(jsonGroup);
         }
 
-        return "";
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
@@ -60,22 +59,20 @@ public class GroupResource {
      * @param moduleId module
      * @return Surveys Metadata
      */
-    @POST
-    @Path("/link/delete")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String deleteLink(@PathParam("id") int id,
-                             @HeaderParam("module") int moduleId,
-                             @HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, path = "/link/delete")
+    public ResponseEntity deleteLink(@PathVariable(value = "id") int id,
+                             @RequestHeader(value = "module") int moduleId,
+                             @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.removeGroupLink(id, moduleId);
-                return "{\"200\": \"success\"}";
+                return ResponseEntity.ok().build();
             } catch (SurveyException e) {
-                return "{\"error\": \"No such link\"}";
+                return ResponseEntity.badRequest().body(new Error("No such link"));
             }
         }
 
-        return "{\"error\": \"Invalid token\"}";
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     /**
@@ -85,23 +82,21 @@ public class GroupResource {
      * @param token
      * @return
      */
-    @PUT
-    @Path("/link/add")
-    @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject linkSurveyToGroup(@PathParam("id") int id,
-                                        @HeaderParam("module") int moduleId,
-                                        @HeaderParam("token") String token) {
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, path = "/link/add")
+    public ResponseEntity linkSurveyToGroup(@PathVariable(value = "id") int id,
+                                            @RequestHeader(value = "module") int moduleId,
+                                            @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 Database.linkModuleToGroup(moduleId, id);
             } catch (SurveyException e) {
-                return Json.createObjectBuilder().add("error", e.getMessage()).build();
+                return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             } catch (P8Exception e) {
                 e.printStackTrace();
             }
 
-            return Json.createObjectBuilder().add("success", 1).build();
+            return ResponseEntity.ok().build();
         }
-        return Json.createObjectBuilder().add("error", "Invalid token").build();
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 }

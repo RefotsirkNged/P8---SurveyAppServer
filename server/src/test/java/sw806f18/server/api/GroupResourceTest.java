@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sw806f18.server.TestHelpers;
@@ -14,9 +15,8 @@ import sw806f18.server.exceptions.P8Exception;
 import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.Survey;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +24,18 @@ import java.util.List;
 @RunWith(TestRunner.class)
 public class GroupResourceTest {
     @Test
-    public void getGroupLinks() {
-        Response response = TestHelpers.getWithToken(TestListener.target,
-                TestHelpers.GROUP_PATH + "/" + TestHelpers.group1.getId() + "/surveys",
+    public void getGroupLinks() throws IOException {
+        HttpURLConnection response = TestHelpers.getWithToken(TestHelpers.GROUP_PATH + "/"
+                        + TestHelpers.group1.getId() + "/surveys",
                 TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
-        JsonObject object = TestHelpers.getPayload(response);
-        JsonArray array = object.getJsonArray("modules");
+        assertEquals(200, response.getResponseCode());
+        JsonNode object = TestHelpers.getJsonPayload(response);
+        JsonNode array = object.get("modules");
         List<Survey> modules = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
-            JsonObject element = array.get(i).asJsonObject();
-            modules.add(new Survey(element.getInt("id"), element.getString("title"), element.getString("description")));
+            JsonNode element = array.get(i);
+            modules.add(new Survey(element.get("id").asInt(),
+                    element.get("title").asText(), element.get("description").asText()));
         }
 
         List<Survey> expected = new ArrayList<>();
@@ -49,12 +50,12 @@ public class GroupResourceTest {
     }
 
     @Test
-    public void removeGroupLink() {
-        Response response = TestHelpers.removeGroupLink(TestListener.target,
-                TestHelpers.GROUP_PATH + "/" + TestHelpers.group1.getId() + "/link/delete",
+    public void removeGroupLink() throws IOException {
+        HttpURLConnection response = TestHelpers.removeGroupLink(TestHelpers.GROUP_PATH + "/"
+                        + TestHelpers.group1.getId() + "/link/delete",
                 TestHelpers.survey2.getId(),
                 TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        assertEquals(200, response.getResponseCode());
 
         boolean hasError = false;
         List<Survey> modules = null;
@@ -69,13 +70,13 @@ public class GroupResourceTest {
     }
 
     @Test
-    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
-        Response response = TestHelpers.linkModuleToSurvey(TestListener.target,
-                TestHelpers.GROUP_PATH + "/" + TestHelpers.group1.getId() + "/link/add",
+    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException, IOException {
+        HttpURLConnection response = TestHelpers.linkModuleToSurvey(TestHelpers.GROUP_PATH + "/"
+                        + TestHelpers.group2.getId() + "/link/add",
                 TestHelpers.survey1.getId(), TestHelpers.tokenResearcher1);
-        assertEquals(200, response.getStatus());
+        assertEquals(200, response.getResponseCode());
 
         List<Integer> linkedGroups = Database.getModuleLinks(TestHelpers.survey1);
-        assertTrue(linkedGroups.contains(TestHelpers.group1.getId()));
+        assertTrue(linkedGroups.contains(TestHelpers.group2.getId()));
     }
 }

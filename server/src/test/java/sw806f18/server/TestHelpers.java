@@ -32,12 +32,14 @@ public class TestHelpers {
     public static final String RESEARCHER_PARTICIPANT_PATH = "researcher/participant";
     public static final String RESEARCHER_PARTICIPANT_ALL_PATH = "researcher/participant/all";
     public static final String RESEARCHER_GROUPMANAGER_LINK_PATH = "researcher/groupmanager/link";
-    public static final String SURVEY_PATH = "researcher/groupmanager/surveys";
+    public static final String RESEARCHER_GROUPMANAGER_SURVEYS_PATH = "researcher/groupmanager/surveys";
 
+    public static final String PARTICIPANT_PATH = "participant";
     public static final String PARTICIPANT_LOGIN_PATH = "participant/login";
     public static final String PARTICIPANT_HUB_PATH = "participant/hub";
     public static final String PARTICIPANT_HUB_MODULES_PATH = "participant/hub/modules";
     public static final String GROUP_PATH = "group";
+    public static final String SURVEY_PATH = "survey";
 
     public static final String PASSWORD = "power123";
     public static final String INVALID_EMAIL = "fake1@email.com";
@@ -237,26 +239,37 @@ public class TestHelpers {
     /**
      * Get group members.
      *
-     * @param target Target.
      * @param path   Path.
      * @param moduleId  Module.
      * @param token  Token.
      * @return Response.
      */
-    public static Response removeGroupLink(WebTarget target, String path, int moduleId, String token) {
-        return target.path(path).request().header("module", moduleId)
-                .header("token", token).post(Entity.text(""));
+    public static HttpURLConnection removeGroupLink(String path, int moduleId, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("module", Integer.toString(moduleId));
+        return getHttpConnection(path, "POST", token, map, null, null);
     }
 
     /**
-     * Get all of some thing.
+     * Get with a token.
      *
      * @param path  Path.
      * @param token Token.
      * @return Response.
      */
-    public static HttpURLConnection getAll(String path, String token) throws IOException {
+    public static HttpURLConnection getWithToken(String path, String token) throws IOException {
         return getHttpConnection(path, "GET", token, null, null, null);
+    }
+
+    /**
+     * Delete with a token.
+     *
+     * @param path  Path.
+     * @param token Token.
+     * @return Response.
+     */
+    public static HttpURLConnection deleteWithToken(String path, String token) throws IOException {
+        return getHttpConnection(path, "DELETE", token, null, null, null);
     }
 
     /**
@@ -273,12 +286,11 @@ public class TestHelpers {
     /**
      * Get HTML from resource.
      *
-     * @param target Target.
      * @param path   Path.
      * @return Response.
      */
-    public static String getHTML(WebTarget target, String path) {
-        return target.path(path).request().get(String.class);
+    public static String getHTML(String path) throws IOException {
+        return getStringPayload(getHttpConnection(path, "GET", null, null, null, null));
     }
 
     /**
@@ -310,11 +322,49 @@ public class TestHelpers {
      * @return
      */
     public static HttpURLConnection linkModuleToSurvey(String path,
-                                                       int surveyID, int groupID, String token) throws IOException {
+                                                       int surveyID, String token) throws IOException {
         HashMap<String, String> map = new HashMap<>();
-        map.put("groupID", Integer.toString(groupID));
-        map.put("surveyID", Integer.toString(surveyID));
+        map.put("module", Integer.toString(surveyID));
         return getHttpConnection(path, "PUT", token, map, null, null);
+    }
+
+    /**
+     * Link module to survey request.
+     *
+     * @param path Path.
+     * @param cpr CPR.
+     * @param email Email.
+     * @param token Token.
+     * @return
+     */
+    public static HttpURLConnection inviteParticipant(String path,
+                                                       String cpr, String email, String token) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("cpr", cpr);
+        map.put("email", email);
+        return getHttpConnection(path, "POST", token, map, null, null);
+    }
+
+    /**
+     * Create Participant.
+     * @param path Path.
+     * @param key Key.
+     * @param email Email.
+     * @param password Password.
+     * @param firstname Firstname.
+     * @param lastname Lastname.
+     * @return Connection.
+     * @throws IOException IOException.
+     */
+    public static HttpURLConnection createParticipant(String path, String key, String email, String password,
+            String firstname, String lastname) throws IOException {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("key", key);
+        map.put("email", email);
+        map.put("password", password);
+        map.put("firstname", firstname);
+        map.put("lastname", lastname);
+        return getHttpConnection(path, "POST", null, map, null, null);
     }
 
     /**

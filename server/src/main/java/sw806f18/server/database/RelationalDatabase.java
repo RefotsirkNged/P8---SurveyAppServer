@@ -91,6 +91,8 @@ public class RelationalDatabase {
                         resultSet.getString("name"),
                         resultSet.getInt("hub")));
             }
+            resultSet.close();
+            statement.close();
             con.close();
             return groups;
         } catch (SQLException e) {
@@ -120,6 +122,8 @@ public class RelationalDatabase {
                 modules.add(new Survey(resultSet.getInt("id"),
                         resultSet.getString("name"), resultSet.getString("description")));
             }
+            resultSet.close();
+            statement.close();
             con.close();
             return modules;
         } catch (SQLException e) {
@@ -148,6 +152,8 @@ public class RelationalDatabase {
             ResultSet rs = statement.executeQuery(query);
             rs.next();
             id = rs.getInt(1);
+            rs.close();
+            statement.close();
             con.close();
 
             return new Group(id, group.getName(), group.getHub());
@@ -177,7 +183,9 @@ public class RelationalDatabase {
             statement.executeUpdate(q2);
 
             String q3 = "DELETE FROM groups WHERE id=" + id;
+
             statement.executeUpdate(q3);
+            statement.close();
             con.close();
         } catch (SQLException e) {
             throw new DeleteGroupException(e.getMessage());

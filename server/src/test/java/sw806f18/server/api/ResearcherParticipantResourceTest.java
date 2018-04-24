@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -43,6 +44,7 @@ public class ResearcherParticipantResourceTest {
                 null,
                 null
             );
+            assertEquals(200, connection.getResponseCode());
             Thread.sleep(5000); // Wait for mail
             String key = TestHelpers.getKeyFromParticipantEmail();
             assertNotNull(key);

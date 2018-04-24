@@ -64,7 +64,7 @@ public class ParticipantLoginResource {
      * @return HTML for hub.
      */
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-    public InputStream getLoginPage() {
+    public String getLoginPage() {
         String html = "";
         try {
             html = new String(Files.readAllBytes(Paths.get("tmp/participantlogin.html")), StandardCharsets.UTF_8);
@@ -72,6 +72,7 @@ public class ParticipantLoginResource {
             html = "Error!";
         }
 
-        return new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
+        return html;
+        // return ResponseEntity.ok(new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)));
     }
 }

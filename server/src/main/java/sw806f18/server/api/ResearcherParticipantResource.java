@@ -22,6 +22,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "researcher/participant")
@@ -40,7 +41,8 @@ public class ResearcherParticipantResource {
                                             @RequestHeader("cpr") int cpr,
                                             @RequestHeader("email") String email) throws CreateInviteException {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
-            Invite invite = new Invite(Integer.toString(cpr), token);
+            String key = UUID.randomUUID().toString();
+            Invite invite = new Invite(Integer.toString(cpr), key);
             try {
                 Database.createInvite(invite);
             } catch (CreateInviteException e) {
@@ -49,7 +51,7 @@ public class ResearcherParticipantResource {
             }
 
             // TODO: Maybe not have credentials in source files
-            String to = "sw806f18@gmail.com";
+            String to = email;
             String from = "sw806f18@gmail.com";
             String username = "sw806f18@gmail.com";
             String password = "p0wer123";
@@ -71,8 +73,8 @@ public class ResearcherParticipantResource {
                 Message message = new MimeMessage(emailSession);
                 message.setFrom(new InternetAddress(from));
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-                message.setSubject("invite");
-                message.setText("123");
+                message.setSubject("Join MERSY");
+                message.setText(key);
                 Transport.send(message);
 
             } catch (MessagingException e) {

@@ -40,8 +40,6 @@ public class TestListener extends RunListener {
         Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
         mongoLogger.setLevel(Level.SEVERE);
 
-        // TODO: Uncomment me before merge
-        /*
         if (Configurations.instance.getPostgresDatabase().equals("devdb")
                 || Configurations.instance.getPostgresDatabase().equals("postgres")) {
             throw new SQLException("Please use another database name for testing!!!");
@@ -61,7 +59,7 @@ public class TestListener extends RunListener {
         }
 
         createDatabase();
-        */
+
 
         try {
             context.close();

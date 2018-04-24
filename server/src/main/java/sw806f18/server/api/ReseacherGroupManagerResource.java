@@ -110,11 +110,11 @@ public class ReseacherGroupManagerResource {
      * @return Response.
      */
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteGroup(@RequestHeader(value = "id") int groupId, // TODO: URI param instead?
+    public ResponseEntity deleteGroup(@RequestHeader(value = "id") String groupId, // TODO: URI param instead?
                                       @CookieValue(value = "token") String token) {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
-                Database.deleteGroup(groupId);
+                Database.deleteGroup(Integer.parseInt(groupId));
             } catch (DeleteGroupException e) {
                 return ResponseEntity.badRequest().body(new Error(e.getMessage()));
             }
@@ -168,32 +168,5 @@ public class ReseacherGroupManagerResource {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().body(new Error("Invalid token"));
-    }
-
-    /**
-     * Linking a group to a survey.
-     *
-     * @param surveyID
-     * @param groupID
-     * @param token
-     * @return
-     */
-    @RequestMapping(path = "/link", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity linkSurveyToGroup(@RequestHeader("surveyID") int surveyID,
-                                            @RequestHeader("groupID") int groupID,
-                                            @CookieValue("token") String token) {
-        if (Database.isResearcher(Authentication.instance.getId(token))) {
-            try {
-                Database.linkModuleToGroup(surveyID, groupID);
-            } catch (P8Exception e) {
-                e.printStackTrace();
-
-                return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
-            }
-
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.ok(JsonBuilder.buildError("Invalid token"));
     }
 }

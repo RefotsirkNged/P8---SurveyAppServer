@@ -21,7 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 public class ResearcherLoginResource {
     /**
      * Allows an admin to log into the system.
-     * @param email The email address of the researcher.
+     *
+     * @param email    The email address of the researcher.
      * @param password The password of the researcher.
      * @return A JSON string with either a login "token" or an "error" message.
      */
@@ -32,6 +33,7 @@ public class ResearcherLoginResource {
         try {
             int userid = Database.getResearcher(email, password).getId();
             String token = Authentication.instance.getToken(userid);
+            response.addCookie(new Cookie("token", token));
             return ResponseEntity.ok(JsonBuilder.buildMessage("token", token));
         } catch (Exception e) {
             e.printStackTrace();

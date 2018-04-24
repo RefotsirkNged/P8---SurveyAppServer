@@ -8,14 +8,12 @@ import sw806f18.server.TestRunner;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.GetGroupMemberException;
 import sw806f18.server.exceptions.GetGroupsException;
-import sw806f18.server.exceptions.P8Exception;
 import sw806f18.server.model.Group;
 import sw806f18.server.model.Participant;
 import sw806f18.server.model.Survey;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -45,10 +43,11 @@ public class ResearcherGroupManagerTest {
     @Test
     public void removeGroup() {
         try {
-            TestHelpers.deleteGroup(
+            HttpURLConnection response = TestHelpers.deleteGroup(
                 TestHelpers.RESEARCHER_GROUPMANAGER_PATH,
                 TestHelpers.group1.getId(),
                 TestHelpers.tokenResearcher1);
+            assertEquals(200, response.getResponseCode());
             List<Group> groups = Database.getAllGroups();
             assertFalse(groups.contains(TestHelpers.group1));
         } catch (GetGroupsException | IOException e) {
@@ -63,7 +62,7 @@ public class ResearcherGroupManagerTest {
 
         HttpURLConnection response = null;
         try {
-            response = TestHelpers.getAll(
+            response = TestHelpers.getWithToken(
                 TestHelpers.RESEARCHER_GROUPMANAGER_PATH, TestHelpers.tokenResearcher1);
             assertEquals(response.getResponseCode(), 200);
             JsonNode jsonObject = TestHelpers.getJsonPayload(response);
@@ -159,7 +158,7 @@ public class ResearcherGroupManagerTest {
     public void getAllParticipants() {
         HttpURLConnection response = null;
         try {
-            response = TestHelpers.getAll(
+            response = TestHelpers.getWithToken(
                 TestHelpers.RESEARCHER_PARTICIPANT_ALL_PATH,
                 TestHelpers.tokenResearcher1);
 
@@ -197,32 +196,15 @@ public class ResearcherGroupManagerTest {
     public void getAllSurveys() {
         HttpURLConnection response = null;
         try {
-            response = TestHelpers.getAll(TestHelpers.SURVEY_PATH,
+            response = TestHelpers.getWithToken(TestHelpers.RESEARCHER_GROUPMANAGER_SURVEYS_PATH,
                 TestHelpers.tokenResearcher1);
             assertEquals(200, response.getResponseCode());
 
             JsonNode jsonObject = TestHelpers.getJsonPayload(response);
-            JsonNode jsonArray = jsonObject.get("surveys");
+            JsonNode jsonArray = jsonObject.get("modules");
             JsonNode element = jsonArray.get(0);
             Survey s1 = new Survey(element.get("title").asText(), element.get("description").asText());
             assertEquals(TestHelpers.survey1.getTitle(), s1.getTitle());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
-
-    @Test
-    public void linkModuleToGroup() throws P8Exception, SQLException, ClassNotFoundException {
-        HttpURLConnection response = null;
-        try {
-            response = TestHelpers.linkModuleToSurvey(
-                TestHelpers.RESEARCHER_GROUPMANAGER_LINK_PATH,
-                TestHelpers.survey1.getId(), TestHelpers.group1.getId(), TestHelpers.tokenResearcher1);
-            assertEquals(200, response.getResponseCode());
-
-            List<Integer> linkedGroups = Database.getModuleLinks(TestHelpers.survey1);
-            assertTrue(linkedGroups.contains(TestHelpers.group1.getId()));
         } catch (IOException e) {
             e.printStackTrace();
             fail();

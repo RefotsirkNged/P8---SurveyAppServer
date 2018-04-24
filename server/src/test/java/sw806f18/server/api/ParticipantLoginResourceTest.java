@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sw806f18.server.TestHelpers;
+import sw806f18.server.TestListener;
 import sw806f18.server.TestRunner;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
@@ -59,8 +63,8 @@ public class ParticipantLoginResourceTest {
     }
 
     @Test
-    public void getLoginPage() {
-        String actual = TestHelpers.getHTML(TestListener.target, TestHelpers.PARTICIPANT_LOGIN_PATH);
+    public void getLoginPage() throws IOException {
+        String actual = TestHelpers.getHTML(TestHelpers.PARTICIPANT_LOGIN_PATH);
         String expected = "";
         boolean hasError = false;
         try {
@@ -69,6 +73,6 @@ public class ParticipantLoginResourceTest {
             hasError = true;
         }
         assertFalse(hasError);
-        assertTrue(actual.equals(expected));
+        assertTrue(actual.equals(expected.replace("\n", "")));
     }
 }
