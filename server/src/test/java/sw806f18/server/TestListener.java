@@ -13,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +42,7 @@ public class TestListener extends RunListener {
         mongoLogger.setLevel(Level.SEVERE);
 
         if (Configurations.instance.getPostgresDatabase().equals("devdb")
-                || Configurations.instance.getPostgresDatabase().equals("postgres")) {
+            || Configurations.instance.getPostgresDatabase().equals("postgres")) {
             throw new SQLException("Please use another database name for testing!!!");
         }
 
@@ -49,14 +50,8 @@ public class TestListener extends RunListener {
             throw new MongoException("Please use another database name for testing!!!");
         }
 
-        try {
-            dropRelationelDatabase();
-            dropNonrelationalDatabase();
-        } catch (PSQLException e) {
-            e.printStackTrace();
-            return;
-            // The database is already dropped!
-        }
+        dropRelationelDatabase();
+        dropNonrelationalDatabase();
 
         createDatabase();
 
@@ -78,15 +73,25 @@ public class TestListener extends RunListener {
             Configurations.instance.getPostgresPassword());
     }
 
-    private void dropRelationelDatabase() throws SQLException {
-        Connection connection = getConnection();
-        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+    private void dropRelationelDatabase() {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+
+            connection = getConnection();
+            String query = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
                 + "FROM pg_stat_activity "
                 + "WHERE pg_stat_activity.datname = '" + Configurations.instance.getPostgresDatabase() + "' "
                 + "  AND pid <> pg_backend_pid();"
                 + "DROP DATABASE " + Configurations.instance.getPostgresDatabase();
-        connection.createStatement().execute(statement);
-        connection.close();
+            statement = connection.createStatement();
+            statement.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            TestHelpers.closeConnection(connection);
+            TestHelpers.closeStatement(statement);
+        }
     }
 
     private void dropNonrelationalDatabase() {
@@ -96,15 +101,22 @@ public class TestListener extends RunListener {
     }
 
     private void createDatabase() throws SQLException {
-        Connection connection = getConnection();
-        String statement = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
+        Connection connection = null;
+        Statement statement = null;
+
+        try {
+            connection = getConnection();
+            String query = "SELECT pg_terminate_backend(pg_stat_activity.pid) "
                 + "FROM pg_stat_activity "
                 + "WHERE pg_stat_activity.datname = 'devdb' "
                 + "  AND pid <> pg_backend_pid();"
                 + "CREATE DATABASE " + Configurations.instance.getPostgresDatabase() + " TEMPLATE devdb";
-        connection.createStatement().execute(statement);
-
-        connection.close();
+            statement = connection.createStatement();
+            statement.execute(query);
+        } finally {
+            TestHelpers.closeConnection(connection);
+            TestHelpers.closeStatement(statement);
+        }
     }
 
     private static MongoClient client;

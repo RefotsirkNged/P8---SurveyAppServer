@@ -105,8 +105,12 @@ public class DatabaseTest {
     }
 
     @Test
-    public void getCprFromInvite() throws SQLException, ClassNotFoundException {
-        assertEquals(Database.getCPRFromKey(TestHelpers.invite1.getKey()), TestHelpers.invite1.getCpr());
+    public void getCprFromInvite() {
+        try {
+            assertEquals(Database.getCPRFromKey(TestHelpers.invite1.getKey()), TestHelpers.invite1.getCpr());
+        } catch (CprKeyNotFoundException e) {
+            fail();
+        }
     }
 
     @Test

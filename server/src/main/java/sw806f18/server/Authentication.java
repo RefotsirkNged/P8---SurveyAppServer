@@ -29,13 +29,6 @@ public class Authentication {
      * @return A JWT token for the user.
      */
     public String getToken(int userid) {
-        // Get the expiration time for the token
-        Date expiryDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(expiryDate);
-        calendar.add(Calendar.DATE, TOKEN_EXPIRATION_DAYS);
-        expiryDate = calendar.getTime();
-
         // Create a token
         // Token contains info about creation and expiration time, and the user it is tied to.
         return JWT.create().withIssuedAt(new Date(System.currentTimeMillis()))

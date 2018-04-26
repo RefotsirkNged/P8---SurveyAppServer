@@ -19,10 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class TestHelpers {
@@ -138,19 +135,19 @@ public class TestHelpers {
         bistrolStoolChart.add("123");
 
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
-                "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-                bistrolStoolChart));
+            "Afføring",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+            bistrolStoolChart));
 
         surveyAnswer1.addQuestion(new NumberQuestion(3, "Alkohol",
-                "Hvor mange genstande drikker du om ugen:"));
+            "Hvor mange genstande drikker du om ugen:"));
         surveyAnswer1.addQuestion(new TextQuestion(3, "Rygning",
-                "Hvor mange cigaretter ryger du om dagen:"));
+            "Hvor mange cigaretter ryger du om dagen:"));
 
         surveyAnswer1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
-                "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
-                bistrolStoolChart));
+            "Afføring",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+            bistrolStoolChart));
 
         String answer1 = "1";
         String answer2 = "123a";
@@ -202,6 +199,7 @@ public class TestHelpers {
 
     /**
      * Get payload in String format.
+     *
      * @param connection An open connection to the server.
      * @return Payload.
      * @throws IOException
@@ -271,9 +269,9 @@ public class TestHelpers {
     /**
      * Get group members.
      *
-     * @param path   Path.
-     * @param moduleId  Module.
-     * @param token  Token.
+     * @param path     Path.
+     * @param moduleId Module.
+     * @param token    Token.
      * @return Response.
      */
     public static HttpURLConnection removeGroupLink(String path, int moduleId, String token) throws IOException {
@@ -318,7 +316,7 @@ public class TestHelpers {
     /**
      * Get HTML from resource.
      *
-     * @param path   Path.
+     * @param path Path.
      * @return Response.
      */
     public static String getHTML(String path) throws IOException {
@@ -363,14 +361,14 @@ public class TestHelpers {
     /**
      * Link module to survey request.
      *
-     * @param path Path.
-     * @param cpr CPR.
+     * @param path  Path.
+     * @param cpr   CPR.
      * @param email Email.
      * @param token Token.
      * @return
      */
     public static HttpURLConnection inviteParticipant(String path,
-                                                       String cpr, String email, String token) throws IOException {
+                                                      String cpr, String email, String token) throws IOException {
         HashMap<String, String> map = new HashMap<>();
         map.put("cpr", cpr);
         map.put("email", email);
@@ -380,20 +378,18 @@ public class TestHelpers {
     /**
      * Create Participant.
      * @param path Path.
-     * @param key Key.
+     * @param cpr cpr.
      * @param email Email.
-     * @param password Password.
      * @param firstname Firstname.
      * @param lastname Lastname.
      * @return Connection.
      * @throws IOException IOException.
      */
-    public static HttpURLConnection createParticipant(String path, String key, String email, String password,
+    public static HttpURLConnection createParticipant(String path, String cpr, String email,
             String firstname, String lastname) throws IOException {
         HashMap<String, String> map = new HashMap<>();
-        map.put("key", key);
+        map.put("cpr", cpr);
         map.put("email", email);
-        map.put("password", password);
         map.put("firstname", firstname);
         map.put("lastname", lastname);
         return getHttpConnection(path, "POST", null, map, null, null);
@@ -547,10 +543,6 @@ public class TestHelpers {
         return c;
     }
 
-    public static void closeConnection(Connection c) throws SQLException {
-        c.close();
-    }
-
     /**
      * Reset the database completely.
      *
@@ -558,16 +550,25 @@ public class TestHelpers {
      * @throws ClassNotFoundException Ex
      * @throws IOException            Ex
      */
-    public static void resetDatabase() throws SQLException, ClassNotFoundException, IOException {
-        Connection connection = createConnection();
+    public static void resetDatabase() {
+        Connection connection = null;
+        Statement statement = null;
 
-        String query = "SELECT truncate_tables('postgres')";
+        try {
+            connection = createConnection();
 
-        Statement statement = connection.createStatement();
+            String query = "SELECT truncate_tables('postgres')";
 
-        statement.execute(query);
+            statement = connection.createStatement();
 
-        closeConnection(connection);
+            statement.execute(query);
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(connection);
+            closeStatement(statement);
+        }
 
         Database.cleanMongoDB();
     }
@@ -579,13 +580,22 @@ public class TestHelpers {
      * @throws ClassNotFoundException Ex
      * @throws IOException            Ex
      */
-    public static void addDefaultHub() throws SQLException, ClassNotFoundException, IOException {
-        Connection connection = createConnection();
+    public static void addDefaultHub() {
+        Connection connection = null;
+        Statement statement = null;
 
-        String query = "INSERT INTO hubs(id) VALUES (0)";
-        Statement statement = connection.createStatement();
-        statement.executeUpdate(query);
-        closeConnection(connection);
+        try {
+            connection = createConnection();
+
+            String query = "INSERT INTO hubs(id) VALUES (0)";
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(connection);
+            closeStatement(statement);
+        }
     }
 
     /**
@@ -677,7 +687,6 @@ public class TestHelpers {
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Element ele = (Element) nodes.item(i);
-            NodeList children = ele.getChildNodes();
 
             return ele.getAttribute(attribute);
         }
@@ -856,4 +865,50 @@ public class TestHelpers {
 
         return connection;
     }
+
+    /**
+     * Use this to close connection.
+     *
+     * @param c The connection to close.
+     */
+    public static void closeConnection(Connection c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Use this to close statement.
+     *
+     * @param s The statement to close.
+     */
+    public static void closeStatement(Statement s) {
+        if (s != null) {
+            try {
+                s.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Use this to close resultset.
+     *
+     * @param r The resultset to close.
+     */
+    public static void closeResultSet(ResultSet r) {
+        if (r != null) {
+            try {
+                r.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
