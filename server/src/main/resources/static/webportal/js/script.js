@@ -4,10 +4,10 @@
 
 function gotoHome(){
     if(isLoggedIn()){
-        window.location.href("../home/index.html");
+        window.location.assign("../home/index.html");
     }
     else {
-        window.location.href("../login/index.html");
+        window.location.assign("../login/index.html");
     }
 }
 

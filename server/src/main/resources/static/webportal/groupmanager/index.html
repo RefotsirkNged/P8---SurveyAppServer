@@ -274,7 +274,7 @@
                 response.participants.forEach(function (value) {
                     userTBody.innerHTML += "<tr>\n" +
                         "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
-                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addMemberToGroup(" + value.id + ")\" style='float: right;width:25px;'>+</button>\n" +
+                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" title=\"Tilføj bruger til markeret gruppe\" onclick=\"addMemberToGroup(" + value.id + ")\" style='float: right;width:25px;'>+</button>\n" +
                         "</td>\n" +
                         "</tr>"
                 });
@@ -296,7 +296,7 @@
                 var modules = response.modules;
                 modules.forEach(function(e){
                     $('#groupSurveysWindow').append('<tr id="module' + e.id + '"><td>' + e.title +
-                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>edit</button></td></tr>");
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" title=\"Rediger spørgeskema\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>rediger</button></td></tr>");
                     allModules.push(e);
                 });
             }
