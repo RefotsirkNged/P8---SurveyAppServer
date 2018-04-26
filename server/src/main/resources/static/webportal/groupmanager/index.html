@@ -15,7 +15,7 @@
     <div class="column-container col-lg-6">
         <div class="content-container">
             <h3>Grupper</h3>
-            <div class="table-container col-sm-11">
+            <div class="table-container">
                 <table class="table table-hover table-striped">
                     <tbody id="groupTableBody">
                     </tbody>
@@ -104,7 +104,7 @@
     <div class="column-container col-lg-6">
         <div class="content-container">
             <h3>Brugere</h3>
-            <div class="table-container  col-sm-11">
+            <div class="table-container">
                 <table class="table table-striped">
                     <tbody id="allUsersWindow">
 
@@ -296,7 +296,7 @@
                 var modules = response.modules;
                 modules.forEach(function(e){
                     $('#groupSurveysWindow').append('<tr id="module' + e.id + '"><td>' + e.title +
-                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" title=\"Rediger spørgeskema\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>rediger</button></td></tr>");
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" title=\"Rediger spørgeskema\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>Rediger</button></td></tr>");
                     allModules.push(e);
                 });
             }
@@ -340,21 +340,33 @@
                 markedModules = [];
                 var modules = response.modules;
                 modules.forEach(function(e){
-                    document.getElementById('module' + e.id).innerHTML =
+                    var node = document.getElementById('module' + e.id);
+                    node.innerHTML =
                         "<td>" + e.title + "\n" +
                         " <button id='rmgrplnk" + e.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeGroupLink(" + e.id + ")\" style='float: right;width:25px;'>-</button>\n" +
-                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>edit</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
                         "</td>";
+                    node.parentNode.insertBefore(node,node.parentNode.firstChild);
+                    //document.getElementById('module' + e.id).setAttribute("style", "background: #03b240;")
                     markedModules.push(e);
+                    if(modules.lastChild == e){
+                        node.style.borderBottom("solid");
+                        node.style.borderBottomWidth("3px");
+                    }
+                    else{
+                        node.style.borderBottomWidth("0px");
+                    }
                 });
 
                 var moduleDiff = arr_diff(allModules, markedModules);
                 moduleDiff.forEach(function(e) {
-                    document.getElementById('module' + e.id).innerHTML =
+                    var node = document.getElementById('module' + e.id);
+                    node.innerHTML =
                         "<td>" + e.title + "\n" +
                         " <button id='addgrplnk" + e.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addGroupLink(" + e.id + ")\" style='float: right;width:25px;'>+</button>\n" +
-                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>edit</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
                         "</td>";
+                    node.style.borderBottomWidth("0px");
                 });
             }
         });
