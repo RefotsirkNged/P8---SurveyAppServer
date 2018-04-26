@@ -50,7 +50,7 @@ function login() {
                 setCookie("token", response.token);
                 // sessionStorage.setItem('token', response.token);
                 // setCookie("token", response.token, 1);
-                window.location.replace("../index.html");
+                window.location.href("../index.html");
             }
         },
         error: function (response) {
@@ -65,14 +65,14 @@ function login() {
 function logout(){
     //sessionStorage.removeItem('token');
     setCookie("token", "");
-    window.location.replace("../index.html");
+    window.location.href("../index.html");
 }
 
 function groupManager(){
     if(isLoggedIn()){
-        window.location.replace("../groupmanager/index.html");
+        window.location.href("../groupmanager/index.html");
     }
     else {
-        window.location.replace("../login/index.html");
+        window.location.href("../login/index.html");
     }
 }
