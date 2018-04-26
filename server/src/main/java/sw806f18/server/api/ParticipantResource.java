@@ -28,22 +28,12 @@ public class ParticipantResource {
                                             @RequestHeader("email") String email,
                                             @RequestHeader("firstname") String firstname,
                                             @RequestHeader("lastname") String lastname) {
-        String cpr = "";
-        try {
-            cpr = Database.getCPRFromKey(key);
-        } catch (CprKeyNotFoundException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
 
         Participant participant = new Participant(-1, email, cpr, firstname, lastname, 5139);
         try {
             Database.createParticipant(participant, cpr);
             return ResponseEntity.ok().build();
         } catch (CreateUserException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (CprKeyNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
