@@ -228,6 +228,17 @@ public class NoSqlDatabase {
         collection.replaceOne(eq("_id", surveyId), survey);
     }
 
+    static void updateQuestionFromSurvey(Survey survey) {
+        openConnection();
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(modulePojoCodecProvider));
+
+        database = database.withCodecRegistry(pojoCodecRegistry);
+        MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
+
+        collection.replaceOne(eq("_id", survey.getId()), survey);
+    }
+
     static Answer getNewestAnswer(int userId) {
         openConnection();
         CodecRegistry pojoCodeRegestry = fromRegistries(
