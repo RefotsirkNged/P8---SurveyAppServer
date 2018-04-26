@@ -76,3 +76,22 @@ function groupManager(){
         window.location.assign("../login/index.html");
     }
 }
+
+function home(){
+    if(isLoggedIn()){
+        window.location.replace("../home/index.html");
+    }
+    else {
+        window.location.replace("../login/index.html");
+    }
+}
+
+function addUserPage(){
+    if(isLoggedIn()){
+        window.location.replace("../participantcreation/index.html");
+    }
+    else {
+        window.location.replace("../login/index.html");
+    }
+}
+

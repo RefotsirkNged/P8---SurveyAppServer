@@ -89,7 +89,7 @@ public class Database {
         RelationalDatabase.createInvite(invite);
     }
 
-    public static String getCPRFromKey(String key) throws SQLException, ClassNotFoundException {
+    public static String getCPRFromKey(String key) throws CprKeyNotFoundException {
         return RelationalDatabase.getCPRFromKey(key);
     }
 
