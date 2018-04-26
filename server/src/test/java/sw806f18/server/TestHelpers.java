@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 public class TestHelpers {
@@ -377,22 +380,19 @@ public class TestHelpers {
 
     /**
      * Create Participant.
-     *
-     * @param path      Path.
-     * @param key       Key.
-     * @param email     Email.
-     * @param password  Password.
+     * @param path Path.
+     * @param cpr cpr.
+     * @param email Email.
      * @param firstname Firstname.
-     * @param lastname  Lastname.
+     * @param lastname Lastname.
      * @return Connection.
      * @throws IOException IOException.
      */
-    public static HttpURLConnection createParticipant(String path, String key, String email, String password,
-                                                      String firstname, String lastname) throws IOException {
+    public static HttpURLConnection createParticipant(String path, String cpr, String email,
+            String firstname, String lastname) throws IOException {
         HashMap<String, String> map = new HashMap<>();
-        map.put("key", key);
+        map.put("cpr", cpr);
         map.put("email", email);
-        map.put("password", password);
         map.put("firstname", firstname);
         map.put("lastname", lastname);
         return getHttpConnection(path, "POST", null, map, null, null);
@@ -857,13 +857,13 @@ public class TestHelpers {
             headers.forEach(connection::setRequestProperty);
         }
 
+        if (contentType != null) {
+            connection.setRequestProperty("Content-Type", contentType);
+        }
+
         if (body != null) {
             connection.setDoOutput(true);
             connection.getOutputStream().write(body.getBytes());
-        }
-
-        if (contentType != null) {
-            connection.setRequestProperty("Content-Type", contentType);
         }
 
         return connection;

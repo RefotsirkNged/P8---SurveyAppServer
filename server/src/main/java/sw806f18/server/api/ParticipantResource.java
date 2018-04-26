@@ -18,16 +18,14 @@ public class ParticipantResource {
 
     /**
      * Creates a participant with the given parameters.
-     * @param key
+     * @param cpr
      * @param email
-     * @param password
      * @param firstname
      * @param lastname
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity createParticipant(@RequestHeader("key") String key,
+    public ResponseEntity createParticipant(@RequestHeader("cpr") String cpr,
                                             @RequestHeader("email") String email,
-                                            @RequestHeader("password") String password,
                                             @RequestHeader("firstname") String firstname,
                                             @RequestHeader("lastname") String lastname) {
         String cpr = "";
@@ -40,8 +38,7 @@ public class ParticipantResource {
 
         Participant participant = new Participant(-1, email, cpr, firstname, lastname, 5139);
         try {
-            Database.createParticipant(participant, password);
-            Database.clearInviteFromKey(key);
+            Database.createParticipant(participant, cpr);
             return ResponseEntity.ok().build();
         } catch (CreateUserException e) {
             e.printStackTrace();

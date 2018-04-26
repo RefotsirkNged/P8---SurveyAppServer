@@ -228,4 +228,9 @@ public class Database {
         RelationalDatabase.removeQuestionFromSurvey(questionId);
         NoSqlDatabase.removeQuestionFromSurvey(surveyId, questionId);
     }
+
+    public static void updateSurvey(Survey survey) throws SurveyException {
+        RelationalDatabase.updateSurvey(survey);
+        NoSqlDatabase.updateQuestionFromSurvey(survey);
+    }
 }

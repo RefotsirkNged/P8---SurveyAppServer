@@ -994,4 +994,49 @@ public class RelationalDatabase {
             closeStatement(statement);
         }
     }
+
+    static void updateSurvey(Survey survey) throws SurveyException {
+        Connection con = null;
+        try {
+            con = createConnection();
+            String q1 = "UPDATE modules SET name=?, "
+                    + "frequencyvalue=?,frequencytype=?::frequencytype,description=? WHERE id=?";
+            PreparedStatement stmt = con.prepareStatement(q1);
+            stmt.setString(1, survey.getTitle());
+            stmt.setInt(2, survey.getFrequencyValue());
+            stmt.setString(3, survey.getFrequencyType().name());
+            stmt.setString(4, survey.getDescription());
+            stmt.setInt(5, survey.getId());
+            stmt.execute();
+            stmt.close();
+
+            for (Question q : survey.getQuestions()) {
+                if (q.getId() == -1) {
+                    RelationalDatabase.addQuestionToSurvey(q, survey.getId());
+                } else {
+                    updateQuestion(q);
+                }
+            }
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+    }
+
+    static void updateQuestion(Question q) throws SurveyException {
+        Connection con = null;
+        try {
+            con = createConnection();
+            String q1 = "UPDATE questions SET name=?,description=? WHERE id=?";
+            PreparedStatement stmt = con.prepareStatement(q1);
+            stmt.setString(1, q.getTitle());
+            stmt.setString(2, q.getDescription());
+            stmt.setInt(3, q.getId());
+            stmt.execute();
+            stmt.close();
+            con.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new SurveyException(e.getMessage());
+        }
+    }
 }

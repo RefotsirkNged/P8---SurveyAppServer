@@ -1,5 +1,8 @@
 package sw806f18.server.api;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -56,7 +59,7 @@ public class SurveyResource {
      * @param id
      * @return stream
      */
-    @RequestMapping(path = "/{id}", method = RequestMethod.POST,
+    @RequestMapping(path = "/{id}/answer", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity postSurvey(@PathVariable("id") int id,
@@ -309,6 +312,103 @@ public class SurveyResource {
                 e.printStackTrace();
                 return ResponseEntity.badRequest().body(new Error("Server Error"));
             }
+        }
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
+    }
+
+    /**
+     * Remove question from survey.
+     *
+     * @param surveyId Survey to remove from.
+     * @return Response.
+     */
+    @RequestMapping(method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            path = "/{surveyId}/question",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addQuestionToSurvey(@PathVariable(value = "surveyId") int surveyId,
+                                      @RequestBody JsonNode questionJson,
+                                      @CookieValue(value = "token") String token)
+            throws SurveyException {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Survey survey = Database.getSurvey(surveyId);
+
+            Question q;
+
+            switch (questionJson.get("input").asText()) {
+                case "TEXT":
+                    q = new TextQuestion(questionJson.get("title").asText(),
+                            questionJson.get("description").asText());
+                    break;
+                case "NUMBER":
+                    q = new NumberQuestion(questionJson.get("title").asText(),
+                            questionJson.get("description").asText());
+                    break;
+                case "DROPDOWN":
+                    List<String> list = new ArrayList<>();
+                    for (int i = 0; i < questionJson.get("values").size(); i++) {
+                        list.add(questionJson.get("values").get(i).asText());
+                    }
+                    Question.Type t;
+                    if (questionJson.get("type").equals("STRING")) {
+                        t = Question.Type.STRING;
+                    } else {
+                        t = Question.Type.INT;
+                    }
+
+                    q = new DropdownQuestion(t,
+                            questionJson.get("title").asText(),
+                            questionJson.get("description").asText(),
+                            list);
+                    break;
+                default:
+                    throw new SurveyException("Input " + questionJson.get("input").asText() + " wrong type.");
+            }
+
+            survey.addQuestion(q);
+            Database.updateSurvey(survey);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
+    }
+
+    /**
+     * Remove question from survey.
+     *
+     * @return Response.
+     */
+    @RequestMapping(method = RequestMethod.POST,
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity addEmptySurvey(@CookieValue(value = "token") String token) throws SurveyException {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Survey survey = new Survey("", "");
+            int id = Database.addSurvey(survey);
+            return ResponseEntity.ok(Integer.toString(id));
+        }
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
+    }
+
+    /**
+     * Remove question from survey.
+     *
+     * @return Response.
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            path = "/{surveyId}",
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity updateSurveyMetadata(@PathVariable(value = "surveyId") int surveyId,
+                                               @RequestBody JsonNode body,
+                                               @CookieValue(value = "token") String token)
+            throws SurveyException {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Survey survey = Database.getSurvey(surveyId);
+            survey.setTitle(body.get("title").asText());
+            survey.setDescription(body.get("description").asText());
+            survey.setFrequencyValue(body.get("frequencyValue").asInt());
+            survey.setFrequencyType(FrequencyType.valueOf(body.get("frequencyType").asText()));
+            Database.updateSurvey(survey);
+
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
