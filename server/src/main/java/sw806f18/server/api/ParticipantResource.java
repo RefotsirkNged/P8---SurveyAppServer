@@ -33,7 +33,7 @@ public class ParticipantResource {
         String cpr = "";
         try {
             cpr = Database.getCPRFromKey(key);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (CprKeyNotFoundException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }

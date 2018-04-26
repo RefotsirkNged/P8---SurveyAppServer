@@ -35,7 +35,7 @@ public class ParticipantHubResource {
     public ResponseEntity getModules(@CookieValue(value = "token") String token) {
         DecodedJWT decodedJWT = Authentication.instance.decodeToken(token);
         int userId = decodedJWT.getClaim("userid").asInt();
-        List<Survey> modules = new ArrayList<>();
+        List<Survey> modules = null;
 
         try {
             modules = Database.getModulesByUser(userId);
