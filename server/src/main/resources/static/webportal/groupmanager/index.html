@@ -264,12 +264,13 @@
             url: 'http://localhost:8081/api/researcher/participant/all',
             type: 'GET',
             beforeSend: function (request) {
-                request.setRequestHeader("token", sessionStorage.getItem("token"));
+                // request.setRequestHeader("token", sessionStorage.getItem("token"));
             },
             success: function(response){
                 var userTBody = document.getElementById("allUsersWindow");
                 userTBody.innerHTML = "";
 
+                console.log(response.participants);
                 response.participants.forEach(function (value) {
                     userTBody.innerHTML += "<tr>\n" +
                         "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +

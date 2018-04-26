@@ -11,11 +11,37 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <label>Email</label> <input id="loginemail" type="text" value="konrad@forsker.dk"/>
-    <label>Password</label><input id="loginpassword" type="password" value="power123"/>
-    <br>
-    <button type="button" class="btn btn-primary btn-md" onclick="login()">Log-ind</button>
+<div class="wrapper upper-container">
+    <img src="../image/Search.png" style="width: 25%;">
+</div>
+
+<div class="spacing">
+
+</div>
+
+<div class="wrapper center-container">
+    <div class="container">
+        <div class="row">
+            <label>Email</label>
+        </div>
+        <div class="row">
+                <input class="form-control" id="loginemail" type="text" value="konrad@forsker.dk"/>
+        </div>
+        <div class="row">
+            <label>Password</label>
+        </div>
+        <div class="row">
+            <input class="form-control" id="loginpassword" type="password" value="power123"/>
+        </div>
+        <div class="spacing">
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary btn-md" onclick="login()">Log-ind</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="loginfailedmodal" class="modal">
@@ -27,6 +53,23 @@
 
 </body>
 </html>
+<style>
+    .spacing {
+        padding-top: 25px;
+    }
+
+    label {
+        font-size: 16px;
+    }
+
+    input {
+        width: 512px;
+    }
+
+    button {
+        width: 256px;
+    }
+</style>
 <script>
     var modal = document.getElementById("loginfailedmodal");
     var span = document.getElementById("modalclose");
