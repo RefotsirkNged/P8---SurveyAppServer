@@ -336,6 +336,23 @@ public class DatabaseTest {
     }
 
     @Test
+    public void addAnswerToDatabase() {
+        Answer answer = new Answer(TestHelpers.participant1.getId(), TestHelpers.surveyAnswer1);
+
+        try {
+            answer.getSurvey().setId(Database.addSurvey(answer.getSurvey()));
+            Database.addAnswer(answer);
+        } catch (AnswerException | SurveyException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+
+        Answer answer1 = Database.getNewestAnswer(TestHelpers.participant1.getId());
+        assertEquals(answer, answer1);
+    }
+
+    @Test
     public void updateSurvey() throws SurveyException {
         Survey survey = TestHelpers.survey2;
         survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins"));
