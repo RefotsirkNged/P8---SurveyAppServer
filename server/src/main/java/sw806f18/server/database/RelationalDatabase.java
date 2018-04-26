@@ -1012,7 +1012,7 @@ public class RelationalDatabase {
 
             for (Question q : survey.getQuestions()) {
                 if (q.getId() == -1) {
-                    RelationalDatabase.addQuestionToSurvey(q, survey.getId());
+                    q.setId(RelationalDatabase.addQuestionToSurvey(q, survey.getId()));
                 } else {
                     updateQuestion(q);
                 }
