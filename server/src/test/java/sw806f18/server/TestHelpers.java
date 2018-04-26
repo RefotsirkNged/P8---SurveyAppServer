@@ -845,13 +845,13 @@ public class TestHelpers {
             headers.forEach(connection::setRequestProperty);
         }
 
+        if (contentType != null) {
+            connection.setRequestProperty("Content-Type", contentType);
+        }
+
         if (body != null) {
             connection.setDoOutput(true);
             connection.getOutputStream().write(body.getBytes());
-        }
-
-        if (contentType != null) {
-            connection.setRequestProperty("Content-Type", contentType);
         }
 
         return connection;

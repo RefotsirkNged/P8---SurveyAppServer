@@ -1,8 +1,11 @@
 package sw806f18.server.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.MediaType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -10,9 +13,11 @@ import org.w3c.tidy.Tidy;
 import sw806f18.server.Constants;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.TestRunner;
+import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.NotImplementedException;
 import sw806f18.server.model.Question;
 import sw806f18.server.model.Survey;
+import sw806f18.server.model.TextQuestion;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
@@ -208,5 +213,75 @@ public class SurveyResourceTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    public void addQuestionToSurvey() throws IOException {
+        Question question = new TextQuestion("Blå Ford", "Parker Ordenligt");
+        Survey survey = TestHelpers.survey2;
+        survey.addQuestion(question);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        HttpURLConnection connection = TestHelpers.getHttpConnection(
+                "survey/" + survey.getId() + "/question",
+                "POST",
+                TestHelpers.tokenResearcher1,
+                null,
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsString(question)
+        );
+
+        assertEquals(200, connection.getResponseCode());
+        Survey survey1 = Database.getSurvey(survey.getId());
+
+        boolean contains = false;
+        for (Question q : survey1.getQuestions()) {
+            if (q.getTitle().equals(question.getTitle()) && q.getDescription().equals(question.getDescription())) {
+                contains = true;
+            }
+        }
+        assertTrue(contains);
+    }
+
+    @Test
+    public void addEmptySurvey() throws IOException {
+        HttpURLConnection connection = TestHelpers.getHttpConnection(
+                "survey/",
+                "POST",
+                TestHelpers.tokenResearcher1,
+                null,
+                null,
+                null
+        );
+
+        assertEquals(200, connection.getResponseCode());
+        int id = Integer.parseInt(TestHelpers.getStringPayload(connection));
+        Survey survey = Database.getSurvey(id);
+        assertNotNull(survey);
+        assertTrue(survey.getTitle().equals(""));
+        assertTrue(survey.getDescription().equals(""));
+        assertEquals(survey.getId(), id);
+    }
+
+    @Test
+    public void updateSurveyMetadata() throws IOException {
+        Survey survey = TestHelpers.survey2;
+        survey.setTitle("New Title");
+        survey.setDescription("New Description");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        HttpURLConnection connection = TestHelpers.getHttpConnection(
+                "survey/" + survey.getId(),
+                "PUT",
+                TestHelpers.tokenResearcher1,
+                null,
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsString(survey)
+        );
+
+        assertEquals(200, connection.getResponseCode());
+        Survey newSurvey = Database.getSurvey(survey.getId());
+        assertTrue(survey.equals(newSurvey));
     }
 }

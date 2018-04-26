@@ -351,4 +351,14 @@ public class DatabaseTest {
         Answer answer1 = Database.getNewestAnswer(TestHelpers.participant1.getId());
         assertEquals(answer, answer1);
     }
+
+    @Test
+    public void updateSurvey() throws SurveyException {
+        Survey survey = TestHelpers.survey2;
+        survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins"));
+        survey.setTitle("Questionnaire about Rullegardins");
+
+        Database.updateSurvey(survey);
+        assertTrue(Database.getSurvey(survey.getId()).equals(survey));
+    }
 }
