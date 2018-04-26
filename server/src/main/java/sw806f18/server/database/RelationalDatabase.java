@@ -826,17 +826,16 @@ public class RelationalDatabase {
     }
 
     static void removeQuestionFromSurvey(int questionId) throws SurveyException {
-        Connection con;
+        Connection con = null;
 
         try {
             con = createConnection();
             Statement statement = con.createStatement();
             String q1 = "DELETE FROM questions WHERE id=" + questionId;
             statement.executeUpdate(q1);
+            statement.close();
             con.close();
-        } catch (SQLException e) {
-            throw new SurveyException(e.getMessage());
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
         }
     }
@@ -896,7 +895,7 @@ public class RelationalDatabase {
 
             for (Question q : survey.getQuestions()) {
                 if (q.getId() == -1) {
-                    RelationalDatabase.addQuestionToSurvey(q, survey.getId());
+                    q.setId(RelationalDatabase.addQuestionToSurvey(q, survey.getId()));
                 } else {
                     updateQuestion(q);
                 }

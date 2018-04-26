@@ -76,3 +76,7 @@ function groupManager(){
         window.location.replace("../login/index.html");
     }
 }
+
+function newSurvey(){
+    window.location.replace("../surveymanager/index.html");
+}

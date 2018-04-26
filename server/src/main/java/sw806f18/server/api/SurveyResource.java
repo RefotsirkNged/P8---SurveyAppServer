@@ -42,13 +42,17 @@ public class SurveyResource {
      * @return stream
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity getSurvey(@PathVariable(value = "id") int id) {
-        Survey survey = Database.getSurvey(id);
+    public ResponseEntity getSurvey(@PathVariable(value = "id") int id,
+                                    @CookieValue(value = "token") String token) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Survey survey = Database.getSurvey(id);
 
-        InputStreamResource inputStreamResource =
-                new InputStreamResource(new ByteArrayInputStream(
-                        survey.getHTML().getBytes(StandardCharsets.UTF_8)));
-        return ResponseEntity.ok(inputStreamResource);
+            InputStreamResource inputStreamResource =
+                    new InputStreamResource(new ByteArrayInputStream(
+                            survey.getHTML().getBytes(StandardCharsets.UTF_8)));
+            return ResponseEntity.ok(inputStreamResource);
+        }
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     //TODO Need to use token.
@@ -66,80 +70,83 @@ public class SurveyResource {
                                      @CookieValue("token") String token,
                                      @RequestBody String params)
             throws UnsupportedEncodingException {
-        InputStream stream;
-        Survey survey = Database.getSurvey(id);
-        boolean hasWarnings = false;
+        if (Database.isParticipant(Authentication.instance.getId(token))) {
+            InputStream stream;
+            Survey survey = Database.getSurvey(id);
+            boolean hasWarnings = false;
 
-        String content = new String(Base64.getDecoder().decode(params.substring(0, params.indexOf("="))));
+            String content = new String(Base64.getDecoder().decode(params.substring(0, params.indexOf("="))));
 
-        Map<String, String> formParams = new HashMap<>();
-        String[] formMembers = content.split("&");
-        for (String s : formMembers) {
-            String[] keyValuePair = s.split("=");
-            if (keyValuePair.length != 2) {
-                formParams.put(keyValuePair[0], "");
-            } else {
-                formParams.put(keyValuePair[0], keyValuePair[1]);
-            }
-        }
-
-        for (Question q : survey.getQuestions()) {
-            if (formParams.containsKey(q.getHtmlID())) {
-                String value = formParams.get(q.getHtmlID()); // formParams.getFirst(q.getHtmlID());
-                q.setValue(value);
-
-                switch (q.getInput()) {
-                    case DROPDOWN:
-                    case TEXT:
-                        if (value.equals("0")) {
-                            q.setWarning("TEST FEJL");
-                            hasWarnings = true;
-                        }
-                        break;
-                    case NUMBER:
-                        if (value.equals("0")) {
-                            q.setWarning("TEST FEJL");
-                            hasWarnings = true;
-                            break;
-                        }
-                        try {
-
-                            if (!value.equals("")) {
-                                Integer.parseInt(value);
-                            }
-                        } catch (NumberFormatException e) {
-                            q.setWarning("Må kun indholde heltal");
-                            hasWarnings = true;
-                        }
-                        break;
-                    default:
-                        q.setWarning("FEJL!");
-                        break;
+            Map<String, String> formParams = new HashMap<>();
+            String[] formMembers = content.split("&");
+            for (String s : formMembers) {
+                String[] keyValuePair = s.split("=");
+                if (keyValuePair.length != 2) {
+                    formParams.put(keyValuePair[0], "");
+                } else {
+                    formParams.put(keyValuePair[0], keyValuePair[1]);
                 }
             }
-        }
 
-        if (hasWarnings) {
-            stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
-        } else {
-            int userID = Authentication.instance.getId(token);
+            for (Question q : survey.getQuestions()) {
+                if (formParams.containsKey(q.getHtmlID())) {
+                    String value = formParams.get(q.getHtmlID()); // formParams.getFirst(q.getHtmlID());
+                    q.setValue(value);
 
-            Answer answer = new Answer(userID, survey);
+                    switch (q.getInput()) {
+                        case DROPDOWN:
+                        case TEXT:
+                            if (value.equals("0")) {
+                                q.setWarning("TEST FEJL");
+                                hasWarnings = true;
+                            }
+                            break;
+                        case NUMBER:
+                            if (value.equals("0")) {
+                                q.setWarning("TEST FEJL");
+                                hasWarnings = true;
+                                break;
+                            }
+                            try {
 
-
-            try {
-                Database.addAnswer(answer);
-                stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
-            } catch (AnswerException e) {
-                e.printStackTrace();
-                //TODO: Give a error message
-                stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
+                                if (!value.equals("")) {
+                                    Integer.parseInt(value);
+                                }
+                            } catch (NumberFormatException e) {
+                                q.setWarning("Må kun indholde heltal");
+                                hasWarnings = true;
+                            }
+                            break;
+                        default:
+                            q.setWarning("FEJL!");
+                            break;
+                    }
+                }
             }
 
-        }
+            if (hasWarnings) {
+                stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
+            } else {
+                int userID = Authentication.instance.getId(token);
 
-        InputStreamResource inputStreamResource = new InputStreamResource(stream);
-        return ResponseEntity.ok(inputStreamResource);
+                Answer answer = new Answer(userID, survey);
+
+
+                try {
+                    Database.addAnswer(answer);
+                    stream = new ByteArrayInputStream(getReturnHTML(Constants.hubUrl).getBytes(StandardCharsets.UTF_8));
+                } catch (AnswerException e) {
+                    e.printStackTrace();
+                    //TODO: Give a error message
+                    stream = new ByteArrayInputStream(survey.getHTML().getBytes(StandardCharsets.UTF_8));
+                }
+
+            }
+
+            InputStreamResource inputStreamResource = new InputStreamResource(stream);
+            return ResponseEntity.ok(inputStreamResource);
+        }
+        return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
     //TODO: Move this maybe
@@ -286,9 +293,13 @@ public class SurveyResource {
      * @return Return Survey with ID.
      */
     @RequestMapping(method = RequestMethod.GET, path = "/{id}/object", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Survey> getSurveyObject(@PathParam("id") int id) {
-        Survey survey = Database.getSurvey(id);
-        return ResponseEntity.ok(survey);
+    public ResponseEntity<Survey> getSurveyObject(@PathVariable(value = "id") int id,
+                                                  @CookieValue(value = "token") String token) {
+        if (Database.isResearcher(Authentication.instance.getId(token))) {
+            Survey survey = Database.getSurvey(id);
+            return ResponseEntity.ok(survey);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -317,15 +328,14 @@ public class SurveyResource {
     }
 
     /**
-     * Remove question from survey.
+     * Add question to survey.
      *
      * @param surveyId Survey to remove from.
      * @return Response.
      */
     @RequestMapping(method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            path = "/{surveyId}/question",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            path = "/{surveyId}/question")
     public ResponseEntity addQuestionToSurvey(@PathVariable(value = "surveyId") int surveyId,
                                       @RequestBody JsonNode questionJson,
                                       @CookieValue(value = "token") String token)
@@ -373,7 +383,7 @@ public class SurveyResource {
     }
 
     /**
-     * Remove question from survey.
+     * Add empty survey.
      *
      * @return Response.
      */
@@ -389,7 +399,7 @@ public class SurveyResource {
     }
 
     /**
-     * Remove question from survey.
+     * Update survey metadata.
      *
      * @return Response.
      */

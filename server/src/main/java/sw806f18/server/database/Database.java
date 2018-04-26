@@ -226,7 +226,11 @@ public class Database {
      */
     public static void removeQuestionFromSurvey(int surveyId, int questionId) throws SurveyException {
         RelationalDatabase.removeQuestionFromSurvey(questionId);
-        NoSqlDatabase.removeQuestionFromSurvey(surveyId, questionId);
+        try {
+            NoSqlDatabase.removeQuestionFromSurvey(surveyId, questionId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void updateSurvey(Survey survey) throws SurveyException {

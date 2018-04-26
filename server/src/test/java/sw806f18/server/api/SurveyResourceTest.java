@@ -71,7 +71,7 @@ public class SurveyResourceTest {
             }
 
             HttpURLConnection connection = TestHelpers.getHttpConnection(
-                    "survey/" + TestHelpers.survey2.getId(),
+                    "survey/" + TestHelpers.survey2.getId() + "/answer",
                     "POST",
                     TestHelpers.token1,
                     null,
@@ -179,7 +179,7 @@ public class SurveyResourceTest {
 
         try {
             HttpURLConnection connection = TestHelpers.getHttpConnection(
-                    "survey/" + TestHelpers.survey2.getId(),
+                    "survey/" + TestHelpers.survey2.getId() + "/answer",
                     "POST",
                     TestHelpers.token1,
                     null,
