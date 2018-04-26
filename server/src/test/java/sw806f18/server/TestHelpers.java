@@ -348,20 +348,18 @@ public class TestHelpers {
     /**
      * Create Participant.
      * @param path Path.
-     * @param key Key.
+     * @param cpr cpr.
      * @param email Email.
-     * @param password Password.
      * @param firstname Firstname.
      * @param lastname Lastname.
      * @return Connection.
      * @throws IOException IOException.
      */
-    public static HttpURLConnection createParticipant(String path, String key, String email, String password,
+    public static HttpURLConnection createParticipant(String path, String cpr, String email,
             String firstname, String lastname) throws IOException {
         HashMap<String, String> map = new HashMap<>();
-        map.put("key", key);
+        map.put("cpr", cpr);
         map.put("email", email);
-        map.put("password", password);
         map.put("firstname", firstname);
         map.put("lastname", lastname);
         return getHttpConnection(path, "POST", null, map, null, null);

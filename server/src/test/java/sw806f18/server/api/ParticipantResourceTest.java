@@ -3,6 +3,7 @@ package sw806f18.server.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sw806f18.server.Authentication;
 import sw806f18.server.TestHelpers;
 import sw806f18.server.TestListener;
 import sw806f18.server.TestRunner;
@@ -13,6 +14,10 @@ import javax.mail.MessagingException;
 import javax.validation.constraints.AssertTrue;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -23,17 +28,24 @@ import static org.junit.Assert.fail;
 public class ParticipantResourceTest {
     @Test
     public void createParticipant() throws IOException, InterruptedException, MessagingException {
-        HttpURLConnection response1 = TestHelpers.inviteParticipant(TestHelpers.RESEARCHER_PARTICIPANT_PATH,
+
+        HttpURLConnection response = TestHelpers.createParticipant(TestHelpers.PARTICIPANT_PATH,
                 TestHelpers.participantCreate.getCpr(),
-                "sw806f18@gmail.com",
-                TestHelpers.tokenResearcher1);
-        Thread.sleep(5000); // Wait for mail
-        assertEquals(200, response1.getResponseCode());
-        String key = TestHelpers.getKeyFromParticipantEmail();
-        assertNotNull(key);
-        HttpURLConnection response2 = TestHelpers.createParticipant(TestHelpers.PARTICIPANT_PATH, key,
-                TestHelpers.participantCreate.getEmail(), TestHelpers.PASSWORD,
+                TestHelpers.participantCreate.getEmail(),
                 TestHelpers.participantCreate.getFirstName(), TestHelpers.participantCreate.getLastName());
+        assertEquals(200, response.getResponseCode());
+        HttpURLConnection response1 =  TestHelpers.login(TestHelpers.PARTICIPANT_LOGIN_PATH,
+                TestHelpers.participantCreate.getEmail(), TestHelpers.participantCreate.getCpr());
         assertEquals(200, response1.getResponseCode());
+        Map<String, List<String>> headerFields = response1.getHeaderFields();
+        List<String> strings = headerFields.get("Set-Cookie");
+
+        Pattern compile = Pattern.compile("(?<=token=).*");
+        Matcher matcher = compile.matcher(strings.get(0));
+
+        if (!matcher.find()) {
+            fail();
+        }
+
     }
 }

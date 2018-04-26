@@ -51,12 +51,13 @@ public class TestListener extends RunListener {
 
         try {
             dropRelationelDatabase();
-            dropNonrelationalDatabase();
+
         } catch (PSQLException e) {
             e.printStackTrace();
-            return;
             // The database is already dropped!
         }
+
+        dropNonrelationalDatabase();
 
         createDatabase();
 
