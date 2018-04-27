@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Indtast brugerinfo</title>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div id="loginfailedmodal" class="modal">
+    <div class="modal-content">
+        <span id="modalclose">&times;</span>
+        <p id="loginfailedmessage"></p>
+    </div>
+</div>
+
+<div id="pickUser" class="wrapper center-container">
+    <div class="row">
+        <div class="col-">
+            <button onclick="home()" class="btn btn-md btn-secondary">Tilbage</button>
+        </div>
+        <div class="col-">
+            <button id="makeResearcher" onclick="setResearcher()" class="btn btn-md btn-primary">Tilføj forsker</button>
+        </div>
+
+        <div class="col-">
+            <button id="makeParticipant" onclick="setParticipant()" class="btn btn-md btn-primary">Tilføj deltager
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="top-container" class="center-container" style="display: none">
+    <div class="container">
+        <div class="row">
+            <label>Fornavn</label>
+        </div>
+        <div class="row">
+            <input class="form-control" name="firstname" id="firstname" type="text"/>
+        </div>
+        <div class="row">
+            <label>Efternavn</label>
+        </div>
+        <div class="row">
+            <input class="form-control" name="lastname" id="lastname" type="text"/>
+        </div>
+        <div class="row">
+            <label>Email</label>
+        </div>
+        <div class="row">
+            <input class="form-control" name="email" id="email" type="email"/>
+        </div>
+        <div class="row participantonly">
+            <label>CPR-nr</label>
+        </div>
+        <div class="row participantonly">
+            <input class="form-control" name="cprnr" id="cprnr" type="text" maxlength="10" minlength="10"/>
+        </div>
+        <div class="row participantonly">
+            <label>JournalNr</label>
+        </div>
+        <div class="row participantonly">
+            <input class="form-control" name="journalnr" id="journalnr" type="text"/>
+        </div>
+        <div class="row researcheronly">
+            <label>Phone Number</label>
+        </div>
+        <div class="row researcheronly">
+            <input class="form-control" name="phonenr" id="phonenr" type="number" minlength="8" maxlength="8"/>
+        </div>
+        <div class="spacing">
+
+
+        </div>
+        <div class="row">
+            <div class="col-">
+                <button type="button" class="btn btn-secondary btn-md" onclick="backHelper()">
+                    Tilbage
+                </button>
+            </div>
+            <div class="col-">
+                <button type="button" class="btn btn-secondary btn-md" onclick="clearAll()">
+                    Ryd felter
+                </button>
+            </div>
+            <div class=" col-
+                ">
+                <button type="button" class="btn btn-primary btn-md" onclick="addUser()">Tilføj
+                    bruger
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    var makeres = false;
+
+    function backHelper() {
+        if (document.getElementById('pickUser').style.display === 'block') {
+            home()
+        } else {
+            setNone();
+        }
+    }
+
+    function clearAll() {
+        // https://stackoverflow.com/questions/569357/clear-all-html-fields-using-javascript
+        var elements = document.getElementsByTagName("input");
+        for (var index = 0; index < elements.length; index++) {
+            elements[index].value = "";
+        }
+    }
+
+    //https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+    function validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function setResearcher() {
+        makeres = true;
+        document.getElementById("top-container").style.display = "block";
+        var e = document.querySelectorAll(".participantonly");
+        [].forEach.call(e, function (s) {
+            s.style.display = "none";
+        });
+        document.getElementById("pickUser").style.display = "none";
+    }
+
+
+    function setParticipant() {
+        makeres = false;
+        document.getElementById("top-container").style.display = "block";
+        var e = document.querySelectorAll(".researcheronly");
+        [].forEach.call(e, function (s) {
+            s.style.display = "none";
+        });
+        document.getElementById("pickUser").style.display = "none";
+    }
+
+    function setNone() {
+        clearAll();
+        document.getElementById("top-container").style.display = "none";
+        var e = document.querySelectorAll(".researcheronly");
+        [].forEach.call(e, function (s) {
+            s.style.display = "block";
+        });
+        e = document.querySelectorAll(".participantonly");
+        [].forEach.call(e, function (s) {
+            s.style.display = "block";
+        });
+        document.getElementById("pickUser").style.display = "block";
+    }
+
+    function addUser() {
+        if (!validateEmail(document.getElementById("email").value)) {
+            modal.style.display = "block";
+            document.getElementById("loginfailedmessage").innerText = "Fejl i email";
+            return;
+        }
+
+        if (makeres) {
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8081/api/researcher',
+                beforeSend: function (request) {
+                    phonenr = document.getElementById("phonenr").value;
+                    emailval = document.getElementById("email").value;
+                    firstnameval = document.getElementById("firstname").value;
+                    lastnameval = document.getElementById("lastname").value;
+                    request.setRequestHeader("phone", phonenr);
+                    request.setRequestHeader("email", emailval);
+                    request.setRequestHeader("firstname", firstnameval);
+                    request.setRequestHeader("lastname", lastnameval);
+                    request.setRequestHeader("password", phonenr);
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.hasOwnProperty("error")) {
+                        modal.style.display = "block";
+                        document.getElementById("loginfailedmessage").innerText = response.error;
+                    }
+                    else {
+                        modal.style.display = "block";
+                        document.getElementById("loginfailedmessage").innerText = "Forsker oprettet";
+                    }
+                },
+                error: function (response) {
+                    modal.style.display = "block";
+                    console.log(response);
+
+                    document.getElementById("loginfailedmessage").innerText = response.responseText;
+                }
+            });
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8081/api/participant',
+                beforeSend: function (request) {
+                    cprval = document.getElementById("cprnr").value;
+                    emailval = document.getElementById("email").value;
+                    firstnameval = document.getElementById("firstname").value;
+                    lastnameval = document.getElementById("lastname").value;
+                    request.setRequestHeader("cpr", cprval);
+                    request.setRequestHeader("email", emailval);
+                    request.setRequestHeader("firstname", firstnameval);
+                    request.setRequestHeader("lastname", lastnameval);
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.hasOwnProperty("error")) {
+                        modal.style.display = "block";
+                        document.getElementById("loginfailedmessage").innerText = response.error;
+                    }
+                    else {
+                        modal.style.display = "block";
+                        document.getElementById("loginfailedmessage").innerText = "Deltager oprettet";
+                    }
+                },
+                error: function (response) {
+                    modal.style.display = "block";
+                    console.log(response);
+
+                    document.getElementById("loginfailedmessage").innerText = response.responseText;
+                }
+            });
+        }
+    }
+
+    var modal = document.getElementById("loginfailedmodal");
+    var span = document.getElementById("modalclose");
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+
+</script>
+<style>
+    button {
+        margin: 10px;
+    }
+</style>
