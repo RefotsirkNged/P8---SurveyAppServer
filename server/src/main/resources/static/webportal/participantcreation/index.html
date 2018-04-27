@@ -71,7 +71,7 @@
     function addUser(){
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8081/api/participant',
+            url: 'http://192.168.1.123:8081/api/participant',
             beforeSend: function (request) {
                 cprval = document.getElementById("cprnr").value;
                 emailval = document.getElementById("email").value;

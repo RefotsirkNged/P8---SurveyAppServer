@@ -3,11 +3,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>sw806f18.server</groupId>
+    <groupId>dk.aau.cs.mersy.server</groupId>
     <artifactId>server</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>server</name>
+    <version>1.0</version>
+    <name>MeRSy Server</name>
 
     <!--<dependencyManagement>-->
     <!--<dependencies>-->
@@ -111,24 +111,16 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <finalName>jersey-service-${project.version}</finalName>
-                    <archive>
-                        <manifest>
-                            <mainClass>sw806f18.server.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <fork>true</fork>
+                    <mainClass>sw806f18.server.Main</mainClass>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>

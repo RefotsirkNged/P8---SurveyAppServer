@@ -151,7 +151,7 @@
 
     function deleteGroup(){
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/groupmanager',
+            url: 'http://192.168.1.123:8081/api/researcher/groupmanager',
             type: 'DELETE',
             beforeSend: function (request) {
                 request.setRequestHeader("id", marked.id);
@@ -173,7 +173,7 @@
         var name = document.getElementById('groupNameInput').value;
 
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/groupmanager',
+            url: 'http://192.168.1.123:8081/api/researcher/groupmanager',
             type: 'PUT',
             beforeSend: function (request) {
                 request.setRequestHeader("name", name);
@@ -200,7 +200,7 @@
 
     function addMemberToGroup(userid) {
         $.ajax({
-           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           url: 'http://192.168.1.123:8081/api/researcher/groupmanager/member',
            type: 'PUT',
            beforeSend: function (request) {
                request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -215,7 +215,7 @@
     
     function removeMemberFromGroup(userid, groupid) {
         $.ajax({
-           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           url: 'http://192.168.1.123:8081/api/researcher/groupmanager/member',
            type: 'DELETE',
            beforeSend: function (request) {
                request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -234,7 +234,7 @@
         g.innerHTML = "";
 
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/participant',
+            url: 'http://192.168.1.123:8081/api/researcher/participant',
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -267,7 +267,7 @@
 
     function getAllParticipants() {
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/participant/all',
+            url: 'http://192.168.1.123:8081/api/researcher/participant/all',
             type: 'GET',
             beforeSend: function (request) {
                 // request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -292,7 +292,7 @@
     function updateSurveysTable(){
         $('#groupSurveysWindow').innerHTML = "";
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/groupmanager/surveys',
+            url: 'http://192.168.1.123:8081/api/researcher/groupmanager/surveys',
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -312,7 +312,7 @@
     function updateTable(){
         $('#groupTableBody').innerHTML = "";
         $.ajax({
-            url: 'http://localhost:8081/api/researcher/groupmanager',
+            url: 'http://192.168.1.123:8081/api/researcher/groupmanager',
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -337,7 +337,7 @@
     var markedModules = [];
     function getGroupLinks() {
         $.ajax({
-            url: 'http://localhost:8081/api/group/' + marked.id + '/surveys',
+            url: 'http://192.168.1.123:8081/api/group/' + marked.id + '/surveys',
             type: 'GET',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -381,7 +381,7 @@
 
     function removeGroupLink(surveyId) {
         $.ajax({
-            url: 'http://localhost:8081/api/group/' + marked.id + '/link/delete',
+            url: 'http://192.168.1.123:8081/api/group/' + marked.id + '/link/delete',
             type: 'POST',
             beforeSend: function (request) {
                 request.setRequestHeader("module", surveyId);
@@ -395,7 +395,7 @@
 
     function addGroupLink(surveyId) {
         $.ajax({
-            url: 'http://localhost:8081/api/group/' + marked.id + '/link/add',
+            url: 'http://192.168.1.123:8081/api/group/' + marked.id + '/link/add',
             type: 'PUT',
             beforeSend: function (request) {
                 request.setRequestHeader("module", surveyId);
