@@ -219,17 +219,17 @@ public class RelationalDatabase {
             String q1 = "DELETE FROM hasgroup WHERE groupid= ?";
             statement = connection.prepareStatement(q1);
             statement.setInt(1, id);
-            statement.executeUpdate(q1);
+            statement.executeUpdate();
 
             String q2 = "DELETE FROM hasmodule WHERE groupid= ?";
             statement = connection.prepareStatement(q2);
             statement.setInt(1, id);
-            statement.executeUpdate(q2);
+            statement.executeUpdate();
 
             String q3 = "DELETE FROM groups WHERE id= ?";
             statement = connection.prepareStatement(q3);
             statement.setInt(1, id);
-            statement.executeUpdate(q3);
+            statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new DeleteGroupException(e.getMessage());
         } finally {
@@ -348,7 +348,7 @@ public class RelationalDatabase {
             statement1.setString(4, researcher.getFirstName());
             statement1.setString(5, researcher.getLastName());
 
-            resultSet = statement1.executeQuery(q1);
+            resultSet = statement1.executeQuery();
             resultSet.next();
             int id = resultSet.getInt(1);
 
@@ -357,7 +357,7 @@ public class RelationalDatabase {
             statement2 = connection.prepareStatement(q2);
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(researcher.phone));
-            statement2.executeUpdate(q2);
+            statement2.executeUpdate();
             
         } catch (SQLException e) {
             //Send stacktrace to log
@@ -389,7 +389,7 @@ public class RelationalDatabase {
             statement = connection.prepareStatement(query);
             statement.setString(1, invite.getCpr());
             statement.setString(2, invite.getKey());
-            statement.execute(query);
+            statement.execute();
         } catch (SQLException | ClassNotFoundException e) {
             //Send stacktrace to log
             throw new CreateInviteException("Server error, contact system administrator", e);
@@ -434,7 +434,7 @@ public class RelationalDatabase {
             String query = "DELETE FROM invite WHERE key = ?";
             statement = connection.prepareStatement(query);
             statement.setString(1, key);
-            statement.execute(query);
+            statement.execute();
         } catch (SQLException | ClassNotFoundException e) {
             throw new CprKeyNotFoundException("Server error, contact system administrator", e);
         } finally {
@@ -531,7 +531,7 @@ public class RelationalDatabase {
             statement1.setString(4, participant.getFirstName());
             statement1.setString(5, participant.getLastName());
 
-            resultSet = statement1.executeQuery(q1);
+            resultSet = statement1.executeQuery();
             resultSet.next();
             int id = resultSet.getInt(1);
 
@@ -539,11 +539,11 @@ public class RelationalDatabase {
                 + "VALUES ( ?, ?, ?, ?)";
             statement2 = connection.prepareStatement(q2);
             statement2.setInt(1, id);
-            statement2.setInt(2, Integer.parseInt(participant.getCpr()));
+            statement2.setInt(2, Integer.parseInt(participant.getCpr().trim()));    // TODO: Loss of leading zeros!!!
             statement2.setTimestamp(3, Timestamp.valueOf(LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
                     ZoneId.systemDefault())));
             statement2.setInt(4, participant.getPrimaryGroup());
-            statement2.executeUpdate(q2);
+            statement2.executeUpdate();
         } catch (SQLException e) {
             //Send stacktrace to log
             throw new CreateUserException("Email is already in use", e);
@@ -609,7 +609,7 @@ public class RelationalDatabase {
             statement.setInt(1, participant1.getId());
             statement.setInt(2, group1.getId());
 
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new AddGroupMemberException("Server error, contact system administrator", e);
         } finally {
@@ -631,7 +631,7 @@ public class RelationalDatabase {
             statement.setInt(1, participant.getId());
             statement.setInt(2, group.getId());
 
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new RemoveParticipantFromGroupException("Server error, contact system administrator", e);
         } finally {
@@ -682,11 +682,11 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "INSERT INTO modules (name, frequencyvalue, "
-                + "frequencytype, description) VALUES ( ?, ?, ?, ?) RETURNING id";
+                + "frequencytype, description) VALUES ( ?, ?, ?::frequencytype, ?) RETURNING id";
             statement = connection.prepareStatement(query);
             statement.setString(1, s.getTitle());
-            statement.setObject(2, s.getFrequencyValue());
-            statement.setObject(3, s.getFrequencyType());
+            statement.setLong(2, s.getFrequencyValue());
+            statement.setString(3, s.getFrequencyType().name());
             statement.setString(4, s.getDescription());
             resultSet = statement.executeQuery();
             resultSet.next();
@@ -786,7 +786,7 @@ public class RelationalDatabase {
             statement = connection.prepareStatement(query);
             statement.setInt(1, groupID);
             statement.setInt(2, moduleID);
-            statement.execute(query);
+            statement.execute();
 
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
@@ -973,7 +973,7 @@ public class RelationalDatabase {
             String query = "DELETE FROM questions WHERE id= ?";
             statement = connection.prepareStatement(query);
             statement.setInt(1, questionId);
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
         } finally {
@@ -1019,7 +1019,7 @@ public class RelationalDatabase {
             statement = connection.prepareStatement(query);
             statement.setInt(1, groupId);
             statement.setInt(2, moduleId);
-            statement.executeUpdate(query);
+            statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
         } finally {
