@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gruppe-administration</title>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="main-container row" style="padding-top: 1%;">
+    <div class="column-container col-lg-1" >
+        <button type="button" class="btn btn-info btnBack" onclick="gotoHome()">Tilbage</button>
+    </div>
+    <div class="col-lg-11" >
+        <div class="row-container row">
+            <div class="content-container col-lg-6">
+                <h3>Grupper</h3>
+                <div class="table-container">
+                    <table class="table table-hover table-striped">
+                        <tbody id="groupTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btnWrapper">
+                    <button type="button" class="btn btn-success btn-sm " title="Tilføj gruppe" data-toggle="modal" data-target="#addGroupModal" style="width:30px;">+</button>
+                    <button type="button" class="btn btn-danger btn-sm " title="Fjern gruppe" onclick="deleteGroupToggle()" style="width:30px;">-</button>
+                </div>
+            </div>
+
+            <div class="content-container col-lg-6">
+                <h3>Brugere</h3>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <tbody id="allUsersWindow">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row-container row">
+            <div class="column-container col-lg-6" >
+                <div class="modal fade" id="addGroupModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Tilføj gruppe</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" class="form-control" id="groupNameInput" placeholder="Navn">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Gem</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteGroupModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Slet gruppe</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body" id="deleteModalText">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Ja</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Nej</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="noMarkingModal" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Ups!</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                Ingen gruppe markeret!
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-container">
+                    <h3>Medlemmer</h3>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <tbody id="groupMemberBody">
+                            <!--<tr>-->
+                            <!--<td>-->
+                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                            <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                            <!--<td>-->
+                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                            <!--</td>-->
+                            <!--</tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column-container col-lg-6">
+                <div class="content-container">
+                    <h3>Spørgeskemaer</h3>
+                    <div class="table-container" >
+                        <table class="table table-striped">
+                            <tbody id="groupSurveysWindow">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<script>
+    var marked;
+    var membersInSelectedGroup = [];
+
+    function deleteGroupToggle(){
+        if(marked === undefined){
+            $('#noMarkingModal').modal('toggle');
+        }
+        else{
+            $('#deleteModalText').html("Er du sikker på at du vil slette " + marked.name + "?");
+            $('#deleteGroupModal').modal('toggle');
+        }
+    }
+
+    function deleteGroup(){
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'DELETE',
+            beforeSend: function (request) {
+                request.setRequestHeader("id", marked.id);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                $('#row' + marked.id).remove();
+                deselect();
+                document.getElementById("groupMemberBody").innerHTML = "";
+            }
+        });
+    }
+
+    function resetRows(){
+        var rows = $('table').find('tr').css('background-color', '');
+    }
+
+    function addGroup(){
+        var name = document.getElementById('groupNameInput').value;
+
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'PUT',
+            beforeSend: function (request) {
+                request.setRequestHeader("name", name);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                $('#groupTableBody').append('<tr id="row' + response.groupid + '"><td>' + name + '</td></tr>');
+                $('#row' + response.groupid).click(function() {
+                    resetRows();
+                    $(this).css('background-color','#9a9a9a');
+                    marked = {id: response.groupid, name: name};
+                    deselect();
+                    getGroupMembers(response.groupid);
+                });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        updateTable();
+        updateSurveysTable();
+        getAllParticipants();
+    });
+
+    function addMemberToGroup(userid) {
+        $.ajax({
+           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           type: 'PUT',
+           beforeSend: function (request) {
+               request.setRequestHeader("token", sessionStorage.getItem("token"));
+               request.setRequestHeader("userID", userid);
+               request.setRequestHeader("groupID", marked.id);
+           },
+            success: function (response) {
+                getGroupMembers(marked.id);
+            }
+        });
+    }
+    
+    function removeMemberFromGroup(userid, groupid) {
+        $.ajax({
+           url: 'http://localhost:8081/api/researcher/groupmanager/member',
+           type: 'DELETE',
+           beforeSend: function (request) {
+               request.setRequestHeader("token", sessionStorage.getItem("token"));
+               request.setRequestHeader("groupID", groupid);
+               request.setRequestHeader("userID", userid);
+           },
+            success: function (response) {
+                deselect();
+                getGroupMembers(groupid);
+            }
+        });
+    }
+
+    function getGroupMembers(groupid) {
+        var g = document.getElementById("groupMemberBody");
+        g.innerHTML = "";
+
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/participant',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+                request.setRequestHeader("groupID", marked.id);
+            },
+            success: function (response) {
+                response.members.forEach(function (value) {
+                   g.innerHTML +=  "<tr>\n" +
+                       "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
+                       " <button id='remparbtn" + value.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeMemberFromGroup(" + value.id + "," + marked.id +")\" style='float: right;width:25px;'>-</button>\n" +
+                       "</td>\n" +
+                       "</tr>";
+
+                   membersInSelectedGroup.push(value.id);
+                });
+
+                membersInSelectedGroup.forEach(function (value) {
+                    document.getElementById("addparbtn" + value).hidden = true;
+                });
+            }
+        })
+    }
+
+    function deselect() {
+        membersInSelectedGroup.forEach(function (value) {
+            document.getElementById("addparbtn" + value).hidden = false;
+        });
+        membersInSelectedGroup = [];
+    }
+
+    function getAllParticipants() {
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/participant/all',
+            type: 'GET',
+            beforeSend: function (request) {
+                // request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function(response){
+                var userTBody = document.getElementById("allUsersWindow");
+                userTBody.innerHTML = "";
+
+                console.log(response.participants);
+                response.participants.forEach(function (value) {
+                    userTBody.innerHTML += "<tr>\n" +
+                        "<td>\n" + value.firstname + " " + value.lastname + " CPR: " + value.cpr +
+                        " <button id='addparbtn" + value.id + "' type=\"button\" class=\"btn-success btnMemberList\" title=\"Tilføj bruger til markeret gruppe\" onclick=\"addMemberToGroup(" + value.id + ")\" style='float: right;width:25px;'>+</button>\n" +
+                        "</td>\n" +
+                        "</tr>"
+                });
+            }
+        });
+    }
+
+    var allModules = [];
+    function updateSurveysTable(){
+        $('#groupSurveysWindow').innerHTML = "";
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager/surveys',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                allModules = [];
+                var modules = response.modules;
+                modules.forEach(function(e){
+                    $('#groupSurveysWindow').append('<tr id="module' + e.id + '"><td>' + e.title +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" title=\"Rediger spørgeskema\" onclick=\"editModule(" + e.id + ")\" style='float: right;'>Rediger</button></td></tr>");
+                    allModules.push(e);
+                });
+            }
+        });
+    }
+
+    function updateTable(){
+        $('#groupTableBody').innerHTML = "";
+        $.ajax({
+            url: 'http://localhost:8081/api/researcher/groupmanager',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                var groups = response.groups;
+                groups.forEach(function(e){
+                    $('#groupTableBody').append('<tr id="row' + e.id + '"><td>' + e.name + '</td></tr>');
+                    $('#row' + e.id).click(function() {
+                        resetRows();
+                        deselect();
+                        $(this).css('background-color','#9a9a9a');
+                        marked = {id:e.id, name: e.name};
+                        getGroupMembers(response.groupid);
+                        getGroupLinks();
+                    });
+                });
+            }
+        });
+    }
+
+    var markedModules = [];
+    function getGroupLinks() {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/surveys',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                markedModules = [];
+                var modules = response.modules;
+                modules.forEach(function(e){
+                    var node = document.getElementById('module' + e.id);
+                    document.getElementById('module' + e.id).innerHTML =
+                        "<td>" + e.title + "\n" +
+                        " <button id='rmgrplnk" + e.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeGroupLink(" + e.id + ")\" style='float: right;width:25px;'>-</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
+                        "</td>";
+                    node.parentNode.insertBefore(node,node.parentNode.firstChild);
+                    //document.getElementById('module' + e.id).setAttribute("style", "background: #03b240;")
+                    markedModules.push(e);
+                    if(modules[0] == e){
+                        node.style.borderBottom = "solid";
+                        node.style.borderBottomWidth = "2px";
+                    }
+                    else{
+                        node.style.borderBottom = "none";
+                    }
+                });
+
+                var moduleDiff = arr_diff(allModules, markedModules);
+                moduleDiff.forEach(function(e) {
+                    var node = document.getElementById('module' + e.id);
+                    node.innerHTML =
+                        "<td>" + e.title + "\n" +
+                        " <button id='addgrplnk" + e.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addGroupLink(" + e.id + ")\" style='float: right;width:25px;'>+</button>\n" +
+                        "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
+                        "</td>";
+                    node.style.borderBottom = "none";
+
+                });
+            }
+        });
+    }
+
+    function removeGroupLink(surveyId) {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/link/delete',
+            type: 'POST',
+            beforeSend: function (request) {
+                request.setRequestHeader("module", surveyId);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                getGroupLinks();
+            }
+        });
+    }
+
+    function addGroupLink(surveyId) {
+        $.ajax({
+            url: 'http://localhost:8081/api/group/' + marked.id + '/link/add',
+            type: 'PUT',
+            beforeSend: function (request) {
+                request.setRequestHeader("module", surveyId);
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                getGroupLinks();
+            }
+        });
+    }
+
+    function editModule(moduleId) {
+        sessionStorage.setItem("surveyid", moduleId);
+        window.location.assign("../surveymanager/index.html");
+    }
+</script>
+
+</body>
+</html>

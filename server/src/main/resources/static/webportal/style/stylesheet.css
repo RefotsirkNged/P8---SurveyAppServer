@@ -1,0 +1,148 @@
+html, body{
+    overflow: hidden;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+#modalclose {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.main-container{
+    height: 99vh;
+    width: auto;
+    overflow: hidden;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+.column-container{
+    height: 100%;
+
+}
+
+.row-container{
+    height: 50%;
+}
+
+.content-container{
+    height: 100%;
+}
+
+.table-container{
+    overflow: auto;
+    height: 80%;
+}
+
+.groupWindow{
+    height: 90%;
+    overflow: auto;
+}
+
+.memberWindow{
+    overflow: auto;
+    height: auto;
+}
+
+.groupWrapper{
+    overflow: hidden;
+}
+
+.groupManagerWrapper{
+    overflow:hidden;
+}
+
+.allUsersWrapper{
+    overflow: auto;
+    height: 45%;
+}
+
+.groupSurveysWrapper{
+    overflow: auto;
+    height: 45%;
+}
+
+
+.title-box{
+}
+.btnWrapper{
+    padding: 1%;
+}
+
+.userWindow{
+}
+
+.surveyWindow{
+}
+
+.btnBack{
+}
+
+.btnAddSurveysToGroup{
+}
+
+.btnGroupManager{
+}
+
+.btnMemberList{
+    border:0;
+    border-radius:0.25rem;
+}
+
+.table > tbody > tr:first-child > td {
+    border: none;
+}
+
+.table > tbody > tr > td {
+    padding:2px;
+}
+
+.center-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.upper-container {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}

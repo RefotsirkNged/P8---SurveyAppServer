@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    Please wait.
+</body>
+</html>
+<script src="js/CookieHelper.js"></script>
+<script>
+    if(isLoggedIn())
+    {
+        window.location.replace("home/index.html");
+    }
+    else
+    {
+        window.location.replace("login/index.html");
+    }
+
+</script>

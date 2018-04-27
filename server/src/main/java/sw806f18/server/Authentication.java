@@ -13,7 +13,7 @@ public class Authentication {
 
     private Algorithm algorithm;
 
-    private final int TOKEN_EXPIRATION_DAYS = 1;
+    private static final int TOKEN_EXPIRATION_DAYS = 1;
 
     private Authentication() {
         try {
@@ -23,37 +23,30 @@ public class Authentication {
         }
     }
 
-
     /**
+     * Get token.
      * @param userid Id for the user that the token will be tied to.
      * @return A JWT token for the user.
      */
     public String getToken(int userid) {
-        // Get the expiration time for the token
-        Date expiryDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(expiryDate);
-        calendar.add(Calendar.DATE, TOKEN_EXPIRATION_DAYS);
-        expiryDate = calendar.getTime();
-
         // Create a token
         // Token contains info about creation and expiration time, and the user it is tied to.
-        return JWT.create().withIssuedAt(new Date(System.currentTimeMillis())).withExpiresAt(expiryDate).withIssuer("sw806f18").withClaim("userid", userid).sign(algorithm);
+        return JWT.create().withIssuedAt(new Date(System.currentTimeMillis()))
+                .withIssuer("sw806f18")
+                .withClaim("userid", userid).sign(algorithm);
     }
 
     /**
-     * Decodes a JWT token
-     *
-     * @param token A JWT token
-     * @return A decoded JWT token
+     * Decodes a JWT token.
+     * @param token A JWT token.
+     * @return A decoded JWT token.
      */
     public DecodedJWT decodeToken(String token) {
         return JWT.require(algorithm).withIssuer("sw806f18").build().verify(token);
     }
 
     /**
-     * Gets the ID of the user that a decoded JWT token belongs to
-     *
+     * Gets the ID of the user that a decoded JWT token belongs to.
      * @param token Decoded JWT token.
      * @return ID of the user the token belongs to.
      */
@@ -62,9 +55,8 @@ public class Authentication {
     }
 
     /**
-     * Gets the ID of the user that a JWT token belongs to
-     *
-     * @param token JWT token
+     * Gets the ID of the user that a JWT token belongs to.
+     * @param token JWT token.
      * @return ID of the user the token belongs to.
      */
     public int getId(String token) {
@@ -73,8 +65,7 @@ public class Authentication {
 
     /**
      * Checks if a token is expired.
-     *
-     * @param token A decoded JWT token
+     * @param token A decoded JWT token.
      * @return A boolean specifying if the token has expired
      */
     public boolean isTokenExpired(DecodedJWT token) {
@@ -82,8 +73,7 @@ public class Authentication {
     }
 
     /**
-     * Checks if a token is expired
-     *
+     * Checks if a token is expired.
      * @param token A JWT token
      * @return A boolean specifying if the token has expired
      */

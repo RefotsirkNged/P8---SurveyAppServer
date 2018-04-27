@@ -1,45 +1,51 @@
 package sw806f18.server;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * Main class.
- *
  */
+@SpringBootApplication
 public class Main {
-    // Base URI the Grizzly HTTP server will listen on
-    public static final String BASE_URI = "http://localhost:8081/api/";
-
     /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
-     * @return Grizzly HTTP server.
+     * Main method.
+     *
+     * @param args Arguments.
+     * @throws IOException Exception.
      */
-    public static HttpServer startServer() {
-        // create a resource config that scans for JAX-RS resources and providers
-        // in com.example package
-        final ResourceConfig rc = new ResourceConfig().packages("sw806f18.server");
-        rc.register(new CORSFilter());
+    public static void main(String[] args) throws IOException {
+        if (!(args.length == 1)) {
+            System.out.println("Usage: java -jar [file].jar [config].json");
+            return;
+        }
 
-        // create and start a new instance of grizzly http server
-        // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+        Configurations.instance = new Configurations(args[0]);
+        SpringApplication.run(Main.class, args);
     }
 
     /**
-     * Main method.
-     * @param args
-     * @throws IOException
+     * CORS Config.
+     * @return Configuration.
      */
-    public static void main(String[] args) throws IOException {
-        final HttpServer server = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
-        System.in.read();
-        server.stop();
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                    .allowedHeaders("*")  // TODO: DONT DO THIS
+                    .allowedOrigins("*")
+                    .allowedMethods("*");
+            }
+        };
     }
 }

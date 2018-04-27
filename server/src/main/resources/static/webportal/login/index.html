@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="../style/bootstrap.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/CookieHelper.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <meta charset="UTF-8">
+    <title>Log ind - MERSY</title>
+</head>
+<body>
+
+<div class="wrapper upper-container">
+    <img src="../image/Search.png" style="width: 25%;">
+</div>
+
+<div class="spacing">
+
+</div>
+
+<div class="wrapper center-container">
+    <div class="container">
+        <div class="row">
+            <label>Email</label>
+        </div>
+        <div class="row">
+                <input class="form-control" id="loginemail" type="text" value="konrad@forsker.dk"/>
+        </div>
+
+        <div class="row spacing">
+            <label>Password</label>
+        </div>
+        <div class="row">
+            <input class="form-control" id="loginpassword" type="password" value="power123"/>
+        </div>
+        <div class="spacing">
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary btn-md" onclick="login()">Log-ind</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loginfailedmodal" class="modal">
+    <div class="modal-content">
+        <span id="modalclose">&times;</span>
+        <p id="loginfailedmessage"></p>
+    </div>
+</div>
+
+</body>
+</html>
+<style>
+    .spacing {
+        padding-top: 25px;
+    }
+
+    label {
+        font-size: 16px;
+    }
+
+    input {
+        width: 512px;
+    }
+
+    button {
+        width: 256px;
+    }
+</style>
+<script>
+    var modal = document.getElementById("loginfailedmodal");
+    var span = document.getElementById("modalclose");
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+</script>
