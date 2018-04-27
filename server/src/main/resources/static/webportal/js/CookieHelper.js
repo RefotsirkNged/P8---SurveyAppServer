@@ -93,7 +93,7 @@ function home(){
 
 function addUserPage(){
     if(isLoggedIn()){
-        window.location.replace("../participantcreation/index.html");
+        window.location.replace("../adduser/index.html");
     }
     else {
         window.location.replace("../login/index.html");

@@ -21,7 +21,7 @@ public class ResearcherResource {
      *
      * @return String with status of creation.
      */
-    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity addResearcher(@RequestHeader("email") String email,
                                         @RequestHeader("password") String password,
                                         @RequestHeader("firstname") String firstname,

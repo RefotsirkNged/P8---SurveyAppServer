@@ -73,6 +73,6 @@ public class ParticipantLoginResourceTest {
             hasError = true;
         }
         assertFalse(hasError);
-        assertEquals(actual, expected.replace("\n", ""));
+        assertEquals(actual, expected.replace("\r\n", ""));
     }
 }
