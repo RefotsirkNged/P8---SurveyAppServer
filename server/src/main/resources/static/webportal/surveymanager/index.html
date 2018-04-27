@@ -25,42 +25,42 @@
 
         <div class="row">
             <div class="form-group col-md-3">
-                <input type="radio" name="gender" value="male" checked> Altid
+                <input id="radioalways" type="radio" name="radio" onclick="setFrequencySelection(1)" checked> Altid
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <input id="radioonce" type="radio" onclick="setFrequencySelection(2)" name="radio"> En gang
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-3">
-                <input type="radio" name="gender" value="female"> En gang
+                <input id="radioevery" type="radio" onclick="setFrequencySelection(3)" name="radio"> Hver
             </div>
-        </div>
-        <div class="row">
             <div class="form-group col-md-3">
-                <input type="radio" name="gender" value="female"> Hver
+                <input id="frequencyval" type="text" class="form-control form-control-sm">
             </div>
-            <div class="form-group col-md-5">
-                <input type="text" class="form-control form-control-sm">
-            </div>
-            <div class="form-group col-md-4">
-                <select class="form-control form-control-sm">
+            <div class="form-group col-md-6">
+                <select id="selectevery" class="form-control form-control-sm">
                     <option disabled default>Vælg</option>
-                    <option>Dag</option>
-                    <option>Uge</option>
-                    <option>Måned</option>
-                    <option>År</option>
-                    <option>Fødselsdag</option>
+                    <option value="1">Dag</option>
+                    <option value="2">Uge</option>
+                    <option value="3">Måned</option>
+                    <option value="4">År</option>
+                    <option value="5">Fødselsdag</option>
                 </select>
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-3">
-                <input type="radio" name="gender" value="female"> Dato
+                <input id="radiodate" type="radio" onclick="setFrequencySelection(4)" name="radio"> Dato
             </div>
             <div class="form-group col-md-9">
-                <input type="date" class="form-control form-control-sm">
+                <input id="dateselector" type="date" class="form-control form-control-sm">
             </div>
         </div>
         <br/>
-        <button class="btn btn-success">Gem</button>
+        <button class="btn btn-success" onclick="updateSurveyMetadata()">Gem</button>
     </div>
     <div class="survey-container col-lg-9 row">
         <div class="table-container col-lg-11">

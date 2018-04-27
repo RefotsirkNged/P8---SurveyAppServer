@@ -78,6 +78,7 @@ function groupManager(){
 }
 
 function newSurvey(){
+    sessionStorage.setItem("surveyid", "undefined");
     window.location.replace("../surveymanager/index.html");
 }
 

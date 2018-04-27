@@ -283,5 +283,6 @@ public class SurveyResourceTest {
         assertEquals(200, connection.getResponseCode());
         Survey newSurvey = Database.getSurvey(survey.getId());
         assertTrue(survey.equals(newSurvey));
+
     }
 }

@@ -2,10 +2,7 @@ package sw806f18.server.model;
 
 import java.util.*;
 
-import org.bson.BSON;
-import org.bson.BsonDocument;
 import sw806f18.server.Constants;
-import sw806f18.server.database.Database;
 
 /**
  * Created by augustkorvell on 14/03/2018.
@@ -50,7 +47,7 @@ public class Survey {
     private String title;
     private String description;
     private int id;
-    private int frequencyValue;
+    private long frequencyValue = 0;
     private FrequencyType frequencyType;
     private Map<String, List<String>> style;
 
@@ -78,11 +75,11 @@ public class Survey {
         this.description = description;
     }
 
-    public void setFrequencyValue(int value) {
+    public void setFrequencyValue(long value) {
         this.frequencyValue = value;
     }
 
-    public int getFrequencyValue() {
+    public long getFrequencyValue() {
         return frequencyValue;
     }
 

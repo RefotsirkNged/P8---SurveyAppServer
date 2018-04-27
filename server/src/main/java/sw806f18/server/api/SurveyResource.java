@@ -1,9 +1,6 @@
 package sw806f18.server.api;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +13,13 @@ import sw806f18.server.exceptions.AnswerException;
 import sw806f18.server.exceptions.SurveyException;
 import sw806f18.server.model.*;
 
-import javax.websocket.server.PathParam;
-import javax.xml.crypto.Data;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.Error;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -337,8 +334,8 @@ public class SurveyResource {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             path = "/{surveyId}/question")
     public ResponseEntity addQuestionToSurvey(@PathVariable(value = "surveyId") int surveyId,
-                                      @RequestBody JsonNode questionJson,
-                                      @CookieValue(value = "token") String token)
+                                              @RequestBody JsonNode questionJson,
+                                              @CookieValue(value = "token") String token)
             throws SurveyException {
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             Survey survey = Database.getSurvey(surveyId);
@@ -405,7 +402,7 @@ public class SurveyResource {
      */
     @RequestMapping(method = RequestMethod.PUT,
             path = "/{surveyId}",
-            produces = MediaType.TEXT_PLAIN_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateSurveyMetadata(@PathVariable(value = "surveyId") int surveyId,
                                                @RequestBody JsonNode body,
                                                @CookieValue(value = "token") String token)
@@ -414,10 +411,22 @@ public class SurveyResource {
             Survey survey = Database.getSurvey(surveyId);
             survey.setTitle(body.get("title").asText());
             survey.setDescription(body.get("description").asText());
-            survey.setFrequencyValue(body.get("frequencyValue").asInt());
             survey.setFrequencyType(FrequencyType.valueOf(body.get("frequencyType").asText()));
-            Database.updateSurvey(survey);
+            if (survey.getFrequencyType() == FrequencyType.DATE) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date;
+                try {
+                    date = formatter.parse(body.get("frequencyValue").asText());
+                } catch (ParseException e) {
+                    return ResponseEntity.badRequest().body(new Error("Invalid date"));
+                }
 
+                survey.setFrequencyValue(date.getTime() / 1000);
+            } else {
+                survey.setFrequencyValue(body.get("frequencyValue").asInt());
+            }
+            Database.updateSurvey(survey);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().body(new Error("Invalid token"));

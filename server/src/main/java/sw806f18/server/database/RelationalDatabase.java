@@ -5,10 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sw806f18.server.Configurations;
 import sw806f18.server.Security;
 import sw806f18.server.exceptions.*;
@@ -997,18 +995,18 @@ public class RelationalDatabase {
 
     static void updateSurvey(Survey survey) throws SurveyException {
         Connection con = null;
+        PreparedStatement stmt = null;
         try {
             con = createConnection();
             String q1 = "UPDATE modules SET name=?, "
                     + "frequencyvalue=?,frequencytype=?::frequencytype,description=? WHERE id=?";
-            PreparedStatement stmt = con.prepareStatement(q1);
+            stmt = con.prepareStatement(q1);
             stmt.setString(1, survey.getTitle());
-            stmt.setInt(2, survey.getFrequencyValue());
+            stmt.setLong(2, survey.getFrequencyValue());
             stmt.setString(3, survey.getFrequencyType().name());
             stmt.setString(4, survey.getDescription());
             stmt.setInt(5, survey.getId());
             stmt.execute();
-            stmt.close();
 
             for (Question q : survey.getQuestions()) {
                 if (q.getId() == -1) {
@@ -1017,18 +1015,21 @@ public class RelationalDatabase {
                     updateQuestion(q);
                 }
             }
-            con.close();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
+        } finally {
+            closeStatement(stmt);
+            closeConnection(con);
         }
     }
 
     static void updateQuestion(Question q) throws SurveyException {
         Connection con = null;
+        PreparedStatement stmt = null;
         try {
             con = createConnection();
             String q1 = "UPDATE questions SET name=?,description=? WHERE id=?";
-            PreparedStatement stmt = con.prepareStatement(q1);
+            stmt = con.prepareStatement(q1);
             stmt.setString(1, q.getTitle());
             stmt.setString(2, q.getDescription());
             stmt.setInt(3, q.getId());
@@ -1037,6 +1038,9 @@ public class RelationalDatabase {
             con.close();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
+        } finally {
+            closeStatement(stmt);
+            closeConnection(con);
         }
     }
 }
