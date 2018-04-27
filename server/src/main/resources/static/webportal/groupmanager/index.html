@@ -11,123 +11,129 @@
     <script src="../js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="main-container row" >     
-    <div class="column-container col-lg-6">
-        <div class="content-container">
-            <h3>Grupper</h3>
-            <div class="table-container">
-                <table class="table table-hover table-striped">
-                    <tbody id="groupTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="btnWrapper">
-                <button type="button" class="btn btn-success btn-sm " title="Tilføj gruppe" data-toggle="modal" data-target="#addGroupModal" style="width:30px;">+</button>
-                <button type="button" class="btn btn-danger btn-sm " title="Fjern gruppe" onclick="deleteGroupToggle()" style="width:30px;">-</button>
-            </div>
-        </div>
-
-        
-
-        <div class="modal fade" id="addGroupModal" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tilføj gruppe</h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="text" class="form-control" id="groupNameInput" placeholder="Navn">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Gem</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="deleteGroupModal" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Slet gruppe</h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body" id="deleteModalText">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Ja</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Nej</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="noMarkingModal" role="dialog">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Ups!</h5>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        Ingen gruppe markeret!
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="content-container"> 
-            <h3>Medlemmer</h3>  
-            <div class="table-container col-sm-11">
-                <table class="table table-striped">
-                    <tbody id="groupMemberBody">
-                    <!--<tr>-->
-                        <!--<td>-->
-                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
-                        <!--</td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<td>-->
-                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
-                        <!--</td>-->
-                    <!--</tr>-->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="column-container col-lg-6">
-        <div class="content-container">
-            <h3>Brugere</h3>
-            <div class="table-container">
-                <table class="table table-striped">
-                    <tbody id="allUsersWindow">
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="content-container">
-            <h3>Spørgeskemaer</h3>
-            <div class="table-container">
-                <table class="table table-striped">
-                    <tbody id="groupSurveysWindow">
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div>
+<div class="main-container row" style="padding-top: 1%;">
+    <div class="column-container col-lg-1" >
         <button type="button" class="btn btn-info btnBack" onclick="gotoHome()">Tilbage</button>
-        <button type="button" class="btn btn-info btnAddSurveysToGroup" data-toggle="modal" data-target="#addSurveysToGroupModal">Knyt spørgeskemaer til gruppe</button>
+    </div>
+    <div class="col-lg-11" >
+        <div class="row-container row">
+            <div class="content-container col-lg-6">
+                <h3>Grupper</h3>
+                <div class="table-container">
+                    <table class="table table-hover table-striped">
+                        <tbody id="groupTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btnWrapper">
+                    <button type="button" class="btn btn-success btn-sm " title="Tilføj gruppe" data-toggle="modal" data-target="#addGroupModal" style="width:30px;">+</button>
+                    <button type="button" class="btn btn-danger btn-sm " title="Fjern gruppe" onclick="deleteGroupToggle()" style="width:30px;">-</button>
+                </div>
+            </div>
+
+            <div class="content-container col-lg-6">
+                <h3>Brugere</h3>
+                <div class="table-container">
+                    <table class="table table-striped">
+                        <tbody id="allUsersWindow">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row-container row">
+            <div class="column-container col-lg-6" >
+                <div class="modal fade" id="addGroupModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Tilføj gruppe</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" class="form-control" id="groupNameInput" placeholder="Navn">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="addGroup()">Gem</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteGroupModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Slet gruppe</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body" id="deleteModalText">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="deleteGroup()">Ja</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Nej</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="noMarkingModal" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Ups!</h5>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                Ingen gruppe markeret!
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-container">
+                    <h3>Medlemmer</h3>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <tbody id="groupMemberBody">
+                            <!--<tr>-->
+                            <!--<td>-->
+                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                            <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                            <!--<td>-->
+                            <!--Test <button type="button" class="btn-danger btnMemberList" onclick="deleteGroupToggle()">-</button>-->
+                            <!--</td>-->
+                            <!--</tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column-container col-lg-6">
+                <div class="content-container">
+                    <h3>Spørgeskemaer</h3>
+                    <div class="table-container" >
+                        <table class="table table-striped">
+                            <tbody id="groupSurveysWindow">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
     
 <script>
     var marked;
@@ -341,7 +347,7 @@
                 var modules = response.modules;
                 modules.forEach(function(e){
                     var node = document.getElementById('module' + e.id);
-                    node.innerHTML =
+                    document.getElementById('module' + e.id).innerHTML =
                         "<td>" + e.title + "\n" +
                         " <button id='rmgrplnk" + e.id + "' type=\"button\" class=\"btn-danger btnMemberList\" onclick=\"removeGroupLink(" + e.id + ")\" style='float: right;width:25px;'>-</button>\n" +
                         "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
@@ -349,12 +355,12 @@
                     node.parentNode.insertBefore(node,node.parentNode.firstChild);
                     //document.getElementById('module' + e.id).setAttribute("style", "background: #03b240;")
                     markedModules.push(e);
-                    if(modules.lastChild == e){
-                        node.style.borderBottom("solid");
-                        node.style.borderBottomWidth("3px");
+                    if(modules[0] == e){
+                        node.style.borderBottom = "solid";
+                        node.style.borderBottomWidth = "2px";
                     }
                     else{
-                        node.style.borderBottomWidth("0px");
+                        node.style.borderBottom = "none";
                     }
                 });
 
@@ -366,7 +372,8 @@
                         " <button id='addgrplnk" + e.id + "' type=\"button\" class=\"btn-success btnMemberList\" onclick=\"addGroupLink(" + e.id + ")\" style='float: right;width:25px;'>+</button>\n" +
                         "<button id='editmod" + e.id + "' type=\"button\" class=\"btn-info btnMemberList\" onclick=\"editModule(" + e.id + ")\" style='float: right;margin-right: 5px;'>Rediger</button>\n" +
                         "</td>";
-                    node.style.borderBottomWidth("0px");
+                    node.style.borderBottom = "none";
+
                 });
             }
         });
@@ -402,7 +409,7 @@
 
     function editModule(moduleId) {
         sessionStorage.setItem("surveyid", moduleId);
-        window.location.replace("../surveymanager/index.html");
+        window.location.assign("../surveymanager/index.html");
     }
 </script>
 

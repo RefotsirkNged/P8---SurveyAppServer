@@ -53,17 +53,21 @@ html, body{
 }
 
 .column-container{
-    height: 90%;
+    height: 100%;
 
 }
 
-.content-container{
+.row-container{
     height: 50%;
 }
 
+.content-container{
+    height: 100%;
+}
+
 .table-container{
-    overflow-y: auto;
-    height: 75%;
+    overflow: auto;
+    height: 80%;
 }
 
 .groupWindow{
