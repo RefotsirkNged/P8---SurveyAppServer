@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.Error;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,11 +73,10 @@ public class SurveyResource {
             Survey survey = Database.getSurvey(id);
             boolean hasWarnings = false;
 
-            String content = new String(params.substring(0, params.indexOf("=")));
-
             Map<String, String> formParams = new HashMap<>();
-            String[] formMembers = content.split("&");
-            for (String s : formMembers) {
+            String[] formMembers = params.split("&");
+            for (String member : formMembers) {
+                String s = URLDecoder.decode(member, StandardCharsets.UTF_8.toString());
                 String[] keyValuePair = s.split("=");
                 if (keyValuePair.length != 2) {
                     formParams.put(keyValuePair[0], "");

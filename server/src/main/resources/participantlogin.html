@@ -93,7 +93,7 @@
         var password = document.getElementById('loginpassword').value;
 
         $.ajax({
-            url: 'http://192.168.1.123:8081/api/participant/login',
+            url: '/api/participant/login',
             type: 'POST',
             beforeSend: function (request) {
                 request.setRequestHeader("email", email);
@@ -106,7 +106,7 @@
                     document.getElementById("loginfailedmessage").innerText = response.error;
                 }
                 else {
-                    window.location.replace("http://192.168.1.123:8081/api/participant/hub");
+                    window.location.replace("/api/participant/hub");
                 }
             },
             error: function (response) {

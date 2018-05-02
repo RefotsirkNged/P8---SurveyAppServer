@@ -34,7 +34,7 @@ function login() {
     var password = document.getElementById('loginpassword').value;
 
     $.ajax({
-        url: 'http://192.168.1.123:8081/api/researcher/login',
+        url: '/api/researcher/login',
         type: 'POST',
         beforeSend: function (request) {
             request.setRequestHeader("email", email);

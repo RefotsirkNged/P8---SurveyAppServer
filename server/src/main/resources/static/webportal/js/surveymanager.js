@@ -6,7 +6,7 @@ function getQuestions() {
     g.innerHTML = "";
 
     $.ajax({
-        url: 'http://192.168.1.123:8081/api/survey/' + surveyId + '/object',
+        url: '/api/survey/' + surveyId + '/object',
         type: 'GET',
         beforeSend: function (request) {
             request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -57,7 +57,7 @@ function removeQuestion(questionId) {
         var surveyId = sessionStorage.getItem("surveyid");
 
         $.ajax({
-            url: 'http://192.168.1.123:8081/api/survey/' + surveyId + '/question/' + questionId,
+            url: '/api/survey/' + surveyId + '/question/' + questionId,
             type: 'DELETE',
             beforeSend: function (request) {
                 request.setRequestHeader("token", sessionStorage.getItem("token"));
@@ -100,7 +100,7 @@ function dropdownValueClicked(row) {
 function addEmptySurvey() {
     var surveyId;
     $.ajax({
-        url: 'http://192.168.1.123:8081/api/survey',
+        url: '/api/survey',
         type: 'POST',
         success: function (response) {
             console.log("response " + response);
@@ -157,7 +157,7 @@ function addQuestion() {
     console.log(json);
 
     $.ajax({
-        url: 'http://192.168.1.123:8081/api/survey/' + sessionStorage.getItem("surveyid") + "/question",
+        url: '/api/survey/' + sessionStorage.getItem("surveyid") + "/question",
         type: 'POST',
         data: JSON.stringify(json),
         headers: {
@@ -228,7 +228,7 @@ function updateSurveyMetadata() {
     console.log("json " + JSON.stringify(json));
 
     $.ajax({
-        url: 'http://192.168.1.123:8081/api/survey/' + sessionStorage.getItem("surveyid"),
+        url: '/api/survey/' + sessionStorage.getItem("surveyid"),
         type: 'PUT',
         data: JSON.stringify(json),
         headers: {
