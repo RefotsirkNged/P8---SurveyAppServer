@@ -169,7 +169,7 @@
         if (makeres) {
             $.ajax({
                 type: 'POST',
-                url: 'http://192.168.1.123:8081/api/researcher',
+                url: '/api/researcher',
                 beforeSend: function (request) {
                     phonenr = document.getElementById("phonenr").value;
                     emailval = document.getElementById("email").value;
@@ -202,7 +202,7 @@
         } else {
             $.ajax({
                 type: 'POST',
-                url: 'http://192.168.1.123:8081/api/participant',
+                url: '/api/participant',
                 beforeSend: function (request) {
                     cprval = document.getElementById("cprnr").value;
                     emailval = document.getElementById("email").value;
