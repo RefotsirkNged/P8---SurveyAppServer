@@ -544,7 +544,7 @@ public class RelationalDatabase {
             statement2.executeUpdate();
         } catch (SQLException e) {
             //Send stacktrace to log
-            throw new CreateUserException("Email is already in use", e);
+            throw new CreateUserException(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
             //Send stacktrace to log
             throw new CreateUserException("Server error, contact system administrator", e);

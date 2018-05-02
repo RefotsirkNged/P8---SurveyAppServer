@@ -33,7 +33,7 @@ public class Hub {
             hub.setModules(Database.getModulesByUser(userId));
             return hub;
         } catch (GetModulesByUserException e) {
-            throw new HubException("Could not load modules. Contact system administrator");
+            return new Hub(userId);
         }
     }
 
@@ -190,7 +190,7 @@ public class Hub {
 
         builder.append("<script type='text/javascript'>");
         builder.append("function openModule(moduleID){"
-            + "window.location.href = \"../../survey/\" + moduleID;"
+            + "window.location.href = \"../../api/survey/\" + moduleID;"
             + "}");
         builder.append("</script>");
 

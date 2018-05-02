@@ -2,9 +2,11 @@ package sw806f18.server.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,6 +46,7 @@ public class ParticipantLoginResource {
             String token = Authentication.instance.getToken(participant.getId());
 
             Cookie cookie = new Cookie("token", token);
+            cookie.setPath("/api");
             //cookie.setHttpOnly(true);
 
             response.addCookie(cookie);
@@ -67,7 +71,9 @@ public class ParticipantLoginResource {
     public String getLoginPage() {
         String html = "";
         try {
-            html = new String(Files.readAllBytes(Paths.get("tmp/participantlogin.html")), StandardCharsets.UTF_8);
+
+            html = StreamUtils.copyToString(new ClassPathResource("participantlogin.html")
+                    .getInputStream(), Charset.defaultCharset());
         } catch (IOException e) {
             html = "Error!";
         }

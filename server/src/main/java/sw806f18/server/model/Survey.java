@@ -237,7 +237,7 @@ public class Survey {
         builder.append("<br />");
         builder.append("<h4 class='p8label'>" + description + "</h4>");
         builder.append("<hr />");
-        builder.append("<form action='" + Constants.submitUrl + id + "' method='post'>");
+        builder.append("<form action='" + Constants.submitUrl + id + "/answer' method='post'>");
 
         for (int i = 0; i < questions.size(); i++) {
             builder.append("<div class='question'>");

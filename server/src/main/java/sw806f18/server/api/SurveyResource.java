@@ -41,7 +41,7 @@ public class SurveyResource {
     @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity getSurvey(@PathVariable(value = "id") int id,
                                     @CookieValue(value = "token") String token) {
-        if (Database.isResearcher(Authentication.instance.getId(token))) {
+        if (Database.isParticipant(Authentication.instance.getId(token))) {
             Survey survey = Database.getSurvey(id);
 
             InputStreamResource inputStreamResource =
@@ -72,7 +72,7 @@ public class SurveyResource {
             Survey survey = Database.getSurvey(id);
             boolean hasWarnings = false;
 
-            String content = new String(Base64.getDecoder().decode(params.substring(0, params.indexOf("="))));
+            String content = new String(params.substring(0, params.indexOf("=")));
 
             Map<String, String> formParams = new HashMap<>();
             String[] formMembers = content.split("&");

@@ -25,6 +25,7 @@ public class Configurations {
     private String mongoPassword;
     private String mongoDatabase;
     private int mongoPort;
+    private int primaryGroup;
 
     /**
      * Constructor.
@@ -50,6 +51,8 @@ public class Configurations {
             mongoPassword = mongo.findValue("password").asText();
             mongoPort = mongo.findValue("port").asInt();
             mongoDatabase = mongo.findValue("database").asText();
+
+            primaryGroup = jsonNodes.get("primarygroup").asInt();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,4 +138,9 @@ public class Configurations {
     public String getMongoDatabase() {
         return mongoDatabase;
     }
+
+    public int getPrimaryGroup() {
+        return primaryGroup;
+    }
+
 }

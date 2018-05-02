@@ -149,6 +149,7 @@ public class Database {
 
     /**
      * Link a module(survey) to a group using the IDs.
+     *
      * @param surveyID
      * @param groupID
      * @throws P8Exception
@@ -159,7 +160,7 @@ public class Database {
     }
 
     public static List<Integer> getModuleLinks(Survey survey) throws SurveyException,
-                                                                     SQLException, ClassNotFoundException {
+            SQLException, ClassNotFoundException {
         return RelationalDatabase.getModuleLinks(survey.getId());
     }
 
@@ -204,7 +205,12 @@ public class Database {
      */
     public static Hub getHubByUser(int userID) throws HubException {
         int hubID = RelationalDatabase.getHubIdByUser(userID);
-        return NoSqlDatabase.getHub(hubID);
+        Hub hub = NoSqlDatabase.getHub(hubID);
+        if (hub != null) {
+            return hub;
+        } else {
+            return new Hub(userID);
+        }
     }
 
     public static List<Survey> getGroupLinks(int groupId) throws SurveyException {
@@ -221,7 +227,8 @@ public class Database {
 
     /**
      * Removes a question from a survey.
-     * @param surveyId The ID of the survey from which the question should be removed.
+     *
+     * @param surveyId   The ID of the survey from which the question should be removed.
      * @param questionId The ID of the question to be removed.
      */
     public static void removeQuestionFromSurvey(int surveyId, int questionId) throws SurveyException {

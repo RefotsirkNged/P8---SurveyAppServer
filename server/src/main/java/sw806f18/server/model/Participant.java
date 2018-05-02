@@ -1,11 +1,13 @@
 package sw806f18.server.model;
 
+import sw806f18.server.Configurations;
+
 import java.util.Date;
 
 public class Participant extends User {
     private String cpr;
     private Date birthday;
-    private int primaryGroup = 5139;
+    private int primaryGroup = Configurations.instance.getPrimaryGroup();
 
     /**
      * Constructor.

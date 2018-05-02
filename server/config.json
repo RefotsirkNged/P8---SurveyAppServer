@@ -12,5 +12,6 @@
     "database": "data",
     "user": "root",
     "password": "power123"
-  }
+  },
+  "primarygroup": 5144
 }
