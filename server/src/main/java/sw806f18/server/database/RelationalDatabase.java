@@ -75,12 +75,12 @@ public class RelationalDatabase {
      */
     private static int getUser(Connection connection, String email, String password)
         throws SQLException {
-        
+
         String query = "SELECT id, password, salt FROM users "
             + "WHERE email = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, email);
-        
+
         ResultSet resultSet = statement.executeQuery();
         if (!resultSet.next()) {
             return -1;
@@ -356,7 +356,7 @@ public class RelationalDatabase {
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(researcher.phone));
             statement2.executeUpdate();
-            
+
         } catch (SQLException e) {
             //Send stacktrace to log
             throw new CreateUserException(e.getMessage(), e);
@@ -539,7 +539,7 @@ public class RelationalDatabase {
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(participant.getCpr().trim()));    // TODO: Loss of leading zeros!!!
             statement2.setTimestamp(3, Timestamp.valueOf(LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
-                    ZoneId.systemDefault())));
+                ZoneId.systemDefault())));
             statement2.setInt(4, participant.getPrimaryGroup());
             statement2.executeUpdate();
         } catch (SQLException e) {
@@ -649,7 +649,7 @@ public class RelationalDatabase {
 
             String query = "SELECT u.id id, u.email email, u.firstname firstname, "
                 + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
-                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = ?" 
+                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = ?"
                 + " AND h.participantid = u.id";
             statement = connection.prepareStatement(query);
             statement.setInt(1, group1.getId());
@@ -912,7 +912,7 @@ public class RelationalDatabase {
         try {
             List<Survey> surveys = new ArrayList<>();
             connection = createConnection();
-            String query = "SELECT m.id AS id, m.name AS name, m.description AS description\n"
+            String query = "SELECT DISTINCT (m.id) AS id, m.name AS name, m.description AS description\n"
                 + "FROM modules m, hasmodule hm, groups g, hasgroup hg\n"
                 + "WHERE m.id = hm.moduleid AND\n"
                 + "hm.groupid = g.id AND\n"
@@ -925,15 +925,15 @@ public class RelationalDatabase {
                 + "            h.timestamp < (SELECT\n"
                 + "                           CASE WHEN frequencytype='ONCE' THEN to_timestamp(1)\n"
                 + "                                WHEN frequencytype='DAYS' "
-                + "THEN CURRENT_DATE - INTERVAL '1 day' * frequencyvalue\n"
+                + "THEN CURRENT_DATE + INTERVAL '1 day' * frequencyvalue\n"
                 + "                                WHEN frequencytype='WEEKS' "
-                + "THEN CURRENT_DATE - INTERVAL '1 week' * frequencyvalue\n"
+                + "THEN CURRENT_DATE + INTERVAL '1 week' * frequencyvalue\n"
                 + "                                WHEN frequencytype='MONTHS' "
-                + "THEN CURRENT_DATE - INTERVAL '1 month' * frequencyvalue\n"
+                + "THEN CURRENT_DATE + INTERVAL '1 month' * frequencyvalue\n"
                 + "                                WHEN frequencytype='YEARS'"
-                + " THEN CURRENT_DATE - INTERVAL '1 year' * frequencyvalue\n"
+                + " THEN CURRENT_DATE + INTERVAL '1 year' * frequencyvalue\n"
                 + "                                WHEN frequencytype='BIRTHDAY' "
-                + "THEN (SELECT to_timestamp(DATE_PART('year', CURRENT_DATE)-1 || ' ' || "
+                + "THEN (SELECT to_timestamp(DATE_PART('year', CURRENT_DATE)+1 || ' ' || "
                 + "DATE_PART('month', birthday) || ' ' || DATE_PART('day', birthday), 'YYYY-MM-DD') "
                 + "FROM participants WHERE id = ?)\n"
                 + "                                ELSE to_timestamp(frequencyvalue)\n"
@@ -953,14 +953,7 @@ public class RelationalDatabase {
                     .getString("description")));
             }
 
-            List<Survey> cleanSurveys = new ArrayList<>();
-            for (Survey s : surveys) {
-                if (!cleanSurveys.contains(s)) {
-                    cleanSurveys.add(s);
-                }
-            }
-
-            return cleanSurveys;
+            return surveys;
         } catch (SQLException | ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
         } finally {
@@ -1040,7 +1033,7 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             String q1 = "UPDATE modules SET name=?, "
-                    + "frequencyvalue=?,frequencytype=?::frequencytype,description=? WHERE id=?";
+                + "frequencyvalue=?,frequencytype=?::frequencytype,description=? WHERE id=?";
             stmt = con.prepareStatement(q1);
             stmt.setString(1, survey.getTitle());
             stmt.setLong(2, survey.getFrequencyValue());

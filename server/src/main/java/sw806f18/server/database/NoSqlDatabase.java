@@ -45,8 +45,8 @@ public class NoSqlDatabase {
 
     private static void openConnection() {
         MongoClientURI uri = new MongoClientURI("mongodb://" + Configurations.instance.getMongoUser() + ":"
-                + Configurations.instance.getMongoPassword() + "@" + Configurations.instance.getMongoIp()
-                + ":" + Configurations.instance.getMongoPort() + "/?authSource=admin");
+            + Configurations.instance.getMongoPassword() + "@" + Configurations.instance.getMongoIp()
+            + ":" + Configurations.instance.getMongoPort() + "/?authSource=admin");
 
         client = new MongoClient(uri);
         database = client.getDatabase(Configurations.instance.getMongoDatabase());
@@ -55,16 +55,16 @@ public class NoSqlDatabase {
         ClassModel<Survey> surveyModel = ClassModel.builder(Survey.class).build();
         ClassModel<Question> questionModel = ClassModel.builder(Question.class).enableDiscriminator(true).build();
         ClassModel<DropdownQuestion> dropdownQuestionModel =
-                ClassModel.builder(DropdownQuestion.class).enableDiscriminator(true).build();
+            ClassModel.builder(DropdownQuestion.class).enableDiscriminator(true).build();
         ClassModel<TextQuestion> textQuestionModel =
-                ClassModel.builder(TextQuestion.class).enableDiscriminator(true).build();
+            ClassModel.builder(TextQuestion.class).enableDiscriminator(true).build();
         ClassModel<NumberQuestion> numberQuestionModel =
-                ClassModel.builder(NumberQuestion.class).enableDiscriminator(true).build();
+            ClassModel.builder(NumberQuestion.class).enableDiscriminator(true).build();
 
         ClassModel<Answer> answerModel = ClassModel.builder(Answer.class).build();
 
         modulePojoCodecProvider = PojoCodecProvider.builder().register(
-                surveyModel, questionModel, dropdownQuestionModel, textQuestionModel, numberQuestionModel).build();
+            surveyModel, questionModel, dropdownQuestionModel, textQuestionModel, numberQuestionModel).build();
         hubPojoCodecProvider = PojoCodecProvider.builder().register(hubModel).build();
         answerPojoCodecProvider = PojoCodecProvider.builder().register(
             surveyModel, questionModel, dropdownQuestionModel,
@@ -80,7 +80,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+            fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
@@ -93,13 +93,14 @@ public class NoSqlDatabase {
 
     /**
      * Add survey to the NoSQL Database.
+     *
      * @param s Survey
      */
     public static void addSurvey(Survey s) {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
@@ -118,7 +119,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(hubPojoCodecProvider));
+            fromProviders(hubPojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Hub> collection = database.getCollection(hubCollection, Hub.class);
@@ -132,7 +133,7 @@ public class NoSqlDatabase {
         Hub hub;
         openConnection();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(hubPojoCodecProvider));
+            fromProviders(hubPojoCodecProvider));
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Hub> collection = database.getCollection(hubCollection, Hub.class);
         hub = collection.find((eq("_id", hubID))).first();
@@ -145,7 +146,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 
@@ -164,7 +165,7 @@ public class NoSqlDatabase {
         openConnection();
 
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
 
@@ -196,7 +197,7 @@ public class NoSqlDatabase {
 
         openConnection();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
@@ -209,7 +210,7 @@ public class NoSqlDatabase {
     static void removeQuestionFromSurvey(int surveyId, int questionId) {
         openConnection();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
@@ -231,7 +232,7 @@ public class NoSqlDatabase {
     static void updateQuestionFromSurvey(Survey survey) {
         openConnection();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(modulePojoCodecProvider));
+            fromProviders(modulePojoCodecProvider));
 
         database = database.withCodecRegistry(pojoCodecRegistry);
         MongoCollection<Survey> collection = database.getCollection(MODULE_COLLECTION, Survey.class);
