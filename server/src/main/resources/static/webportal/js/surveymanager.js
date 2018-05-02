@@ -187,6 +187,7 @@ function addValueToTable() {
 function updateSurveyMetadata() {
     var title = document.getElementById("nametext").value;
     var description = document.getElementById("descriptiontext").value;
+    var tag = document.getElementById("tagtext").value;
     var frequencyType, frequencyValue;
 
 
