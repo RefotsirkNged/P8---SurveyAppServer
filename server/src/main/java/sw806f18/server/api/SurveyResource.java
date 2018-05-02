@@ -53,8 +53,6 @@ public class SurveyResource {
         return ResponseEntity.badRequest().body(new Error("Invalid token"));
     }
 
-    //TODO Need to use token.
-
     /**
      * Get a survey as html by id.
      *

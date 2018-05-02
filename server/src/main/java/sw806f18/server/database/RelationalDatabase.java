@@ -952,7 +952,15 @@ public class RelationalDatabase {
                     resultSet.getString("name"), resultSet
                     .getString("description")));
             }
-            return surveys;
+
+            List<Survey> cleanSurveys = new ArrayList<>();
+            for (Survey s : surveys) {
+                if (!cleanSurveys.contains(s)) {
+                    cleanSurveys.add(s);
+                }
+            }
+
+            return cleanSurveys;
         } catch (SQLException | ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
         } finally {
