@@ -127,26 +127,26 @@ public class TestHelpers {
         survey2 = new Survey("Spørgeskema under graviditetsforløb",
             "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
         survey2.addQuestion(new NumberQuestion(3, "Alkohol",
-            "Hvor mange genstande drikker du om ugen:"));
+            "Hvor mange genstande drikker du om ugen:", ""));
         survey2.addQuestion(new TextQuestion(3, "Rygning",
-            "Hvor mange cigaretter ryger du om dagen:"));
+            "Hvor mange cigaretter ryger du om dagen:", ""));
 
         List<String> bistrolStoolChart = new ArrayList<>();
         bistrolStoolChart.add("123");
 
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
             "Afføring",
-            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", "",
             bistrolStoolChart));
 
         surveyAnswer1.addQuestion(new NumberQuestion(3, "Alkohol",
-            "Hvor mange genstande drikker du om ugen:"));
+            "Hvor mange genstande drikker du om ugen:", ""));
         surveyAnswer1.addQuestion(new TextQuestion(3, "Rygning",
-            "Hvor mange cigaretter ryger du om dagen:"));
+            "Hvor mange cigaretter ryger du om dagen:", ""));
 
         surveyAnswer1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
             "Afføring",
-            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", "",
             bistrolStoolChart));
 
         String answer1 = "1";
@@ -625,7 +625,7 @@ public class TestHelpers {
             Survey survey = new Survey(title, description);
             survey.addQuestion(new TextQuestion(1,
                 "Text question" + i,
-                "Text question description" + i));
+                "Text question description" + i, ""));
 
             List<String> values = new ArrayList<>();
             values.add("A" + i);
@@ -634,10 +634,12 @@ public class TestHelpers {
 
             survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Drop question" + i,
-                "Drop question description" + i, values));
+                "Drop question description" + i,
+                    "",
+                    values));
             survey.addQuestion(new NumberQuestion(3,
                 "Number question" + 1,
-                "Number question description" + 1));
+                "Number question description" + 1, ""));
 
             results.add(survey);
         }

@@ -34,12 +34,13 @@ public abstract class Question {
      * @param title The title
      * @param description Description
      */
-    public Question(int id, Type type, Input input, String title, String description) {
+    public Question(int id, Type type, Input input, String title, String description, String tag) {
         this.id = id;
         this.input = input;
         this.type = type;
         this.title = title;
         this.description = description;
+        this.tag = tag;
     }
 
     protected int id;
@@ -47,6 +48,7 @@ public abstract class Question {
     protected Input input;
     protected String title;
     protected String description;
+    protected String tag;
     protected String value;
     protected String warning;
 
@@ -80,6 +82,14 @@ public abstract class Question {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public int getId() {

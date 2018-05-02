@@ -24,8 +24,8 @@ public class DropdownQuestion extends Question {
      * @param title The title
      * @param description Description
      */
-    public DropdownQuestion(int id, Type type, String title, String description, List<String> values) {
-        super(id, type, Input.DROPDOWN, title, description);
+    public DropdownQuestion(int id, Type type, String title, String description, String tag, List<String> values) {
+        super(id, type, Input.DROPDOWN, title, description, tag);
         this.values = values;
     }
 
@@ -36,8 +36,8 @@ public class DropdownQuestion extends Question {
      * @param title The title
      * @param description Description
      */
-    public DropdownQuestion(Type type, String title, String description, List<String> values) {
-        super(-1, type, Input.DROPDOWN, title, description);
+    public DropdownQuestion(Type type, String title, String description, String tag, List<String> values) {
+        super(-1, type, Input.DROPDOWN, title, description, tag);
         this.values = values;
     }
 

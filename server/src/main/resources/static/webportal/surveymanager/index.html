@@ -20,6 +20,9 @@
         <br />
         <p>Beskrivelse</p>
         <textarea type="text" id="descriptiontext" name="descriptiontext" class="form-control"></textarea>
+        <br />
+        <p>Tag</p>
+        <textarea type="text" id="tagtext" name="tagtext" class="form-control"></textarea>
         <br/>
         <p>Hvor ofte skal spørgeskemaet besvares?</p>
 
@@ -84,6 +87,7 @@
             <div class="modal-body">
                 <input type="text" class="form-control" id="questionNameInput" placeholder="Navn"><br />
                 <textarea type="text" class="form-control" rows="3" id="questionDescriptionInput" placeholder="Beskrivelse"></textarea><br />
+                <textarea type="text" class="form-control" id="questionTagInput" placeholder="Tag"></textarea><br />
                 <select class="form-control" id="questionInputTypeInput" onchange="pickInputTypeDiv();">
                     <option selected="selected"></option>
                     <option>Tekst</option>

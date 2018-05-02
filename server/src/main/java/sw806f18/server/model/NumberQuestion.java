@@ -10,8 +10,8 @@ public class NumberQuestion extends Question {
      * @param title The title
      * @param description Description
      */
-    public NumberQuestion(int id, String title, String description) {
-        super(id, Type.INT, Input.NUMBER, title, description);
+    public NumberQuestion(int id, String title, String description, String tag) {
+        super(id, Type.INT, Input.NUMBER, title, description, tag);
     }
 
     /**
@@ -19,8 +19,8 @@ public class NumberQuestion extends Question {
      * @param title The title
      * @param description Description
      */
-    public NumberQuestion(String title, String description) {
-        super(-1, Type.INT, Input.NUMBER, title, description);
+    public NumberQuestion(String title, String description, String tag) {
+        super(-1, Type.INT, Input.NUMBER, title, description, tag);
     }
 
     /**

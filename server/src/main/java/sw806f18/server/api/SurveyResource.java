@@ -194,7 +194,7 @@ public class SurveyResource {
         survey1.addStyleProperty("body", "background-color", "lightblue");
 
         survey1.addQuestion(new NumberQuestion(3, "Alkohol",
-                "Hvor mange genstande drikker du om ugen?"));
+                "Hvor mange genstande drikker du om ugen?", ""));
 
         List<String> bristolStoolChart = new ArrayList<>();
         bristolStoolChart.add("");
@@ -208,10 +208,10 @@ public class SurveyResource {
 
         survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?", "",
                 bristolStoolChart));
         survey1.addQuestion(new TextQuestion(1, "Sygdomsepisoder",
-                "Hvilke sygdomsepisoder har du haft inden for det sidste år?"));
+                "Hvilke sygdomsepisoder har du haft inden for det sidste år?", ""));
 
         List<String> rygningList = new ArrayList<>();
         rygningList.add("Dagligt mere end 4");
@@ -223,14 +223,15 @@ public class SurveyResource {
         survey1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Rygning",
                 "Hvor ofte ryger du?",
+                "",
                 rygningList));
 
         survey1.addQuestion(new TextQuestion("Graviditetsrelaterede begivenheder",
-                "Har du haft nogen specielle episoder?"));
+                "Har du haft nogen specielle episoder?", ""));
         survey1.addQuestion(new TextQuestion("Fødselsrelaterede begivenheder",
-                "Skete der noget specielt under fødslen?"));
+                "Skete der noget specielt under fødslen?", ""));
         survey1.addQuestion(new TextQuestion("Barselsrelaterede begivenheder",
-                "Er der sket noget i din tid der hjemme?"));
+                "Er der sket noget i din tid der hjemme?", ""));
 
 
         Survey survey2 = new Survey("Barn 6 - 10 år",
@@ -252,11 +253,12 @@ public class SurveyResource {
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Barnets alder",
                 "Hvad er barnets alder?",
+                "",
                 ageChart));
         survey2.addQuestion(new NumberQuestion(3, "Barnets højde",
-                "Skriv barnets højde i centimeter:"));
+                "Skriv barnets højde i centimeter:", ""));
         survey2.addQuestion(new NumberQuestion(3, "Barnets vægt",
-                "Skriv barents vægt i gram:"));
+                "Skriv barents vægt i gram:", ""));
 
 
         Survey survey3 = new Survey("Efter fødsel til mor",
@@ -264,15 +266,15 @@ public class SurveyResource {
         survey3.addStyleProperty("body", "background-color", "#FAD7A0");
         survey3.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
                 "Afføring",
-                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?",
+                "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg?", "",
                 bristolStoolChart));
         survey3.addQuestion(new NumberQuestion(3, "Alkohol",
-                "Hvor mange genstande drikker du om ugen?"));
+                "Hvor mange genstande drikker du om ugen?", ""));
         survey3.addQuestion(new TextQuestion("Kost:",
                 "Hvad består din daglige kost af?"
-                        + "\n\"Eks: Får du mange fibre? Spiser du sundt?\""));
-        survey3.addQuestion(new TextQuestion("Medicin", "Får du medicin?:"));
-        survey3.addQuestion(new NumberQuestion("BMI", "Hvad er din BMI?:"));
+                        + "\n\"Eks: Får du mange fibre? Spiser du sundt?\"", ""));
+        survey3.addQuestion(new TextQuestion("Medicin", "Får du medicin?:", ""));
+        survey3.addQuestion(new NumberQuestion("BMI", "Hvad er din BMI?:", ""));
 
         survey1.setId(570);
         survey2.setId(571);
@@ -345,11 +347,13 @@ public class SurveyResource {
             switch (questionJson.get("input").asText()) {
                 case "TEXT":
                     q = new TextQuestion(questionJson.get("title").asText(),
-                            questionJson.get("description").asText());
+                            questionJson.get("description").asText(),
+                            questionJson.get("tag").asText());
                     break;
                 case "NUMBER":
                     q = new NumberQuestion(questionJson.get("title").asText(),
-                            questionJson.get("description").asText());
+                            questionJson.get("description").asText(),
+                            questionJson.get("tag").asText());
                     break;
                 case "DROPDOWN":
                     List<String> list = new ArrayList<>();
@@ -366,6 +370,7 @@ public class SurveyResource {
                     q = new DropdownQuestion(t,
                             questionJson.get("title").asText(),
                             questionJson.get("description").asText(),
+                            questionJson.get("tag").asText(),
                             list);
                     break;
                 default:

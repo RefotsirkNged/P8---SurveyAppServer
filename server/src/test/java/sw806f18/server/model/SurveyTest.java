@@ -34,7 +34,7 @@ public class SurveyTest {
     @Before
     public void setUp() throws Exception {
         survey = new Survey(title, description);
-        survey.addQuestion(new TextQuestion(1, "Text question", "Text question description"));
+        survey.addQuestion(new TextQuestion(1, "Text question", "Text question description", ""));
 
         List<String> values = new ArrayList<>();
         values.add("A");
@@ -43,15 +43,15 @@ public class SurveyTest {
 
         survey.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
             "Drop question",
-            "Drop question description", values));
+            "Drop question description","", values));
         survey.addQuestion(new NumberQuestion(3, "Number question",
-            "Number question description"));
+            "Number question description", ""));
         Configurations.instance = new Configurations("test-config.json");
     }
 
     @Test
     public void addQuestion() throws Exception {
-        Question tempQuestion = new TextQuestion(5, title, description);
+        Question tempQuestion = new TextQuestion(5, title, description, "");
         survey.addQuestion(tempQuestion);
 
         assertTrue(survey.getQuestions().get(survey.getQuestions().size() - 1).equals(tempQuestion));
@@ -59,7 +59,7 @@ public class SurveyTest {
 
     @Test
     public void addQuestionAtIndex() throws Exception {
-        Question tempQuestion = new TextQuestion(5, title, description);
+        Question tempQuestion = new TextQuestion(5, title, description, "");
         survey.addQuestion(tempQuestion, 1);
 
         assertTrue(survey.getQuestions().get(1).equals(tempQuestion));

@@ -359,7 +359,7 @@ public class DatabaseTest {
     @Test
     public void updateSurvey() throws SurveyException {
         Survey survey = TestHelpers.survey2;
-        survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins"));
+        survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins", ""));
         survey.setTitle("Questionnaire about Rullegardins");
 
         Database.updateSurvey(survey);
