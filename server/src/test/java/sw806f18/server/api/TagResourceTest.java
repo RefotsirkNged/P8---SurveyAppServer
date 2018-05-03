@@ -20,6 +20,27 @@ public class TagResourceTest {
         HttpURLConnection connection = TestHelpers.getHttpConnection(
                 "tag",
                 "GET",
+                TestHelpers.tokenResearcher1,
+                null,
+                "application/x-www-form-urlencoded",
+                null
+        );
+
+        assertEquals(connection.getResponseCode(), 200);
+        JsonNode jsonNode = TestHelpers.getJsonPayload(connection);
+        JsonNode jsonArray = jsonNode.get("tags");
+        assertEquals(jsonArray.size(), 2);
+        for (int i = 0; i < jsonArray.size(); i++) {
+            assertTrue(jsonArray.get(i).get("name").asText().equals(TestHelpers.text1)
+                    || jsonArray.get(i).get("name").asText().equals(TestHelpers.number1));
+        }
+    }
+
+    @Test
+    public void getIntTags() throws IOException {
+        HttpURLConnection connection = TestHelpers.getHttpConnection(
+                "tag/int",
+                "GET",
                 TestHelpers.token1,
                 null,
                 "application/x-www-form-urlencoded",
@@ -29,20 +50,29 @@ public class TagResourceTest {
         assertEquals(connection.getResponseCode(), 200);
         JsonNode jsonNode = TestHelpers.getJsonPayload(connection);
         JsonNode jsonArray = jsonNode.get("tags");
-        assertEquals(jsonNode.size(), 2);
+        assertEquals(jsonNode.size(), 1);
         for (int i = 0; i < jsonNode.size(); i++) {
-            assertTrue(!jsonArray.get(i).equals(TestHelpers.text1)
-                    || !jsonArray.get(i).equals(TestHelpers.number1));
+            assertTrue(jsonArray.get(i).equals(TestHelpers.number1));
         }
     }
 
     @Test
-    void getIntTags() {
+    public void getStringTags() throws IOException {
+        HttpURLConnection connection = TestHelpers.getHttpConnection(
+                "tag/String",
+                "GET",
+                TestHelpers.token1,
+                null,
+                "application/x-www-form-urlencoded",
+                null
+        );
 
-    }
-
-    @Test
-    void getStringTags() {
-
+        assertEquals(connection.getResponseCode(), 200);
+        JsonNode jsonNode = TestHelpers.getJsonPayload(connection);
+        JsonNode jsonArray = jsonNode.get("tags");
+        assertEquals(jsonNode.size(), 1);
+        for (int i = 0; i < jsonNode.size(); i++) {
+            assertTrue(jsonArray.get(i).equals(TestHelpers.text1));
+        }
     }
 }
