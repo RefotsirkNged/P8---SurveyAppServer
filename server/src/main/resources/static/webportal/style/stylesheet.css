@@ -146,3 +146,11 @@ html, body{
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
 }
+
+.bottom-navbar {
+    border-top: 1px solid #c8cbcf;
+
+}
+
+
+
