@@ -28,7 +28,7 @@ public class TagResource {
             for (String tag : tags) {
                 ObjectNode objectnode = mapper.createObjectNode();
                 objectnode.put("name", tag);
-                arrayNode.add(objectnode);
+                arrayNode.add(tag);
             }
             ObjectNode arraytags = mapper.createObjectNode();
             arraytags.put("tags", arrayNode);

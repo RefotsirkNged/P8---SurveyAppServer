@@ -31,8 +31,8 @@ public class TagResourceTest {
         JsonNode jsonArray = jsonNode.get("tags");
         assertEquals(jsonArray.size(), 2);
         for (int i = 0; i < jsonArray.size(); i++) {
-            assertTrue(jsonArray.get(i).get("name").asText().equals(TestHelpers.text1)
-                    || jsonArray.get(i).get("name").asText().equals(TestHelpers.number1));
+            assertTrue(jsonArray.get(i).asText().equals(TestHelpers.text1)
+                    || jsonArray.get(i).asText().equals(TestHelpers.number1));
         }
     }
 
