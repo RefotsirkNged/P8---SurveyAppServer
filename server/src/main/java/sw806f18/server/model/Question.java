@@ -17,8 +17,18 @@ public abstract class Question {
      * Enum describing the data type of a question.
      */
     public enum Type {
-        STRING,
-        INT
+        STRING(0),
+        INT(1);
+
+        private final int value;
+
+        private Type(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     /**
@@ -30,8 +40,9 @@ public abstract class Question {
 
     /**
      * Constructor for abstract class Question.
-     * @param id The id of a question
-     * @param title The title
+     *
+     * @param id          The id of a question
+     * @param title       The title
      * @param description Description
      */
     public Question(int id, Type type, Input input, String title, String description, String tag) {
@@ -122,6 +133,7 @@ public abstract class Question {
 
     /**
      * Get the HTML representation of Question.
+     *
      * @return HTML representation of Question
      */
     public String getHTML() {
@@ -131,12 +143,12 @@ public abstract class Question {
             builder.append("<p class='p8warning'>" + warning + "</p>");
         }
 
-        return  builder.toString();
+        return builder.toString();
     }
 
     @Override
     public boolean equals(Object obj) {
-        Question other = (Question)obj;
+        Question other = (Question) obj;
         return this.id == other.id;
     }
 }

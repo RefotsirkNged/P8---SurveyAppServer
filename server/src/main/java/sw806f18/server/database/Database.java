@@ -244,4 +244,16 @@ public class Database {
         RelationalDatabase.updateSurvey(survey);
         NoSqlDatabase.updateQuestionFromSurvey(survey);
     }
+
+    public static List<String> getAllTags() throws P8Exception {
+        return RelationalDatabase.getAllTags();
+    }
+
+    public static List<String> getIntTags() throws P8Exception {
+        return RelationalDatabase.getIntTags();
+    }
+
+    public static List<String> getStringTags() throws P8Exception {
+        return RelationalDatabase.getStringTags();
+    }
 }

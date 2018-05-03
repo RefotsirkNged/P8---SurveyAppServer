@@ -74,6 +74,11 @@ public class TestHelpers {
     public static Hub hub2 = new Hub();
     public static Hub hub3 = new Hub();
 
+    public static String text1 = "Text1";
+    public static String text2 = "Text2";
+    public static String text3 = "Text3";
+    public static String number1 = "number1";
+
     /**
      * Populates database with test data.
      *
@@ -127,26 +132,26 @@ public class TestHelpers {
         survey2 = new Survey("Spørgeskema under graviditetsforløb",
             "Dette spørgeskema indholder spørgsmål vedrørende din livsstil og dit helbred.");
         survey2.addQuestion(new NumberQuestion(3, "Alkohol",
-            "Hvor mange genstande drikker du om ugen:", ""));
+            "Hvor mange genstande drikker du om ugen:", number1));
         survey2.addQuestion(new TextQuestion(3, "Rygning",
-            "Hvor mange cigaretter ryger du om dagen:", ""));
+            "Hvor mange cigaretter ryger du om dagen:", text1));
 
         List<String> bistrolStoolChart = new ArrayList<>();
         bistrolStoolChart.add("123");
 
         survey2.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
             "Afføring",
-            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", "",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", text1,
             bistrolStoolChart));
 
         surveyAnswer1.addQuestion(new NumberQuestion(3, "Alkohol",
-            "Hvor mange genstande drikker du om ugen:", ""));
+            "Hvor mange genstande drikker du om ugen:", number1));
         surveyAnswer1.addQuestion(new TextQuestion(3, "Rygning",
-            "Hvor mange cigaretter ryger du om dagen:", ""));
+            "Hvor mange cigaretter ryger du om dagen:", text2));
 
         surveyAnswer1.addQuestion(new DropdownQuestion(2, Question.Type.STRING,
             "Afføring",
-            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", "",
+            "Hvordan vil du beskrive din afføring efter et gennemsnitligt toiletbesøg:", text3,
             bistrolStoolChart));
 
         String answer1 = "1";
