@@ -141,7 +141,7 @@ public class RelationalDatabase {
      * Get list of all modules from database.
      *
      * @return List of all surveys.
-     * @throws GetGroupsException Exception.
+     * @throws SurveyException Exception.
      */
     static List<Survey> getAllModules() throws SurveyException {
         Connection con = null;
@@ -157,7 +157,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 modules.add(new Survey(resultSet.getInt("id"),
-                    resultSet.getString("name"), resultSet.getString("description")));
+                        resultSet.getString("name"),
+                        resultSet.getString("description")));
             }
             return modules;
         } catch (SQLException | ClassNotFoundException e) {
@@ -715,13 +716,14 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
 
-            String query = "INSERT INTO questions (name, description, moduleId) VALUES (?, ?, ?) RETURNING id";
-
+            String query = "INSERT INTO questions (name, description, tag, moduleId) VALUES (?, ?, ?, ?) RETURNING id";
+            int tagId = getTagId(connection, question);
 
             statement = connection.prepareStatement(query);
             statement.setString(1, question.getTitle());
             statement.setString(2, question.getDescription());
-            statement.setInt(3, surveyID);
+            statement.setInt(3, tagId);
+            statement.setInt(4, surveyID);
 
             resultSet = statement.executeQuery();
             resultSet.next();
@@ -1055,6 +1057,24 @@ public class RelationalDatabase {
             closeConnection(con);
         }
     }
+    static int getTagId(Connection con, Question q) throws SQLException {
+        PreparedStatement statement = null;
+
+        try {
+            String tagQuery = "INSERT INTO tags (name) VALUES (?) ON CONFLICT DO NOTHING RETURNING (SELECT id FROM tags WHERE ? = name)";
+            statement = con.prepareStatement(tagQuery);
+            statement.setString(1,q.getTag());
+            statement.setString(2,q.getTag());
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+
+    }
 
     static void updateQuestion(Question q) throws SurveyException {
         Connection con = null;
@@ -1062,11 +1082,13 @@ public class RelationalDatabase {
 
         try {
             con = createConnection();
-            String query = "UPDATE questions SET name=?,description=? WHERE id=?";
+            int tagId = getTagId(con, q);
+            String query = "UPDATE questions SET name=?,description=?, tag=? WHERE id=?";
             statement = con.prepareStatement(query);
             statement.setString(1, q.getTitle());
             statement.setString(2, q.getDescription());
-            statement.setInt(3, q.getId());
+            statement.setInt(3, tagId);
+            statement.setInt(4, q.getId());
             statement.execute();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
