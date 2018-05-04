@@ -16,9 +16,17 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+
 @RestController
 @RequestMapping(path = "/tag")
 public class TagResource {
+
+    /**
+     * get all tags.
+     * @param token token.
+     * @return returns a list of tags.
+     * @throws P8Exception
+     */
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllTags(@CookieValue(value = "token") String token) throws P8Exception {
         if (Database.isResearcher(Authentication.instance.getId(token))) {

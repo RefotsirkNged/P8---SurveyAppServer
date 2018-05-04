@@ -12,7 +12,7 @@
     <script src="../js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../js/surveymanager.js"></script>
 </head>
-<body>
+<body onload="initTags()">
 <div class="main-container">
     <div class="wrapper row" style="height: 90%">
         <div class="col-md-6 parameters-container" style="overflow: auto;">
@@ -76,6 +76,7 @@
     var index = 0;
     var currentrowid;
     var currentTagRowid;
+    var taglist;
 
     function addParameterRow(){
         var table = document.getElementById("parametertable");
@@ -186,19 +187,30 @@
 
     function getTags(rowid){
         var table = document.getElementById("tagtable");
-        var listoftags = ["hej", "123", "ged"];
+        //var listoftags = ["hej", "123", "ged"];
         currentrowid = rowid;
         table.innerHTML = "";
-        //ajax kald til get list of tags api
 
-        for (i = 0; i < listoftags.length; i++) {
-            var tag = listoftags[i];
+        for (i = 0; i < taglist.length; i++) {
+            var tag = taglist[i];
             var newrow = table.insertRow(-1);
             newrow.innerHTML = "<td>" + tag + "</td>";
             newrow.style.cursor = "default";
             newrow.onclick = function(){tagRowClicked(this)};
         }
-        return listoftags;
+    }
+
+    function initTags(){
+        $.ajax({
+            url: '/api/tag/',
+            type: 'GET',
+            beforeSend: function (request) {
+                request.setRequestHeader("token", sessionStorage.getItem("token"));
+            },
+            success: function (response) {
+                taglist = response.tags;
+            }
+        })
     }
 
     function query(){
@@ -206,7 +218,6 @@
     }
 
     function exportData(){
-
     }
 
     function tagRowClicked(row) {
