@@ -1175,4 +1175,9 @@ public class RelationalDatabase {
             closeStatement(statement);
         }
     }
+
+    static List<Tuple<String, Integer>> queryTags(List<QueryRow> query) {
+        //Todo
+        return null;
+    }
 }

@@ -400,4 +400,9 @@ public class DatabaseTest {
     public void tagTypeCheck() {
         //TODO Implement this test
     }
+
+    @Test
+    public void queryTest() {
+        fail();
+    }
 }

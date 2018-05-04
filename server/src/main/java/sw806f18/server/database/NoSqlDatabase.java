@@ -253,4 +253,9 @@ public class NoSqlDatabase {
         closeConnection();
         return answer;
     }
+
+    static List<Tuple<String, Integer>> getPersonsFromSurvey(Tuple<String, Integer> survey) {
+        //Todo
+        return null;
+    }
 }

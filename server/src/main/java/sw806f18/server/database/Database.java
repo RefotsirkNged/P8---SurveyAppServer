@@ -2,7 +2,9 @@ package sw806f18.server.database;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sw806f18.server.exceptions.AddGroupException;
 import sw806f18.server.exceptions.AddGroupMemberException;
@@ -255,5 +257,22 @@ public class Database {
 
     public static List<String> getStringTags() throws P8Exception {
         return RelationalDatabase.getStringTags();
+    }
+
+    /**
+     * Query surveys and answers.
+     *
+     * @param query Query.
+     * @return Surveys ans persons.
+     */
+    public static Map<Tuple<String, Integer>, List<Tuple<String, Integer>>> querySurveys(List<QueryRow> query) {
+        List<Tuple<String, Integer>> surveys = RelationalDatabase.queryTags(query);
+        Map<Tuple<String, Integer>, List<Tuple<String, Integer>>> res = new HashMap<>();
+        for (Tuple<String, Integer> survey : surveys) {
+            List<Tuple<String, Integer>> persons = NoSqlDatabase.getPersonsFromSurvey(survey);
+            res.put(survey, persons);
+        }
+
+        return res;
     }
 }
