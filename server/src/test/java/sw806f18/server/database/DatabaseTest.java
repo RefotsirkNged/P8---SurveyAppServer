@@ -19,6 +19,7 @@ import sw806f18.server.exceptions.*;
 import sw806f18.server.model.*;
 
 import javax.validation.constraints.AssertTrue;
+import javax.xml.crypto.Data;
 
 import static org.junit.Assert.*;
 
@@ -359,10 +360,44 @@ public class DatabaseTest {
     @Test
     public void updateSurvey() throws SurveyException {
         Survey survey = TestHelpers.survey2;
-        survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins"));
+        survey.addQuestion(new TextQuestion("Hello Rullegardin", "I love rullegardins", ""));
         survey.setTitle("Questionnaire about Rullegardins");
 
         Database.updateSurvey(survey);
         assertTrue(Database.getSurvey(survey.getId()).equals(survey));
+    }
+
+    @Test
+    public void getAllTags() throws P8Exception {
+        List<String> tags = Database.getAllTags();
+
+        assertEquals(tags.size(), 2);
+        assertTrue(tags.contains(TestHelpers.text1));
+        assertTrue(tags.contains(TestHelpers.number1));
+    }
+
+    @Test
+    public void getIntTags() throws P8Exception {
+        List<String> tags = Database.getIntTags();
+
+        assertEquals(tags.size(), 1);
+        assertFalse(tags.contains(TestHelpers.text1));
+        assertFalse(tags.contains(TestHelpers.text2));
+        assertFalse(tags.contains(TestHelpers.text3));
+        assertTrue(tags.contains(TestHelpers.number1));
+    }
+
+    @Test
+    public void getStringTags() throws P8Exception {
+        List<String> tags = Database.getStringTags();
+
+        assertEquals(tags.size(), 1);
+        assertTrue(tags.contains(TestHelpers.text1));
+        assertFalse(tags.contains(TestHelpers.number1));
+    }
+
+    @Test
+    public void tagTypeCheck() {
+        //TODO Implement this test
     }
 }

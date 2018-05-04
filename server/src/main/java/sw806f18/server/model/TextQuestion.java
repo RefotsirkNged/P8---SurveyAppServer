@@ -18,8 +18,8 @@ public class TextQuestion extends Question {
      * @param title the title
      * @param description Description
      */
-    public TextQuestion(int id, String title, String description) {
-        super(id, Type.STRING, Input.TEXT, title, description);
+    public TextQuestion(int id, String title, String description, String tag) {
+        super(id, Type.STRING, Input.TEXT, title, description, tag);
     }
 
     /**
@@ -27,8 +27,8 @@ public class TextQuestion extends Question {
      * @param title The title
      * @param description Description
      */
-    public TextQuestion(String title, String description) {
-        super(-1, Type.STRING, Input.TEXT, title, description);
+    public TextQuestion(String title, String description, String tag) {
+        super(-1, Type.STRING, Input.TEXT, title, description, tag);
     }
 
 

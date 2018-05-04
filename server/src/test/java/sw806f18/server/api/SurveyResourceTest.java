@@ -217,7 +217,7 @@ public class SurveyResourceTest {
 
     @Test
     public void addQuestionToSurvey() throws IOException {
-        Question question = new TextQuestion("Blå Ford", "Parker Ordenligt");
+        Question question = new TextQuestion("Blå Ford", "Parker Ordenligt", "");
         Survey survey = TestHelpers.survey2;
         survey.addQuestion(question);
 

@@ -25,12 +25,12 @@ public class RelationalDatabase {
         Connection c = null;
         Class.forName("org.postgresql.Driver");
         c = DriverManager
-            .getConnection("jdbc:postgresql://"
-                    + Configurations.instance.getPostgresIp() + ":"
-                    + Configurations.instance.getPostgresPort() + "/"
-                    + Configurations.instance.getPostgresDatabase(),
-                Configurations.instance.getPostgresUser(),
-                Configurations.instance.getPostgresPassword());
+                .getConnection("jdbc:postgresql://"
+                                + Configurations.instance.getPostgresIp() + ":"
+                                + Configurations.instance.getPostgresPort() + "/"
+                                + Configurations.instance.getPostgresDatabase(),
+                        Configurations.instance.getPostgresUser(),
+                        Configurations.instance.getPostgresPassword());
         return c;
     }
 
@@ -74,10 +74,10 @@ public class RelationalDatabase {
      * @throws SQLException SQL Exception.
      */
     private static int getUser(Connection connection, String email, String password)
-        throws SQLException {
+            throws SQLException {
 
         String query = "SELECT id, password, salt FROM users "
-            + "WHERE email = ?";
+                + "WHERE email = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, email);
 
@@ -87,9 +87,9 @@ public class RelationalDatabase {
         }
 
         byte[] saltedPassword = Security
-            .convertStringToByteArray(resultSet.getString("password"));
+                .convertStringToByteArray(resultSet.getString("password"));
         byte[] salt = Security
-            .convertStringToByteArray(resultSet.getString("salt"));
+                .convertStringToByteArray(resultSet.getString("salt"));
         int id = resultSet.getInt("id");
 
         byte[] hashedPassword = Security.hash(password, salt);
@@ -124,8 +124,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 groups.add(new Group(resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getInt("hub")));
+                        resultSet.getString("name"),
+                        resultSet.getInt("hub")));
             }
             return groups;
         } catch (SQLException | ClassNotFoundException e) {
@@ -141,7 +141,7 @@ public class RelationalDatabase {
      * Get list of all modules from database.
      *
      * @return List of all surveys.
-     * @throws GetGroupsException Exception.
+     * @throws SurveyException Exception.
      */
     static List<Survey> getAllModules() throws SurveyException {
         Connection con = null;
@@ -157,7 +157,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 modules.add(new Survey(resultSet.getInt("id"),
-                    resultSet.getString("name"), resultSet.getString("description")));
+                        resultSet.getString("name"),
+                        resultSet.getString("description")));
             }
             return modules;
         } catch (SQLException | ClassNotFoundException e) {
@@ -294,16 +295,16 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 String query = "SELECT r.phone AS phone, u.firstname AS firstname, u.lastname AS lastname"
-                    + " FROM researcher r, users u WHERE r.id = ? AND r.id = u.id";
+                        + " FROM researcher r, users u WHERE r.id = ? AND r.id = u.id";
                 statement = connection.prepareStatement(query);
                 statement.setInt(1, userid);
                 resultSet = statement.executeQuery();
 
                 if (resultSet.next()) {
                     researcher = new Researcher(userid, email,
-                        resultSet.getString("phone"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname"));
+                            resultSet.getString("phone"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"));
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -326,7 +327,7 @@ public class RelationalDatabase {
      * @throws CreateUserException Exception.
      */
     static Researcher createResearcher(Researcher researcher, String password)
-        throws CreateUserException {
+            throws CreateUserException {
         Connection connection = null;
         PreparedStatement statement1 = null;
         PreparedStatement statement2 = null;
@@ -338,7 +339,7 @@ public class RelationalDatabase {
             byte[] salt = Security.getNextSalt();
 
             String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
-                + "VALUES ( ?, ?, ?, ?, ? ) RETURNING id";
+                    + "VALUES ( ?, ?, ?, ?, ? ) RETURNING id";
             statement1 = connection.prepareStatement(q1);
             statement1.setString(1, researcher.getEmail());
             statement1.setString(2, Security.convertByteArrayToString(Security.hash(password, salt)));
@@ -351,7 +352,7 @@ public class RelationalDatabase {
             int id = resultSet.getInt(1);
 
             String q2 = "INSERT INTO researcher (id, phone)"
-                + "VALUES ( ?, ?)";
+                    + "VALUES ( ?, ?)";
             statement2 = connection.prepareStatement(q2);
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(researcher.phone));
@@ -457,18 +458,18 @@ public class RelationalDatabase {
                 throw new LoginException("Invalid email or password!");
             } else {
                 String query = "SELECT p.cpr AS cpr, u.firstname AS firstname, u.lastname AS lastname, "
-                    + "p.primarygroup AS primarygroup"
-                    + " FROM participants p, users u WHERE p.id = ? AND p.id = u.id";
+                        + "p.primarygroup AS primarygroup"
+                        + " FROM participants p, users u WHERE p.id = ? AND p.id = u.id";
                 statement = connection.prepareStatement(query);
                 statement.setInt(1, userid);
                 resultSet = statement.executeQuery();
 
                 if (resultSet.next()) {
                     participant = new Participant(userid, email,
-                        resultSet.getString("cpr"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname"),
-                        resultSet.getInt("primarygroup"));
+                            resultSet.getString("cpr"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"),
+                            resultSet.getInt("primarygroup"));
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -520,8 +521,8 @@ public class RelationalDatabase {
             byte[] salt = Security.getNextSalt();
 
             String q1 = "INSERT INTO users(email, password, salt, firstname, lastname) "
-                + "VALUES ( ?, ?, ?, ?, ? )"
-                + "RETURNING id";
+                    + "VALUES ( ?, ?, ?, ?, ? )"
+                    + "RETURNING id";
             statement1 = connection.prepareStatement(q1);
             statement1.setString(1, participant.getEmail());
             statement1.setString(2, Security.convertByteArrayToString(Security.hash(password, salt)));
@@ -534,7 +535,7 @@ public class RelationalDatabase {
             int id = resultSet.getInt(1);
 
             String q2 = "INSERT INTO participants (id, cpr, birthday, primarygroup)"
-                + "VALUES ( ?, ?, ?, ?)";
+                    + "VALUES ( ?, ?, ?, ?)";
             statement2 = connection.prepareStatement(q2);
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(participant.getCpr().trim()));    // TODO: Loss of leading zeros!!!
@@ -573,14 +574,14 @@ public class RelationalDatabase {
             statement = connection.createStatement();
 
             String query = "SELECT u.id id, u.email email, u.firstname firstname, "
-                + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
-                + " FROM users u, participants p WHERE u.id = p.id";
+                    + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
+                    + " FROM users u, participants p WHERE u.id = p.id";
 
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 ret.add(new Participant(resultSet.getInt("id"), resultSet.getString("email"),
-                    resultSet.getString("cpr"), resultSet.getString("firstname"),
-                    resultSet.getString("lastname"), resultSet.getInt("primarygroup")));
+                        resultSet.getString("cpr"), resultSet.getString("firstname"),
+                        resultSet.getString("lastname"), resultSet.getInt("primarygroup")));
             }
             closeConnection(connection);
         } catch (SQLException | ClassNotFoundException e) {
@@ -602,7 +603,7 @@ public class RelationalDatabase {
             connection = createConnection();
 
             String query = "INSERT INTO hasgroup (participantid, groupid)"
-                + " VALUES ( ?, ?)";
+                    + " VALUES ( ?, ?)";
             statement = connection.prepareStatement(query);
             statement.setInt(1, participant1.getId());
             statement.setInt(2, group1.getId());
@@ -617,7 +618,7 @@ public class RelationalDatabase {
     }
 
     static void removeParticipantFromGroup(Group group, Participant participant)
-        throws RemoveParticipantFromGroupException {
+            throws RemoveParticipantFromGroupException {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -648,16 +649,16 @@ public class RelationalDatabase {
             connection = createConnection();
 
             String query = "SELECT u.id id, u.email email, u.firstname firstname, "
-                + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
-                + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = ?"
-                + " AND h.participantid = u.id";
+                    + "u.lastname lastname, p.cpr cpr, p.primarygroup primarygroup"
+                    + " FROM users u, participants p, hasgroup h WHERE u.id = p.id AND h.groupid = ?"
+                    + " AND h.participantid = u.id";
             statement = connection.prepareStatement(query);
             statement.setInt(1, group1.getId());
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 ret.add(new Participant(resultSet.getInt("id"), resultSet.getString("email"),
-                    resultSet.getString("cpr"), resultSet.getString("firstname"),
-                    resultSet.getString("lastname"), resultSet.getInt("primarygroup")));
+                        resultSet.getString("cpr"), resultSet.getString("firstname"),
+                        resultSet.getString("lastname"), resultSet.getInt("primarygroup")));
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new GetGroupMemberException("Server error, contact system administrator", e);
@@ -680,7 +681,7 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "INSERT INTO modules (name, frequencyvalue, "
-                + "frequencytype, description) VALUES ( ?, ?, ?::frequencytype, ?) RETURNING id";
+                    + "frequencytype, description) VALUES ( ?, ?, ?::FREQUENCYTYPE, ?) RETURNING id";
             statement = connection.prepareStatement(query);
             statement.setString(1, s.getTitle());
             statement.setLong(2, s.getFrequencyValue());
@@ -715,18 +716,19 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
 
-            String query = "INSERT INTO questions (name, description, moduleId) VALUES (?, ?, ?) RETURNING id";
-
+            String query = "INSERT INTO questions (name, description, tag, moduleId) VALUES (?, ?, ?, ?) RETURNING id";
+            int tagId = getTagId(connection, question);
 
             statement = connection.prepareStatement(query);
             statement.setString(1, question.getTitle());
             statement.setString(2, question.getDescription());
-            statement.setInt(3, surveyID);
+            statement.setInt(3, tagId);
+            statement.setInt(4, surveyID);
 
             resultSet = statement.executeQuery();
             resultSet.next();
             id = resultSet.getInt(1);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException | P8Exception e) {
             throw new SurveyException(e.getMessage());
         } finally {
             closeConnection(connection);
@@ -745,7 +747,7 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "SELECT hasmodule.moduleid FROM hasgroup, hasmodule WHERE hasgroup.participantid = ? "
-                + "AND hasgroup.groupid = hasmodule.groupid";
+                    + "AND hasgroup.groupid = hasmodule.groupid";
             statement = connection.prepareStatement(query);
             statement.setInt(1, user.getId());
             resultSet = statement.executeQuery();
@@ -780,7 +782,7 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "INSERT INTO hasModule (groupid, moduleid) "
-                + "VALUES ( ?, ?)";
+                    + "VALUES ( ?, ?)";
             statement = connection.prepareStatement(query);
             statement.setInt(1, groupID);
             statement.setInt(2, moduleID);
@@ -833,7 +835,7 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "SELECT g.hub AS hubid FROM participants p, \"groups\" g "
-                + "WHERE p.id= ? AND p.primarygroup=g.id";
+                    + "WHERE p.id= ? AND p.primarygroup=g.id";
             statement = connection.prepareStatement(query);
             statement.setInt(1, userId);
             resultSet = statement.executeQuery();
@@ -912,34 +914,34 @@ public class RelationalDatabase {
         try {
             List<Survey> surveys = new ArrayList<>();
             connection = createConnection();
-            String query = "SELECT DISTINCT (m.id) AS id, m.name AS name, m.description AS description\n"
-                + "FROM modules m, hasmodule hm, groups g, hasgroup hg\n"
-                + "WHERE m.id = hm.moduleid AND\n"
-                + "hm.groupid = g.id AND\n"
-                + "hg.groupid = g.id AND\n"
-                + "hg.participantid = ? AND\n"
-                + "m.id NOT IN (SELECT m.id\n"
-                + "            FROM modules m, hasanswered h\n"
-                + "            WHERE h.participantid = ? AND\n"
-                + "            h.moduleid = m.id AND\n"
-                + "            h.timestamp < (SELECT\n"
-                + "                           CASE WHEN frequencytype='ONCE' THEN to_timestamp(1)\n"
-                + "                                WHEN frequencytype='DAYS' "
-                + "THEN CURRENT_DATE + INTERVAL '1 day' * frequencyvalue\n"
-                + "                                WHEN frequencytype='WEEKS' "
-                + "THEN CURRENT_DATE + INTERVAL '1 week' * frequencyvalue\n"
-                + "                                WHEN frequencytype='MONTHS' "
-                + "THEN CURRENT_DATE + INTERVAL '1 month' * frequencyvalue\n"
-                + "                                WHEN frequencytype='YEARS'"
-                + " THEN CURRENT_DATE + INTERVAL '1 year' * frequencyvalue\n"
-                + "                                WHEN frequencytype='BIRTHDAY' "
-                + "THEN (SELECT to_timestamp(DATE_PART('year', CURRENT_DATE)+1 || ' ' || "
-                + "DATE_PART('month', birthday) || ' ' || DATE_PART('day', birthday), 'YYYY-MM-DD') "
-                + "FROM participants WHERE id = ?)\n"
-                + "                                ELSE to_timestamp(frequencyvalue)\n"
-                + "                           END\n"
-                + "                           FROM modules\n"
-                + "                           WHERE id = m.id))";
+            String query = "SELECT m.id AS id, m.name AS name, m.description AS description\n"
+                    + "FROM modules m, hasmodule hm, groups g, hasgroup hg\n"
+                    + "WHERE m.id = hm.moduleid AND\n"
+                    + "hm.groupid = g.id AND\n"
+                    + "hg.groupid = g.id AND\n"
+                    + "hg.participantid = ? AND\n"
+                    + "m.id NOT IN (SELECT m.id\n"
+                    + "            FROM modules m, hasanswered h\n"
+                    + "            WHERE h.participantid = ? AND\n"
+                    + "            h.moduleid = m.id AND\n"
+                    + "            h.timestamp < (SELECT\n"
+                    + "                           CASE WHEN frequencytype='ONCE' THEN to_timestamp(1)\n"
+                    + "                                WHEN frequencytype='DAYS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 day' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='WEEKS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 week' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='MONTHS' "
+                    + "THEN CURRENT_DATE - INTERVAL '1 month' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='YEARS'"
+                    + " THEN CURRENT_DATE - INTERVAL '1 year' * frequencyvalue\n"
+                    + "                                WHEN frequencytype='BIRTHDAY' "
+                    + "THEN (SELECT to_timestamp(DATE_PART('year', CURRENT_DATE)-1 || ' ' || "
+                    + "DATE_PART('month', birthday) || ' ' || DATE_PART('day', birthday), 'YYYY-MM-DD') "
+                    + "FROM participants WHERE id = ?)\n"
+                    + "                                ELSE to_timestamp(frequencyvalue)\n"
+                    + "                           END\n"
+                    + "                           FROM modules\n"
+                    + "                           WHERE id = m.id))";
             statement = connection.prepareStatement(query);
             statement.setInt(1, userId);
             statement.setInt(2, userId);
@@ -949,8 +951,8 @@ public class RelationalDatabase {
 
             while (resultSet.next()) {
                 surveys.add(new Survey(resultSet.getInt("id"),
-                    resultSet.getString("name"), resultSet
-                    .getString("description")));
+                        resultSet.getString("name"), resultSet
+                        .getString("description")));
             }
 
             return surveys;
@@ -990,14 +992,14 @@ public class RelationalDatabase {
         try {
             connection = createConnection();
             String query = "SELECT m.id AS id, m.name AS title, m.description AS description "
-                + "FROM hasModule h, modules m WHERE h.groupid = ? AND m.id = h.moduleid";
+                    + "FROM hasModule h, modules m WHERE h.groupid = ? AND m.id = h.moduleid";
             statement = connection.prepareStatement(query);
             statement.setInt(1, groupId);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 modules.add(new Survey(resultSet.getInt("id"),
-                    resultSet.getString("title"),
-                    resultSet.getString("description")));
+                        resultSet.getString("title"),
+                        resultSet.getString("description")));
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
@@ -1033,7 +1035,7 @@ public class RelationalDatabase {
         try {
             con = createConnection();
             String q1 = "UPDATE modules SET name=?, "
-                + "frequencyvalue=?,frequencytype=?::frequencytype,description=? WHERE id=?";
+                    + "frequencyvalue=?,frequencytype=?::FREQUENCYTYPE,description=? WHERE id=?";
             stmt = con.prepareStatement(q1);
             stmt.setString(1, survey.getTitle());
             stmt.setLong(2, survey.getFrequencyValue());
@@ -1049,7 +1051,7 @@ public class RelationalDatabase {
                     updateQuestion(q);
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException | P8Exception e) {
             throw new SurveyException(e.getMessage());
         } finally {
             closeStatement(stmt);
@@ -1057,20 +1059,118 @@ public class RelationalDatabase {
         }
     }
 
-    static void updateQuestion(Question q) throws SurveyException {
+    static int getTagId(Connection con, Question q) throws SQLException, P8Exception {
+        PreparedStatement statement = null;
+        try {
+            String tagQuery = "INSERT INTO tags (name, tagtype) VALUES (?,?) ON CONFLICT DO NOTHING";
+            statement = con.prepareStatement(tagQuery);
+            statement.setString(1, q.getTag());
+            statement.setInt(2, q.getType().getValue());
+            statement.execute();
+            String getTagQuery = "SELECT id, tagtype FROM tags WHERE ? = name";
+            statement = con.prepareStatement(getTagQuery);
+            statement.setString(1, q.getTag());
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            if (resultSet.getInt(2) != q.getType().getValue()) {
+                throw new P8Exception("wrong input type");
+            }
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException();
+        }
+
+
+    }
+
+    static void updateQuestion(Question q) throws SurveyException, P8Exception {
         Connection con = null;
         PreparedStatement statement = null;
 
         try {
             con = createConnection();
-            String query = "UPDATE questions SET name=?,description=? WHERE id=?";
+            int tagId = getTagId(con, q);
+            String query = "UPDATE questions SET name=?,description=?, tag=? WHERE id=?";
             statement = con.prepareStatement(query);
             statement.setString(1, q.getTitle());
             statement.setString(2, q.getDescription());
-            statement.setInt(3, q.getId());
+            statement.setInt(3, tagId);
+            statement.setInt(4, q.getId());
             statement.execute();
         } catch (SQLException | ClassNotFoundException e) {
             throw new SurveyException(e.getMessage());
+        } finally {
+            closeConnection(con);
+            closeStatement(statement);
+        }
+    }
+
+    static List<String> getAllTags() throws P8Exception {
+        Connection con = null;
+        PreparedStatement statement = null;
+
+        try {
+            con = createConnection();
+            String query = "SELECT name FROM tags";
+            statement = con.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<String> tags = new ArrayList<>();
+            while (resultSet.next()) {
+                tags.add(resultSet.getString(1));
+            }
+            return tags;
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new P8Exception(e.getMessage());
+        } finally {
+            closeConnection(con);
+            closeStatement(statement);
+        }
+    }
+
+    static List<String> getIntTags() throws P8Exception {
+        Connection con = null;
+        PreparedStatement statement = null;
+
+        try {
+            con = createConnection();
+            String query = "SELECT name FROM tags WHERE tagtype = ?";
+            statement = con.prepareStatement(query);
+            statement.setInt(1, Question.Type.INT.getValue());
+            ResultSet resultSet = statement.executeQuery();
+            List<String> tags = new ArrayList<>();
+            while (resultSet.next()) {
+                tags.add(resultSet.getString(1));
+            }
+            return tags;
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new P8Exception(e.getMessage());
+        } finally {
+            closeConnection(con);
+            closeStatement(statement);
+        }
+    }
+
+    static List<String> getStringTags() throws P8Exception {
+        Connection con = null;
+        PreparedStatement statement = null;
+
+        try {
+            con = createConnection();
+            String query = "SELECT name FROM tags WHERE tagtype = ?";
+            statement = con.prepareStatement(query);
+            statement.setInt(1, Question.Type.STRING.getValue());
+            ResultSet resultSet = statement.executeQuery();
+            List<String> tags = new ArrayList<>();
+            while (resultSet.next()) {
+                tags.add(resultSet.getString(1));
+            }
+            return tags;
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new P8Exception(e.getMessage());
         } finally {
             closeConnection(con);
             closeStatement(statement);

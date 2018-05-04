@@ -124,6 +124,7 @@ function addQuestion() {
     var name = document.getElementById("questionNameInput").value;
     var description = document.getElementById("questionDescriptionInput").value;
     var index = document.getElementById("questionInputTypeInput").selectedIndex;
+    var tag = document.getElementById("questionTagInput").value;
     var inputtype;
     var type = "STRING";
     var values = [];
@@ -148,6 +149,7 @@ function addQuestion() {
     var json = {};
     json.title = name;
     json.description = description;
+    json.tag = tag;
     json.input = inputtype;
     json.type = type;
     json.values = values;
@@ -185,6 +187,7 @@ function addValueToTable() {
 function updateSurveyMetadata() {
     var title = document.getElementById("nametext").value;
     var description = document.getElementById("descriptiontext").value;
+    var tag = document.getElementById("tagtext").value;
     var frequencyType, frequencyValue;
 
 
@@ -220,6 +223,7 @@ function updateSurveyMetadata() {
     var json = {};
     json.title = title;
     json.description = description;
+    json.tag = tag;
     json.frequencyType = frequencyType;
     json.frequencyValue = frequencyValue;
     console.log("json " + JSON.stringify(json));

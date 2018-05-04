@@ -4,13 +4,14 @@
     "port": 5432,
     "user": "postgres",
     "password": "power123",
-    "database": "test"
+    "database": "dev2"
   },
   "mongoDB": {
     "ip": "192.168.1.111",
     "port": 27017,
-    "database": "test",
+    "database": "dev2",
     "user": "root",
     "password": "power123"
-  }
+  },
+  "primarygroup": 5144
 }

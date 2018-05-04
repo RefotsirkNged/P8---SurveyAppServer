@@ -82,6 +82,10 @@ function newSurvey(){
     window.location.replace("../surveymanager/index.html");
 }
 
+function exportData(){
+    window.location.assign("../Querypage/index.html");
+}
+
 function home(){
     if(isLoggedIn()){
         window.location.replace("../home/index.html");

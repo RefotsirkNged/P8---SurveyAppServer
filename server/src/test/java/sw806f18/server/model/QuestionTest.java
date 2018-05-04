@@ -31,8 +31,9 @@ public class QuestionTest {
     public void getHTMLTextQuestion() throws Exception {
         String title = "Test text question";
         String description = "This is a text question";
+        String tag = "thisIsATag";
 
-        Question question = new TextQuestion(1, title, description);
+        Question question = new TextQuestion(1, title, description, tag);
         String html = question.getHTML();
 
         InputStream stream = new ByteArrayInputStream(html.getBytes());
@@ -49,6 +50,7 @@ public class QuestionTest {
     public void getHTMLDropdownQuestion() throws Exception {
         String title = "Test text question";
         String description = "This is a text question";
+        String tag = "thisIsATag";
         ArrayList<String> values = new ArrayList<String>();
 
         values.add("A");
@@ -59,6 +61,7 @@ public class QuestionTest {
             Question.Type.STRING,
             title,
             description,
+            tag,
             values);
         String html = question.getHTML();
 
@@ -85,8 +88,9 @@ public class QuestionTest {
     public void getHTMLNumberQuestion() throws Exception {
         String title = "Test text question";
         String description = "This is a text question";
+        String tag = "thisIsATag";
 
-        Question question = new NumberQuestion(1, title, description);
+        Question question = new NumberQuestion(1, title, description, tag);
         String html = question.getHTML();
 
         InputStream stream = new ByteArrayInputStream(html.getBytes());
