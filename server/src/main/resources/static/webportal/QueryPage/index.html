@@ -40,7 +40,7 @@
     <div class="bottom-navbar">
         <div class="row align-content-center" style="background: #005cbf">
             <div class="col-md-6 text-center">
-                <input type="button" class="btn btn-primary btn-sm" value="Søg">
+                <input type="button" class="btn btn-primary btn-sm" value="Søg" onclick="makeQuery()">
             </div>
             <div class="col-md-6 text-center">
                 <input type="button" class="btn btn-primary btn-sm" value="Eksporter">
@@ -142,7 +142,7 @@
         var html = [];
         html.push(
             "<span class='input-group-addon'>",
-            "<input id=notcheckbox&" + index + "' type='checkbox' class='form-control form-control-lg'>",
+            "<input id='notcheckbox&" + index + "' type='checkbox' class='form-control form-control-lg'>",
             "</span>"
         );
         return html.join("");
@@ -231,6 +231,32 @@
         row.classList.add("table-active");
     }
 
+    function makeQuery(){
+        var table = document.getElementById("parametertable");
+        var queries = [];
+
+        for (i = 0; i < index; i++){
+            var query = {};
+            var tag = document.getElementById("taglabel&" + i);
+            if(tag !== null){
+                console.log("notcheckbox&" + index);
+                var not = document.getElementById("notcheckbox&" + i).checked;
+                var operator = document.getElementById("operatordropdown&" + i).value;
+                var value = document.getElementById("valuetext&" + i).value;
+                var andor = document.getElementById("operatordropdown&" + i).value;
+
+                query.tag = tag.value;
+                query.not = not;
+                query.operator = operator;
+                query.value = value;
+                query.link = andor;
+
+                queries.push(query);
+            }
+        }
+
+        console.log(queries);
+    }
 
 
 </script>
