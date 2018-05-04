@@ -254,8 +254,9 @@ public class NoSqlDatabase {
         return answer;
     }
 
-    static List<Tuple<String, Integer>> getPersonsFromSurvey(Tuple<String, Integer> survey) {
-        //Todo
+    static List<Tuple<String, Integer>> getPersonsFromSurveyBasedOnQuery(
+            Tuple<String, Integer> survey, List<QueryRow> query) {
+        //Todo return a list of people that answered a survey
         return null;
     }
 }

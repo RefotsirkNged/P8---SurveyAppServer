@@ -1176,8 +1176,30 @@ public class RelationalDatabase {
         }
     }
 
-    static List<Tuple<String, Integer>> queryTags(List<QueryRow> query) {
-        //Todo
+    /**
+     * Returns a list of surveys based on the provided tags.
+     * @param tags tags.
+     * @return list of surveys with name.
+     */
+    static List<Tuple<String, Integer>> querySurveys(List<String> tags) {
+        Connection con = null;
+        PreparedStatement statement = null;
+
+        try {
+            con = createConnection();
+
+
+            //TODO implement lol
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(con);
+            closeStatement(statement);
+        }
+
+
         return null;
     }
 }

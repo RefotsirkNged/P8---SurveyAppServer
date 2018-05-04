@@ -266,10 +266,20 @@ public class Database {
      * @return Surveys ans persons.
      */
     public static Map<Tuple<String, Integer>, List<Tuple<String, Integer>>> querySurveys(List<QueryRow> query) {
-        List<Tuple<String, Integer>> surveys = RelationalDatabase.queryTags(query);
+        //tuple1: surveyname, surveyid tuple2:list of personname, personid
         Map<Tuple<String, Integer>, List<Tuple<String, Integer>>> res = new HashMap<>();
+
+        List<Tuple<String, Integer>> surveys;
+        List<String> queryTags = new ArrayList<>();
+
+        for (QueryRow queryrow : query) {
+            queryTags.add(queryrow.getTag());
+        }
+        surveys =  RelationalDatabase.querySurveys(queryTags); //get the surveys corresponding to tags
+
+        //get the participants that answered the surveys, based on the query
         for (Tuple<String, Integer> survey : surveys) {
-            List<Tuple<String, Integer>> persons = NoSqlDatabase.getPersonsFromSurvey(survey);
+            List<Tuple<String, Integer>> persons = NoSqlDatabase.getPersonsFromSurveyBasedOnQuery(survey, query);
             res.put(survey, persons);
         }
 
