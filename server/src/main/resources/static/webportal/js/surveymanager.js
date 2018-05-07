@@ -107,7 +107,7 @@ function addEmptySurvey() {
             sessionStorage.setItem("surveyid", response);
         },
         error: function (response) {
-            window.location.replace("../home/index.html");
+            window.location.replace("../groupmanager/index.html");
         }
     });
 }

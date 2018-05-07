@@ -50,7 +50,7 @@ function login() {
                 setCookie("token", response.token);
                 // sessionStorage.setItem('token', response.token);
                 // setCookie("token", response.token, 1);
-                window.location.assign("../index.html");
+                window.location.assign("../groupmanager/index.html");
             }
         },
         error: function (response) {
@@ -80,15 +80,6 @@ function groupManager(){
 function newSurvey(){
     sessionStorage.setItem("surveyid", "undefined");
     window.location.replace("../surveymanager/index.html");
-}
-
-function home(){
-    if(isLoggedIn()){
-        window.location.replace("../home/index.html");
-    }
-    else {
-        window.location.replace("../login/index.html");
-    }
 }
 
 function addUserPage(){

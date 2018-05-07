@@ -1105,7 +1105,7 @@ public class RelationalDatabase {
         }
     }
 
-    static List<String> getAllTags() throws P8Exception {
+    static List<String> getAllTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1121,14 +1121,14 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage(), e);
         } finally {
             closeConnection(con);
             closeStatement(statement);
         }
     }
 
-    static List<String> getIntTags() throws P8Exception {
+    static List<String> getIntTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1145,14 +1145,14 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage(), e);
         } finally {
             closeConnection(con);
             closeStatement(statement);
         }
     }
 
-    static List<String> getStringTags() throws P8Exception {
+    static List<String> getStringTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1169,7 +1169,7 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage());
         } finally {
             closeConnection(con);
             closeStatement(statement);
