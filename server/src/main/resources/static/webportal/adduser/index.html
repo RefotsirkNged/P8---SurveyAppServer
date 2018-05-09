@@ -8,8 +8,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="../js/CookieHelper.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../style/sidepanel.css">
 </head>
 <body>
+<script src="../js/sidepanel.js"></script>
 
 <div id="loginfailedmodal" class="modal">
     <div class="modal-content">
@@ -18,80 +20,81 @@
     </div>
 </div>
 
-<div id="pickUser" class="wrapper center-container">
-    <div class="row">
-        <div class="col-">
-            <button onclick="home()" class="btn btn-md btn-secondary">Tilbage</button>
-        </div>
-        <div class="col-">
-            <button id="makeResearcher" onclick="setResearcher()" class="btn btn-md btn-primary">Tilføj forsker</button>
-        </div>
+<div class="main">
 
-        <div class="col-">
-            <button id="makeParticipant" onclick="setParticipant()" class="btn btn-md btn-primary">Tilføj deltager
-            </button>
+    <div id="pickUser" class="wrapper center-container">
+        <div class="row">
+            <div class="col-">
+                <button id="makeResearcher" onclick="setResearcher()" class="btn btn-md btn-primary">Tilføj forsker
+                </button>
+            </div>
+
+            <div class="col-">
+                <button id="makeParticipant" onclick="setParticipant()" class="btn btn-md btn-primary">Tilføj deltager
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="top-container" class="center-container" style="display: none">
-    <div class="container">
-        <div class="row">
-            <label>Fornavn</label>
-        </div>
-        <div class="row">
-            <input class="form-control" name="firstname" id="firstname" type="text"/>
-        </div>
-        <div class="row">
-            <label>Efternavn</label>
-        </div>
-        <div class="row">
-            <input class="form-control" name="lastname" id="lastname" type="text"/>
-        </div>
-        <div class="row">
-            <label>Email</label>
-        </div>
-        <div class="row">
-            <input class="form-control" name="email" id="email" type="email"/>
-        </div>
-        <div class="row participantonly">
-            <label>CPR-nr</label>
-        </div>
-        <div class="row participantonly">
-            <input class="form-control" name="cprnr" id="cprnr" type="text" maxlength="10" minlength="10"/>
-        </div>
-        <div class="row participantonly">
-            <label>JournalNr</label>
-        </div>
-        <div class="row participantonly">
-            <input class="form-control" name="journalnr" id="journalnr" type="text"/>
-        </div>
-        <div class="row researcheronly">
-            <label>Phone Number</label>
-        </div>
-        <div class="row researcheronly">
-            <input class="form-control" name="phonenr" id="phonenr" type="number" minlength="8" maxlength="8"/>
-        </div>
-        <div class="spacing">
-
-
-        </div>
-        <div class="row">
-            <div class="col-">
-                <button type="button" class="btn btn-secondary btn-md" onclick="backHelper()">
-                    Tilbage
-                </button>
+    <div id="top-container" class="center-container" style="display: none">
+        <div class="container">
+            <div class="row">
+                <label>Fornavn</label>
             </div>
-            <div class="col-">
-                <button type="button" class="btn btn-secondary btn-md" onclick="clearAll()">
-                    Ryd felter
-                </button>
+            <div class="row">
+                <input class="form-control" name="firstname" id="firstname" type="text"/>
             </div>
-            <div class=" col-
+            <div class="row">
+                <label>Efternavn</label>
+            </div>
+            <div class="row">
+                <input class="form-control" name="lastname" id="lastname" type="text"/>
+            </div>
+            <div class="row">
+                <label>Email</label>
+            </div>
+            <div class="row">
+                <input class="form-control" name="email" id="email" type="email"/>
+            </div>
+            <div class="row participantonly">
+                <label>CPR-nr</label>
+            </div>
+            <div class="row participantonly">
+                <input class="form-control" name="cprnr" id="cprnr" type="text" maxlength="10" minlength="10"/>
+            </div>
+            <div class="row participantonly">
+                <label>JournalNr</label>
+            </div>
+            <div class="row participantonly">
+                <input class="form-control" name="journalnr" id="journalnr" type="text"/>
+            </div>
+            <div class="row researcheronly">
+                <label>Phone Number</label>
+            </div>
+            <div class="row researcheronly">
+                <input class="form-control" name="phonenr" id="phonenr" type="number" minlength="8" maxlength="8"/>
+            </div>
+            <div class="spacing">
+
+
+            </div>
+            <div class="row">
+                <div class="col-">
+                    <button type="button" class="btn btn-secondary btn-md" onclick="backHelper()">
+                        Tilbage
+                    </button>
+                </div>
+                <div class="col-">
+                    <button type="button" class="btn btn-secondary btn-md" onclick="clearAll()">
+                        Ryd felter
+                    </button>
+                </div>
+                <div class=" col-
                 ">
-                <button type="button" class="btn btn-primary btn-md" onclick="addUser()">Tilføj
-                    bruger
-                </button>
+                    <button type="button" class="btn btn-primary btn-md" onclick="addUser()">Tilføj
+                        bruger
+                    </button>
+                </div>
             </div>
         </div>
     </div>

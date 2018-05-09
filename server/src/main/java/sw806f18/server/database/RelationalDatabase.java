@@ -540,7 +540,7 @@ public class RelationalDatabase {
             statement2.setInt(1, id);
             statement2.setInt(2, Integer.parseInt(participant.getCpr().trim()));    // TODO: Loss of leading zeros!!!
             statement2.setTimestamp(3, Timestamp.valueOf(LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
-                    ZoneId.systemDefault())));
+                ZoneId.systemDefault())));
             statement2.setInt(4, participant.getPrimaryGroup());
             statement2.executeUpdate();
         } catch (SQLException e) {
@@ -954,6 +954,7 @@ public class RelationalDatabase {
                         resultSet.getString("name"), resultSet
                         .getString("description")));
             }
+
             return surveys;
         } catch (SQLException | ClassNotFoundException e) {
             throw new GetModulesByUserException("Server error. Contact system administrator.");
@@ -1105,7 +1106,7 @@ public class RelationalDatabase {
         }
     }
 
-    static List<String> getAllTags() throws P8Exception {
+    static List<String> getAllTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1121,14 +1122,14 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage(), e);
         } finally {
             closeConnection(con);
             closeStatement(statement);
         }
     }
 
-    static List<String> getIntTags() throws P8Exception {
+    static List<String> getIntTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1145,14 +1146,14 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage(), e);
         } finally {
             closeConnection(con);
             closeStatement(statement);
         }
     }
 
-    static List<String> getStringTags() throws P8Exception {
+    static List<String> getStringTags() throws TagException {
         Connection con = null;
         PreparedStatement statement = null;
 
@@ -1169,7 +1170,7 @@ public class RelationalDatabase {
             return tags;
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new P8Exception(e.getMessage());
+            throw new TagException(e.getMessage());
         } finally {
             closeConnection(con);
             closeStatement(statement);

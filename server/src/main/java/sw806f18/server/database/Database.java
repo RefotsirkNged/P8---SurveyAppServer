@@ -247,15 +247,15 @@ public class Database {
         NoSqlDatabase.updateQuestionFromSurvey(survey);
     }
 
-    public static List<String> getAllTags() throws P8Exception {
+    public static List<String> getAllTags() throws TagException {
         return RelationalDatabase.getAllTags();
     }
 
-    public static List<String> getIntTags() throws P8Exception {
+    public static List<String> getIntTags() throws TagException {
         return RelationalDatabase.getIntTags();
     }
 
-    public static List<String> getStringTags() throws P8Exception {
+    public static List<String> getStringTags() throws TagException {
         return RelationalDatabase.getStringTags();
     }
 
