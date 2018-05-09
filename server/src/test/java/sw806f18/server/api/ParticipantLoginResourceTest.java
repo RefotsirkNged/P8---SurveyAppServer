@@ -68,7 +68,7 @@ public class ParticipantLoginResourceTest {
         String expected = "";
         boolean hasError = false;
         try {
-            expected = new String(Files.readAllBytes(Paths.get("tmp/participantlogin.html")), StandardCharsets.UTF_8);
+            expected = new String(Files.readAllBytes(Paths.get("tmp/index.html")), StandardCharsets.UTF_8);
         } catch (IOException e) {
             hasError = true;
         }

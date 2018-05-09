@@ -3,7 +3,6 @@ package sw806f18.server.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
@@ -18,13 +17,8 @@ import sw806f18.server.model.Participant;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 
 @RestController
@@ -72,7 +66,7 @@ public class ParticipantLoginResource {
         String html = "";
         try {
 
-            html = StreamUtils.copyToString(new ClassPathResource("participantlogin.html")
+            html = StreamUtils.copyToString(new ClassPathResource("static/webportal/participantlogin/index.html")
                     .getInputStream(), Charset.defaultCharset());
         } catch (IOException e) {
             html = "Error!";
