@@ -1,6 +1,7 @@
 function sidepanel() {
     //var content = document.body.innerHTML;
     document.body.innerHTML = "<div class=\"sidenav\">\n" +
+        "    <img src='../image/logo.png' style='width:100%;' /> \n" +
         "    <a class='sidepanela' href='../groupmanager/index.html' onclick='validateLogin()'>Gruppe manager</a>\n" +
         "    <a class='sidepanela' href='../adduser/index.html' onclick='validateLogin()'>Opret bruger</a>\n" +
         "    <a class='sidepanela' href='../surveymanager/index.html' onclick='validateLogin()'>Opret spørgskema</a>\n" +
@@ -18,7 +19,7 @@ function sidepanel() {
     for(var i = 0; i < panels.length; i++) {
         if (panels[i].href === currentUrl) {
             console.log("I am here: " + currentUrl);
-            panels[i].style.textDecoration = "underline overline";
+            panels[i].style.color = "#02d2a6";
         }
     }
 }
