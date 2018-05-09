@@ -5,6 +5,7 @@
     <title>Eksporter data</title>
     <link rel="stylesheet" type="text/css" href="../style/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../style/sidepanel.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"/>
     <script src="../js/CookieHelper.js"></script>
@@ -13,62 +14,65 @@
     <script type="text/javascript" src="../js/surveymanager.js"></script>
 </head>
 <body onload="initTags()">
-<div class="main-container">
-    <div class="wrapper row" style="height: 90%">
-        <div class="col-md-6 parameters-container" style="overflow: auto;">
-            <table id="parametertable" class="table table-striped" style="width: 100%">
-                <tr style="cursor: default">
-                    <th>Tag</th>
-                    <th>NOT</th>
-                    <th>Operator</th>
-                    <th>Værdi</th>
-                    <th>AND/OR</th>
-                </tr>
-            </table>
-            <button class="btn btn-success btn-sm" onclick="addParameterRow()">Tilføj parameter</button>
-        </div>
-        <div class="col-md-6 results-container">
-            <table id="resultstable" class="table table-striped" style="width: 100%">
-                <tr style="cursor: default">
-                    <th>Navn</th>
-                    <th>Køn</th>
-                    <th>Surveys</th>
-                </tr>
-            </table>
-        </div>
-    </div>
-    <div class="bottom-navbar">
-        <div class="row align-content-center" style="background: #005cbf">
-            <div class="col-md-6 text-center">
-                <input type="button" class="btn btn-primary btn-sm" value="Søg" onclick="makeQuery()">
+<script src="../js/sidepanel.js"></script>
+<div class="main">
+    <div class="main-container">
+        <div class="wrapper row" style="height: 90%">
+            <div class="col-md-6 parameters-container" style="overflow: auto;">
+                <table id="parametertable" class="table table-striped" style="width: 100%">
+                    <tr style="cursor: default">
+                        <th>Tag</th>
+                        <th>NOT</th>
+                        <th>Operator</th>
+                        <th>Værdi</th>
+                        <th>AND/OR</th>
+                    </tr>
+                </table>
+                <button class="btn btn-success btn-sm" onclick="addParameterRow()">Tilføj parameter</button>
             </div>
-            <div class="col-md-6 text-center">
-                <input type="button" class="btn btn-primary btn-sm" value="Eksporter">
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="tagmodal" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Vælg tag</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <table  id="tagtable" class="table table-hover">
-
+            <div class="col-md-6 results-container">
+                <table id="resultstable" class="table table-striped" style="width: 100%">
+                    <tr style="cursor: default">
+                        <th>Navn</th>
+                        <th>Køn</th>
+                        <th>Surveys</th>
+                    </tr>
                 </table>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="setTagLabel()">Vælg</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+        </div>
+        <div class="bottom-navbar">
+            <div class="row align-content-center" style="background: #005cbf">
+                <div class="col-md-6 text-center">
+                    <input type="button" class="btn btn-primary btn-sm" value="Søg" onclick="makeQuery()">
+                </div>
+                <div class="col-md-6 text-center">
+                    <input type="button" class="btn btn-primary btn-sm" value="Eksporter">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tagmodal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vælg tag</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tagtable" class="table table-hover">
+
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="setTagLabel()">Vælg
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuller</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>
 
@@ -78,7 +82,7 @@
     var currentTagRowid;
     var taglist;
 
-    function addParameterRow(){
+    function addParameterRow() {
         var table = document.getElementById("parametertable");
         var newrow = table.insertRow(-1);
         var cell1 = newrow.insertCell(-1);
@@ -97,7 +101,7 @@
         index++;
     }
 
-    function getRemoveRowHTML(rowid){
+    function getRemoveRowHTML(rowid) {
         console.log("start of getrmove " + rowid);
         var html = [];
         html.push(
@@ -108,37 +112,38 @@
         return html.join("");
     }
 
-    function removeRow(row){
+    function removeRow(row) {
         var table = document.getElementById("parametertable");
         for (i = 0; i < table.rows.length; i++) {
-            if(table.rows[i].id === row.id){
+            if (table.rows[i].id === row.id) {
                 table.deleteRow(i);
             }
         }
     }
-    function getTagCellHTML(){
+
+    function getTagCellHTML() {
         var html = [];
         html.push(
-        "<div class='container-fluid'>",
-        "<div class='row'>",
-        "<button id='tagbutton&" + index + "' type='button' class='btn btn-success btn-sm col-md-2' onclick='getTags(" + index + ")' data-toggle='modal' data-target='#tagmodal'>",
+            "<div class='container-fluid'>",
+            "<div class='row'>",
+            "<button id='tagbutton&" + index + "' type='button' class='btn btn-success btn-sm col-md-2' onclick='getTags(" + index + ")' data-toggle='modal' data-target='#tagmodal'>",
             "&#x2630;",
-        "</button>",
-        "<input id='taglabel&" + index + "' type='text' class='form-control form-control-sm col-md-10' readonly>",
-        "</div>",
-        "</div>"
+            "</button>",
+            "<input id='taglabel&" + index + "' type='text' class='form-control form-control-sm col-md-10' readonly>",
+            "</div>",
+            "</div>"
         );
         return html.join("");
     }
 
-    function setTagLabel(tagid){
+    function setTagLabel(tagid) {
         var tagtable = document.getElementById("tagtable");
         var label = document.getElementById("taglabel&" + currentrowid);
         var tagname = tagtable.rows[currentTagRowid].cells[0].innerHTML;
         label.value = tagname;
     }
 
-    function getNotCellHTML(){
+    function getNotCellHTML() {
         var html = [];
         html.push(
             "<span class='input-group-addon'>",
@@ -162,7 +167,7 @@
         );
         return html.join("");
     }
-    
+
     function getValueCellHTML() {
         var html = [];
         html.push(
@@ -171,7 +176,7 @@
         return html.join("");
     }
 
-    function getAndOrCellHTML(){
+    function getAndOrCellHTML() {
         var html = [];
         html.push(
             "<select id='operatordropdown&" + index + "' class='form-control form-control-sm'>",
@@ -184,8 +189,7 @@
     }
 
 
-
-    function getTags(rowid){
+    function getTags(rowid) {
         var table = document.getElementById("tagtable");
         //var listoftags = ["hej", "123", "ged"];
         currentrowid = rowid;
@@ -196,11 +200,13 @@
             var newrow = table.insertRow(-1);
             newrow.innerHTML = "<td>" + tag + "</td>";
             newrow.style.cursor = "default";
-            newrow.onclick = function(){tagRowClicked(this)};
+            newrow.onclick = function () {
+                tagRowClicked(this)
+            };
         }
     }
 
-    function initTags(){
+    function initTags() {
         $.ajax({
             url: '/api/tag/',
             type: 'GET',
@@ -213,11 +219,11 @@
         })
     }
 
-    function query(){
+    function query() {
 
     }
 
-    function exportData(){
+    function exportData() {
     }
 
     function tagRowClicked(row) {
@@ -231,14 +237,14 @@
         row.classList.add("table-active");
     }
 
-    function makeQuery(){
+    function makeQuery() {
         var table = document.getElementById("parametertable");
         var queries = [];
 
-        for (i = 0; i < index; i++){
+        for (i = 0; i < index; i++) {
             var query = {};
             var tag = document.getElementById("taglabel&" + i);
-            if(tag !== null){
+            if (tag !== null) {
                 console.log("notcheckbox&" + index);
                 var not = document.getElementById("notcheckbox&" + i).checked;
                 var operator = document.getElementById("operatordropdown&" + i).value;
