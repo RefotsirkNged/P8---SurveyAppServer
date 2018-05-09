@@ -1,16 +1,3 @@
-/**
- * Created by chrae on 14-03-2018.
- */
-
-function gotoHome(){
-    if(isLoggedIn()){
-        window.location.assign("../home/index.html");
-    }
-    else {
-        window.location.assign("../login/index.html");
-    }
-}
-
 function arr_diff (a1, a2) {
     var diff = [];
 
