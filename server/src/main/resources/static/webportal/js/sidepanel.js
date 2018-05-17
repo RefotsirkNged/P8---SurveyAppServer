@@ -4,7 +4,7 @@ function sidepanel() {
         "    <img src='../image/logo.png' style='width:100%;' /> \n" +
         "    <a class='sidepanela' href='../groupmanager/index.html' onclick='validateLogin()'>Gruppe manager</a>\n" +
         "    <a class='sidepanela' href='../adduser/index.html' onclick='validateLogin()'>Opret bruger</a>\n" +
-        "    <a class='sidepanela' href='../surveymanager/index.html' onclick='validateLogin()'>Opret spørgskema</a>\n" +
+        "    <a class='sidepanela' href='../surveymanager/index.html' onclick='surveyButtonClick()'>Opret spørgskema</a>\n" +
         "    <a class='sidepanela' href='../QueryPage/index.html' onclick='validateLogin()'>Exporter data</a> \n " +
         "    <a class='sidepanela' href='../login/index.html' onclick='logout()'>Log ud</a>\n" +
         "</div>";
@@ -31,10 +31,16 @@ function logout(){
 function validateLogin() {
     function groupManager(){
         if(!isLoggedIn()) {
+            console.log("Logging out");
             logout();
             document.location.href = "../login/index.html";
         }
     }
+}
+
+function surveyButtonClick(){
+    validateLogin();
+    sessionStorage.removeItem("surveyid");
 }
 
 window.onload = sidepanel();

@@ -9,9 +9,9 @@ import sw806f18.server.Configurations;
 import sw806f18.server.database.Database;
 import sw806f18.server.exceptions.CprKeyNotFoundException;
 import sw806f18.server.exceptions.CreateUserException;
+import sw806f18.server.model.Error;
 import sw806f18.server.model.Participant;
 
-import java.sql.SQLException;
 
 @RestController
 @RequestMapping(path = "participant")
@@ -38,7 +38,7 @@ public class ParticipantResource {
             return ResponseEntity.ok().build();
         } catch (CreateUserException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.ok(new Error(e.getMessage()));
         }
     }
 }

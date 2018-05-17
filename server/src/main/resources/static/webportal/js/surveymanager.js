@@ -3,6 +3,8 @@ var selectedRowIndex = -1;
 function getQuestions() {
     var g = document.getElementById("questiontable");
     var surveyId = sessionStorage.getItem("surveyid");
+    console.log(document.getElementById("questiontable"));
+    console.log(g);
     g.innerHTML = "";
 
     $.ajax({
@@ -113,9 +115,12 @@ function addEmptySurvey() {
 }
 
 function load() {
-    if (sessionStorage.getItem("surveyid") != null && sessionStorage.getItem("surveyid") !== "undefined") {
+    if (sessionStorage.getItem("surveyid") !== null && sessionStorage.getItem("surveyid") !== "undefined") {
+        console.log("Found survey");
+        console.log(sessionStorage.getItem("surveyid"));
         getQuestions();
     } else {
+        console.log("Trying to create empty survey");
         addEmptySurvey();
     }
 }
@@ -187,7 +192,6 @@ function addValueToTable() {
 function updateSurveyMetadata() {
     var title = document.getElementById("nametext").value;
     var description = document.getElementById("descriptiontext").value;
-    var tag = document.getElementById("tagtext").value;
     var frequencyType, frequencyValue;
 
 
@@ -223,7 +227,7 @@ function updateSurveyMetadata() {
     var json = {};
     json.title = title;
     json.description = description;
-    json.tag = tag;
+    json.tag = "";
     json.frequencyType = frequencyType;
     json.frequencyValue = frequencyValue;
     console.log("json " + JSON.stringify(json));
@@ -284,3 +288,7 @@ function toDateTime(secs) {
     t.setSeconds(secs);
     return t;
 }
+
+window.onload = function () {
+    load();
+};

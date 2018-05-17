@@ -538,7 +538,7 @@ public class RelationalDatabase {
                     + "VALUES ( ?, ?, ?, ?)";
             statement2 = connection.prepareStatement(q2);
             statement2.setInt(1, id);
-            statement2.setInt(2, Integer.parseInt(participant.getCpr().trim()));    // TODO: Loss of leading zeros!!!
+            statement2.setString(2, participant.getCpr().trim());    // TODO: Loss of leading zeros!!!
             statement2.setTimestamp(3, Timestamp.valueOf(LocalDateTime.ofInstant(participant.getBirthday().toInstant(),
                 ZoneId.systemDefault())));
             statement2.setInt(4, participant.getPrimaryGroup());
@@ -553,7 +553,6 @@ public class RelationalDatabase {
             closeConnection(connection);
             closeStatement(statement1);
             closeStatement(statement2);
-            closeResultSet(resultSet);
         }
 
         try {
