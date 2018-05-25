@@ -37,7 +37,7 @@ public class ParticipantLoginResourceTest {
         try {
             response = TestHelpers.login(TestHelpers.PARTICIPANT_LOGIN_PATH,
                 TestHelpers.INVALID_EMAIL, TestHelpers.INVALID_PASSWORD);
-            assertEquals(response.getResponseCode(), 200);            // TODO: What status to return?
+            assertEquals(response.getResponseCode(), 200);
             JsonNode payload = TestHelpers.getJsonPayload(response);
             String error = payload.get("error").asText();
             assertEquals(error, "Invalid email or password!");

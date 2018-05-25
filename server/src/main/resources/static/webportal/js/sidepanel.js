@@ -1,5 +1,4 @@
 function sidepanel() {
-    //var content = document.body.innerHTML;
     document.body.innerHTML = "<div class=\"sidenav\">\n" +
         "    <img src='../image/logo.png' style='width:100%;' /> \n" +
         "    <a class='sidepanela' href='../groupmanager/index.html' onclick='validateLogin()'>Gruppe manager</a>\n" +
@@ -8,9 +7,6 @@ function sidepanel() {
         "    <a class='sidepanela' href='../QueryPage/index.html' onclick='validateLogin()'>Exporter data</a> \n " +
         "    <a class='sidepanela' href='../login/index.html' onclick='logout()'>Log ud</a>\n" +
         "</div>";
-        // "<div class=\"main\">\n" +
-        // content + "\n" +
-        // "</div>";
 
     var currentUrl = document.location.href;
 

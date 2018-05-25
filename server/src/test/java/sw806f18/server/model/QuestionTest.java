@@ -74,8 +74,6 @@ public class QuestionTest {
             Assert.assertTrue(values.get(i).equals(TestHelpers.getHTMLDocAttribute(options.item(i),"value")));
         }
 
-        //assertTrue(tidy.getParseErrors() == 0);
-        //assertTrue(tidy.getParseWarnings() == 0);
         Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "h4").equals(title));
         Assert.assertTrue(TestHelpers.getHTMLTagData(htmlDoc, "p").equals(description));
         Assert.assertTrue(TestHelpers.getHTMLTagAttribute(htmlDoc, "select", "name")

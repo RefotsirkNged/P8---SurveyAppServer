@@ -23,7 +23,6 @@ public class ResearcherParticipantResourceTest {
 
     @Test
     public void inviteParticipant() {
-        // TODO: FIX ME
         Participant participant = new Participant(
             -1,
             "sw806f18@gmail.com",

@@ -56,7 +56,6 @@ public class ReseacherGroupManagerResource {
      */
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllGroups(@CookieValue(value = "token") String token) {
-        // TODO: FIX ME!!!
         if (Database.isResearcher(Authentication.instance.getId(token))) {
             try {
                 List<Group> groups = Database.getAllGroups();

@@ -29,7 +29,6 @@ import static org.junit.Assert.*;
 
 @RunWith(TestRunner.class)
 public class DatabaseTest {
-    // TODO: Assert actions!!!
 
     @Test
     public void removeQuestionFromSurvey() throws Exception {
@@ -69,7 +68,6 @@ public class DatabaseTest {
 
     @Test
     public void getAllGroups() throws Exception {
-        // ToDo: Fix pls -- Fix what?
         List<Group> groups = Database.getAllGroups();
         List<Group> expected = TestHelpers.testGroups();
         assertEquals(groups, expected);
@@ -398,7 +396,6 @@ public class DatabaseTest {
 
     @Test
     public void tagTypeCheck() {
-        //TODO Implement this test
     }
 
     @Test

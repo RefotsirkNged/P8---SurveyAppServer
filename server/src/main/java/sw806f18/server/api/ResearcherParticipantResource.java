@@ -50,7 +50,6 @@ public class ResearcherParticipantResource {
                 return ResponseEntity.ok(JsonBuilder.buildError(e.getMessage()));
             }
 
-            // TODO: Maybe not have credentials in source files
             String to = email;
             String from = "sw806f18@gmail.com";
             String username = "sw806f18@gmail.com";

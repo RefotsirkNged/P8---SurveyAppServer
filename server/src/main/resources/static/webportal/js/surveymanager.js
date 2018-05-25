@@ -146,9 +146,6 @@ function addQuestion() {
                 values.push(col.innerHTML);
             }
         }
-        //  document.getElementById("dropdownValuesTable").getElementsByTagName("tr").forEach(function (value) {
-        //    values.push(value.getElementsByTagName("td")[0].value);
-        //    });
     }
 
     var json = {};

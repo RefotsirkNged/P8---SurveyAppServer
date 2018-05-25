@@ -41,8 +41,6 @@ public class ParticipantLoginResource {
 
             Cookie cookie = new Cookie("token", token);
             cookie.setPath("/api");
-            //cookie.setHttpOnly(true);
-
             response.addCookie(cookie);
 
             return ResponseEntity.ok().build();
@@ -73,6 +71,5 @@ public class ParticipantLoginResource {
         }
 
         return html;
-        // return ResponseEntity.ok(new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)));
     }
 }
