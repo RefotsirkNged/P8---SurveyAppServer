@@ -9,6 +9,7 @@
     <script src="../js/CookieHelper.js"></script>
     <script src="../js/script.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/surveymanager.js"></script>
     <link rel="stylesheet" type="text/css" href="../style/sidepanel.css">
 </head>
 
@@ -126,7 +127,12 @@
     </div>
 </div>
 
-<script type="text/javascript" src="../js/surveymanager.js"></script>
+<script>
+    $(document).ready(function () {
+        console.log("LOADING");
+        load();
+    });
+</script>
 </body>
 </html>
 
